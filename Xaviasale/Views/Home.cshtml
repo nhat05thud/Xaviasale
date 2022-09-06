@@ -1,0 +1,233 @@
+﻿@using Umbraco.Web.Models
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var home = Umbraco.AssignedContentItem.Root();
+    var homeBanners = home.Value<IEnumerable<IPublishedElement>>("bannerNested");
+    var welcomeImage = home.Value<IPublishedContent>("welcomeImage");
+    var sectionImageOneBackground = home.Value<IPublishedContent>("sectionImageOneBackground");
+    var featureNested = home.Value<IEnumerable<IPublishedElement>>("featureNested");
+    var sectionImageTwoBackground = home.Value<IPublishedContent>("sectionImageTwoBackground");
+}
+
+<div class="index-sections">
+    <div class="content">
+        @if (homeBanners != null && homeBanners.Any())
+        {
+            <section type="slideshow">
+                <div class="slideshow-section section">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="main-banner owl-carousel">
+                                @foreach (var item in homeBanners)
+                                {
+                                    var image = item.Value<IPublishedContent>("image");
+                                    <div class="item">
+                                        <a aria-current="page" href="@(item.Value<Link>("link")?.Url)" class="router-link-active router-link-exact-active d-block slideshow-section__link">
+                                            <div class="relative slideshow-section__background slideshow-section__background-21by9 mb0">
+                                                <div class="slideshow-section__overlay" style="opacity: 0.14;"></div>
+                                                <img src="@(image != null ? image.GetCropUrl(1903, 856, imageCropMode:ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/1903x856")" alt="@item.Value("title")" class="image sb-lazy priority" data-loaded="true">
+                                            </div>
+                                        </a>
+                                        <div class="container slideshow-section__caption text-align-center">
+                                            <div class="content pb32 margin-auto col-12 col-lg-7">
+                                                <h1 class="h3 mt16 mb0">@item.Value("title")</h1>
+                                                <div class="slideshow-section__caption-text mt12">
+                                                    <p>@item.Value("description")</p>
+                                                </div>
+                                                <a href="@(item.Value<Link>("link")?.Url)" class="btn btn-primary mt24 shape-sharp-t-l-b-r"><span>@item.Value("buttonText")</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        <section type="rich-text">
+            <div class="rich-text-section section py12">
+                <div class="container">
+                    <div class="row justify-center">
+                        <div class="col-12 rich-text-section__heading col-lg-8">
+                            <h4 class="mb12 text-align-center">@home.Value("welcomeTitle")</h4>
+                        </div>
+                        <div class="col-12 col-lg-8 rich-text-section__content text-align-center">
+                            <div class="rich-text-section__text mb16">
+                                @home.Value("welcomeDescription")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section type="image-with-text">
+            <section class="section image-with-text w-100 box">
+                <div class="justify-center container">
+                    <div class="relative row">
+                        <div class="feature-set-content-wrap relative w-100 flex align-center">
+                            <div class="feature-image w-100 relative box layout-odd col-lg-8">
+                                <a aria-current="page" href="/" class="router-link-active router-link-exact-active d-block">
+                                    <img src="@(welcomeImage != null ? welcomeImage.GetCropUrl(992, 469, imageCropMode:ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/992x469"))" alt="" class="image priority shape-sharp-t-l-b-r" data-loaded="true">
+                                </a>
+                            </div>
+                            <div class="feature-content box even text-align-center layout-odd">
+                                <h4 class="title mt12 mb8">@home.Value("welcomeImageTitle")</h4>
+                                <div class="desc mb24">
+                                    <p>@home.Value("welcomeImageDescription")</p>
+                                </div>
+                                <div class="btn-wrap mb16">
+                                    <a href="@(home.Value<Link>("welcomeImageUrl")?.Url)" class="btn btn-view shape-sharp-t-l-b-r">@home.Value("welcomeButtonText")</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+        <section type="banner">
+            <div class="banner-section section">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="w-100">
+                            <div class="banner-section__wrap relative">
+                                <a aria-current="page" href="@(home.Value<Link>("sectionImageOneUrl")?.Url)" class="router-link-active router-link-exact-active">
+                                    <div class="relative flex items-center justify-center banner-section__image">
+                                        <div class="banner-section__overlay" style="opacity: 0.12;"></div>
+                                        <img src="@(sectionImageOneBackground != null ? sectionImageOneBackground.GetCropUrl(1903, 475, imageCropMode:ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/1903x475")" alt="" class="image" data-loaded="true">
+                                    </div>
+                                </a>
+                                <div class="container d-block relative banner-section__caption banner-section--position-left">
+                                    <div class="banner-section__caption-content">
+                                        <h3 class="text-align-left mb8 text-align-center-xs banner-section__title">@home.Value("sectionImageOneTitle")</h3>
+                                        <div class="text-align-left mb16 text-align-center-xs banner-section__subtitle">
+                                        </div>
+                                        <div class="text-align-left text-align-center-xs banner-section__action">
+                                            <a aria-current="page" href="@(home.Value<Link>("sectionImageOneUrl")?.Url)" class="router-link-active router-link-exact-active btn btn-primary mb12 shape-sharp-t-l-b-r">@home.Value("sectionImageOneButtonText")</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        @{
+            var productReview = home.DescendantsOfType("product").Where(x => x.Value<IEnumerable<IPublishedElement>>("reviewNested").Any()).OrderByDescending(x => x.SortOrder).Take(10);
+        }
+        @if (productReview.Count() > 0 && productReview.Any())
+        {
+            <section class="container">
+                <section data-section-id="R7B" type="carousel" app="review" id="R7B">
+                    <section class="rv-widget rv-widget--carousel section section--app" app="review" blocks="" handles="" id="R7B" name="review">
+                        <div class="rv-widget__carousel-container-new">
+                            <div class="review-text-center review-mb24 rv-widget__carousel-header">
+                                <div class="review-flex review-justify-center review-mb16 rv-widget__carousel-header-star" data-rating="5">
+                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                </div>
+                                <div class="review-mb8 rv-widget__carousel-heading">Real reviews from real customers</div>
+                            </div>
+                            <div class="review-carousel owl-carousel">
+                                @foreach (var item in productReview)
+                                {
+                                    var review = item.Value<IEnumerable<IPublishedElement>>("reviewNested");
+                                    <div class="item">
+                                        <div class="review-flex review-direction-column review-pt10 review-relative rv-widget__listing-body">
+                                            <div class="review-p24 review-flex-1 rv-widget__body-content review-text-center" data-review="background-side">
+                                                <div class="review-flex review-items-center rv-widget__body-star review-justify-center" data-rating="@review.FirstOrDefault().Value("star")">
+                                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                                    <div class="review-mr2 review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                                                </div><!---->
+                                                <div class="rv-widget__body-post">@review.FirstOrDefault().Value("review")</div>
+                                                <div class="review-m8 review-flex rv-widget__body-image review-justify-center"><img class="sb-lazy review-mr10 review-pointer" alt="" sizes="auto" data-srcset="https://ae01.alicdn.com/kf/A9a71e0b60bed441ebe7f7e5a9a9a4136p.jpg 180w, https://ae01.alicdn.com/kf/A9a71e0b60bed441ebe7f7e5a9a9a4136p.jpg 360w" data-src="https://ae01.alicdn.com/kf/A9a71e0b60bed441ebe7f7e5a9a9a4136p.jpg" src="https://ae01.alicdn.com/kf/A9a71e0b60bed441ebe7f7e5a9a9a4136p.jpg" lazy="loaded"></div>
+                                            </div>
+                                            <div class="rv-widget__review-author review-flex review-items-center review-px24 review-py16 rv-widget__review-author--small review-justify-center review-text-center">
+                                                @*<img src="https://s.gravatar.com/avatar/c6c80433d96028b74333f446b8555dc8?s=48&amp;r=x&amp;d=https://img.thesitebase.net/apps/review/avatar/1.png" alt="Image" class="rv-widget__image--center">*@
+                                                <div class="rv-widget__author-info review-flex review-flex-wrap review-items-center">
+                                                    <div class="review-inline-flex review-items-center">
+                                                        <div class="rv-widget__author-info--name" title="@review.FirstOrDefault().Value("reviewName")">@review.FirstOrDefault().Value("reviewName")</div>
+                                                    </div>
+                                                    <span class="review-mb4 review-mx8"> · </span>
+                                                    <div class="rv-widget__author-info--date">@review.FirstOrDefault().Value("createdDate")</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </section>
+        }
+
+
+        @if (featureNested != null && featureNested.Any())
+        {
+            <section type="featured-promotion">
+                <div class="featured-promotions-section section">
+                    <div class="container-fluid">
+                        <div class="row">
+                            @foreach (var item in featureNested)
+                            {
+                                <div class="col-12 col-lg-4">
+                                    <div class="flex px32 py26 align-center featured-promotions-section__inner shape-sharp-t-l-b-r">
+                                        <div class="featured-promotions-section__image">
+                                            <img src="@(item.Value<IPublishedContent>("image")?.Url())" alt="" class="image" data-loaded="true">
+                                        </div>
+                                        <div class="featured-promotions-section__content">
+                                            <div class="featured-promotions-section__subtitle text-align-center">
+                                                <p style="text-align: left;">
+                                                    <span style="white-space: pre-wrap;">@item.Value("title")</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        @Html.Partial("Layout/ProductsCarousel/_BestSeller")
+        @Html.Partial("Layout/ProductsCarousel/_RecentlyViewed")
+        @Html.Partial("Layout/ProductsCarousel/_CartCommendations")
+        <section type="banner">
+            <div class="banner-section section">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="w-100">
+                            <div class="banner-section__wrap relative">
+                                <div class="relative flex items-center justify-center banner-section__image">
+                                    <div class="banner-section__overlay" style="opacity: 0.25;"></div>
+                                    <img src="@(sectionImageTwoBackground != null ? sectionImageTwoBackground.GetCropUrl(1903, 475, imageCropMode:ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/1903x475")" alt="" class="image" data-loaded="true">
+                                </div>
+                                <div class="container d-block relative banner-section__caption banner-section--position-center">
+                                    <div class="banner-section__caption-content">
+                                        <h3 class="text-align-center mb8 text-align-center-xs banner-section__title">@home.Value("sectionImageTwoTitle")</h3>
+                                        <div class="text-align-center mb16 text-align-center-xs banner-section__subtitle">
+                                        </div>
+                                        <div class="text-align-center text-align-center-xs banner-section__action">
+                                            <a aria-current="page" href="@(home.Value<Link>("sectionImageTwoUrl")?.Url)" class="router-link-active router-link-exact-active btn btn-primary mb12 shape-sharp-t-l-b-r">@home.Value("sectionImageTwoButtonText")</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @Html.Partial("Home/_Newsletter")
+    </div>
+</div>

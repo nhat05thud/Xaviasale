@@ -1,0 +1,13 @@
+﻿
+<div class="cart-drawer w-100 h-100">
+    <div class="cart-drawer-overlay"></div>
+    <div class="cart-drawer-container p16 absolute h-100">
+        <header class="cart-drawar-header relative mb16">
+            <h3 class="m0 h5">Your shopping cart</h3>
+            <div class="cart-drawer-icon-close absolute pointer"></div>
+        </header>
+        <div class="cart-drawer-wrapper flex direction-column" id="site-nav--cart">
+            @Html.Action("RenderSiteCart", "Site")
+        </div>
+    </div>
+</div>

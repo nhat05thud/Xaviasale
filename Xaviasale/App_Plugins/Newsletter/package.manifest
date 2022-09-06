@@ -1,0 +1,15 @@
+{
+  "sections": [
+    {
+      "alias": "Newsletter",
+      "name": "Newsletter"
+    }
+  ],
+  "dashboards": [
+    {
+      "alias": "NewsletterPage",
+      "sections": [ "Newsletter" ],
+      "view": "~/App_Plugins/Newsletter/dashboard.html"
+    }
+  ]
+}

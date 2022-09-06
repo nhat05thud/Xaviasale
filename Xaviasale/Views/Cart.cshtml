@@ -1,0 +1,25 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var home = Umbraco.AssignedContentItem.Root();
+}
+
+<div id="cart" class="content">
+    <section>
+        <section>
+            <div class="container">
+                <div class="breadcrumb_text hidden-xs">
+                    <span class="breadcrumb_link subtle">
+                        <a href="@home.Url" class="">@home.Name</a> /
+                    </span>
+                    <span class="breadcrumb_link breadcrumb_link--current subtle cl-black">@Umbraco.AssignedContentItem.Name</span>
+                </div>
+            </div>
+            @Html.Action("RenderCartItems", "Cart")
+        </section>
+    </section>
+    <section id="cart-carousels">
+        @Html.Partial("Layout/ProductsCarousel/_CartCommendations")
+        @Html.Partial("Layout/ProductsCarousel/_BestSeller")
+        @Html.Partial("Layout/ProductsCarousel/_RecentlyViewed")
+    </section>
+</div>

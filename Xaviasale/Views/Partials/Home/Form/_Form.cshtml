@@ -1,0 +1,12 @@
+﻿﻿@inherits UmbracoViewPage<Xaviasale.Models.NewsletterModel>
+
+@Html.AntiForgeryToken()
+
+<div class="relative input-base w-100 fs-14">
+    <div class="flex align-end"></div>
+    @Html.TextBoxFor(model => model.Email, new { @class = "w-100 py6 px12 empty shape-sharp-t-l-b-r w-100", placeholder = "Your email", autocomplete = "email", required="" })
+    @Html.ValidationMessageFor(x => x.Email)
+</div>
+<button type="submit" class="btn has-text-weight-bold brdr-top-1 brdr-bottom-1 brdr-cl-black shape-sharp-t-l">Sign up</button>
+
+@Html.HiddenFor(x => x.CultureLcid)

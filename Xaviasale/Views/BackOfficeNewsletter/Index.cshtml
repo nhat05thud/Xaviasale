@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="/Content/assets/css/kendo.common.min.css" rel="stylesheet">
+    <link href="/Content/assets/css/kendo.bootstrap.min.css" rel="stylesheet">
+    <link href="/Content/assets/css/kendo.bootstrap.mobile.min.css" rel="stylesheet">
+    <link href="/css/jquery.fancybox.min.css" rel="stylesheet" />
+    <link href="/Content/assets/css/style.css" rel="stylesheet">
+
+    <script src="/Content/assets/js/jquery.min.js"></script>
+</head>
+<body>
+<div class="main-wrap">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <button class="sendmain-btn">Send mail</button>
+            </div>
+            <div class="col-6">
+                <h3 class="mgb-8">Emails</h3>
+                <div id="grid"></div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-6"><h3 class="mgb-8">Groups</h3></div>
+                    <div class="col-6 text-end"><button class="addgroup-btn">Add group</button></div>
+                </div>
+                <div id="gridgroup"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="window-sendmail">
+        <div class="row mgb-15">
+            <div class="col-2">
+                <label>Email:</label>
+            </div>
+            <div class="col-10">
+                <select id="emails" autocomplete="on"></select>
+            </div>
+        </div>
+        <div class="row mgb-15">
+            <div class="col-2">
+                <label>Group:</label>
+            </div>
+            <div class="col-10">
+                <select id="groups" autocomplete="on"></select>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div id="window-group"></div>
+</div>
+<script src="/Content/assets/js/sweetalert.min.js"></script>
+<script src="/Content/assets/js/jszip.min.js"></script>
+<script src="/Content/assets/js/kendo.all.min.js"></script>
+<script src="/Scripts/jquery.fancybox.min.js"></script>
+<script src="/Content/assets/js/newsletter.js"></script>
+</body>
+</html>

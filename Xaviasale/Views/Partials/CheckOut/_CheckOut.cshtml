@@ -1,0 +1,42 @@
+﻿@using Xaviasale.Controllers
+@inherits UmbracoViewPage<Xaviasale.Models.CheckOutModel>
+@{ 
+    var home = Umbraco.AssignedContentItem.Root();
+}
+
+@using (Ajax.BeginForm("HandleCheckOut", "CheckOut", null, new AjaxOptions
+{
+    UpdateTargetId = "contentAjaxForm",
+    HttpMethod = "POST",
+    OnSuccess = "onCheckoutSuccess",
+    OnFailure = "onCheckoutFailure"
+}, new { id = "requestForm", @class = "ajaxForm" }))
+{
+    <div class="wrap content__wrap" id="contentAjaxForm">
+        @Html.Partial("~/Views/Partials/CheckOut/_Form.cshtml", Model)
+    </div>
+}
+<script>
+    function onCheckoutSuccess(e) {
+        swal({
+            title: e.success ? "Success" : "Error",
+            text: e.message,
+            icon: e.success ? "success" : "error"
+        }).then((value) => {
+            console.log(123); // handle redirect
+        });
+        $("#contentAjaxForm").html(e.view);
+        $(".loading_div").css("display", "none");
+    }
+    function onCheckoutFailure(e) {
+        swal({
+            title: e.success ? "Success" : "Error",
+            text: e.message,
+            icon: e.success ? "success" : "error"
+        }).then((value) => {
+            console.log(123); // handle redirect
+        });
+        $("#contentAjaxForm").html(e.view);
+        $(".loading_div").css("display", "none");
+    }
+</script>

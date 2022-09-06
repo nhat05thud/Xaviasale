@@ -1,0 +1,87 @@
+﻿@inherits UmbracoViewPage<Xaviasale.Models.BackOffice.OrderViewModel>
+<style type="text/css">
+    .group-information {
+        padding: 0 0 15px;
+    }
+
+    .group-products > h1 {
+        font-size: 18px;
+        margin: 0 0 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .wrap-cart-detail * {
+        -webkit-box-sizing: border-box !important;
+        box-sizing: border-box !important;
+    }
+</style>
+<div class="wrap-cart-detail">
+    <div class="group-information">
+        <p><b>Email:</b> @Model.Email</p>
+        <p><b>First Name:</b> @Model.FirstName</p>
+        <p><b>Last Name:</b> @Model.LastName</p>
+        <p><b>Address:</b> @Model.Address</p>
+        <p><b>Apartment, suite, etc.:</b> @Model.Apartment</p>
+        <p><b>Zip Code: </b> @Model.ZipCode</p>
+        <p><b>City: </b> @Model.City</p>
+        <p><b>State: </b> @Model.State</p>
+        <p><b>Country: </b> @Model.Country</p>
+        <p><b>Phone:</b> @Model.Phone</p>
+    </div>
+    <div class="group-products">
+        <h1>Order</h1>
+        <div id="grid-product"></div>
+        <p style="text-align: right; font-size: 16px; margin: 10px 0;"><b>Total: <span id="totalPrice"></span></b></p>
+    </div>
+</div>
+<script type="text/javascript">
+    var record = 0;
+    $("#grid-product").kendoGrid({
+        dataSource: {
+            type: "json",
+            transport: {
+                read: "/umbraco/surface/backofficeshoppingcart/GetProductByOrderId/@Model.Id",
+            },
+            pageSize: 20
+        },
+        height: 250,
+        groupable: false,
+        sortable: true,
+        pageable: {
+            refresh: true,
+            pageSizes: true,
+            buttonCount: 5
+        },
+        columns: [{
+            title: "No.",
+            template: "#= ++record #",
+            width: 50
+        },
+        {
+            title: "Product Name",
+            template: "<a href='#= ProductUrl #' target='_blank'>#= ProductName #</a>"
+        },
+        {
+            field: "Quantity",
+            title: "Quantity"
+        },
+        {
+            title: "Product Color",
+            template: "#= Color #"
+        },
+        {
+            title: "Product Price",
+            template: "$ #= ProductPrice #"
+        }],
+        dataBound: function (e) {
+            var gridData = $("#grid-product").data().kendoGrid.dataSource.view();
+            var total_price = 0;
+            gridData.forEach(element => {
+                total_price = total_price + (element.ProductPrice * element.Quantity);
+            });
+            $("#totalPrice").text("$ " + total_price + "");
+        }
+    });
+</script>
+

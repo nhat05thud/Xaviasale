@@ -1,0 +1,67 @@
+﻿@using Xaviasale.ClassHelper
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var home = Umbraco.AssignedContentItem.Root();
+}
+
+<div id="collection" class="content">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 breadcrumb-collection">
+                <div class="breadcrumb_text hidden-xs">
+                    <span class="breadcrumb_link subtle"><a href="@home.Url()" class="">@home.Name</a> /</span>
+                    <span class="breadcrumb_link breadcrumb_link--current subtle cl-black">@Model.Name</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section data-section-id="kh1" id="kh1">
+        <section>
+            <div>
+                <div class="container collection-detail" data-id="collection_page">
+                    <div class="row">
+                        <div class="col-12 collection-header justify-space-between">
+                            <div class="flex-1">
+                                <h1 class="h4 breadcrumbs-title">Products</h1>
+                            </div>
+                            <div class="flex items-center pt16 collection-select">
+                                <div class="flex align-center justify-center collection-select--item">
+                                    <div class="select-box w-100">
+                                        <div class="base-select flex relative">
+                                            <div class="absolute flex items-center px12 py8 base-select__prefix-icon">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M13.8536 10.4984L12.1672 12.1843L12.1784 6.2853C12.1784 5.96947 11.9228 5.71387 11.6069 5.71387C11.2922 5.71387 11.0355 5.96947 11.0355 6.2853L11.0244 12.1441L9.37927 10.4984C9.15601 10.2758 8.79441 10.2758 8.57121 10.4984C8.34801 10.7217 8.34801 11.0839 8.57121 11.3071L10.9228 13.6586C11.079 13.8656 11.3279 13.9996 11.6069 13.9996C11.8246 13.9996 12.0221 13.9192 12.1728 13.7864C12.1951 13.7697 12.2163 13.7512 12.2364 13.7312L14.6616 11.3071C14.8848 11.0839 14.8848 10.7217 14.6616 10.4984C14.4384 10.2758 14.0768 10.2758 13.8536 10.4984Z" fill="black"></path>
+                                                    <path d="M1.14307 11.8284C1.14307 12.0806 1.34731 12.2854 1.60066 12.2854H6.11404C6.22341 12.2854 6.32387 12.2475 6.40198 12.1839C6.50581 12.1002 6.57164 11.9718 6.57164 11.8284V11.5996C6.57164 11.3474 6.36741 11.1426 6.11404 11.1426H1.60066C1.46784 11.1426 1.34843 11.1984 1.26472 11.2882C1.21784 11.3379 1.18324 11.3982 1.16316 11.4651C1.14976 11.5075 1.14307 11.5527 1.14307 11.5996V11.8284Z" fill="black"></path>
+                                                    <path d="M1.43213 7.6818C1.3886 7.66449 1.34843 7.64106 1.31271 7.61203C1.20891 7.52832 1.14307 7.40055 1.14307 7.25712V7.02832C1.14307 6.77609 1.34731 6.57129 1.60066 6.57129H8.68547C8.93884 6.57129 9.14307 6.77609 9.14307 7.02832V7.25712C9.14307 7.50935 8.93884 7.71415 8.68547 7.71415H1.60066C1.54151 7.71415 1.48459 7.70243 1.43213 7.6818Z" fill="black"></path>
+                                                    <path d="M1.18548 2.87723C1.15869 2.81919 1.14307 2.75446 1.14307 2.68583V2.45703C1.14307 2.31138 1.21115 2.18136 1.31717 2.09766C1.3953 2.03627 1.49351 2 1.60065 2H13.8283C14.0817 2 14.2859 2.2048 14.2859 2.45703V2.68583C14.2859 2.93806 14.0817 3.14286 13.8283 3.14286H1.60065C1.41651 3.14286 1.25802 3.03404 1.18548 2.87723Z" fill="black"></path>
+                                                </svg>
+                                            </div>
+                                            <select name="" autocomplete="" class="w-100 px12 py8 pr32 base-select--with-prefix-icon shape-sharp-t-l-b-r" id="sort-product--ajax">
+                                                <option value="@Utils.SortByCreatedDate:@Utils.OrderByDescending">Newest</option>
+                                                <option value="@Utils.SortByCreatedDate:@Utils.OrderBy">Oldest</option>
+                                                <option value="@Utils.SortByName:@Utils.OrderBy">Alphabet, A -&gt; Z</option>
+                                                <option value="@Utils.SortByName:@Utils.OrderByDescending">Alphabet, Z -&gt; A</option>
+                                                <option value="@Utils.SortByPrice:@Utils.OrderBy">Price, Low to high</option>
+                                                <option value="@Utils.SortByPrice:@Utils.OrderByDescending">Price, High to low</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-100 flex direction-column justify-space-between">
+                            <div id="loadAjaxProductBySort">
+                                @Html.Action("LoadProducts", "Product")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+    @Html.Partial("Layout/ProductsCarousel/_BestSeller")
+    @Html.Partial("Layout/ProductsCarousel/_RecentlyViewed")
+    @Html.Partial("Layout/ProductsCarousel/_CartCommendations")
+</div>

@@ -1,0 +1,15 @@
+{
+  "sections": [
+    {
+      "alias": "ShoppingCart",
+      "name": "Shopping Cart"
+    }
+  ],
+  "dashboards": [
+    {
+      "alias": "ShoppingCartPage",
+      "sections": [ "ShoppingCart" ],
+      "view": "~/App_Plugins/ShoppingCart/dashboard.html"
+    }
+  ]
+}

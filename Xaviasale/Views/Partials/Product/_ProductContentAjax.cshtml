@@ -1,0 +1,326 @@
+﻿@using Umbraco.Web.Models
+@using Xaviasale.ClassHelper
+@model Xaviasale.Models.ProductDetailModel
+@{
+    
+}
+<section class="product section mt12">
+    <input type="hidden" name="ProductColor" value="@Model.ColorName" />
+    <section class="container-page">
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                @if (Model.Images != null && Model.Images.Any())
+                {
+                    <div id="sync1" class="owl-carousel">
+                        @foreach (var item in Model.Images)
+                        {
+                            <div class="item">
+                                <a href="@item.Url()" data-fancybox="gallery">
+                                    <img src="@(item.GetCropUrl(606, 606, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true"))" alt="@Model.Name"/>
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    <div id="sync2" class="owl-carousel">
+                        @foreach (var item in Model.Images)
+                        {
+                            <div class="item">
+                                <img src="@(item.GetCropUrl(110, 110, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true"))" alt="@Model.Name"/>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div id="detail-contents" class="col-12 col-lg-5 product__detail-contents offset-lg-1">
+                <h1 class="h4 d-block product__name mt0 mb12 product__name-product">@Model.Name</h1>
+                <div class="product__price">
+                    <p class="flex align-center flex-wrap mb0">
+                        <span class="h4 product__price-span mr8 mb0">$@(Model.Price)</span>
+                        @if (Model.OldPrice > 0)
+                        {
+                            <span class="h4 product__price-original mr12 mb0"><del>$@(Model.OldPrice)</del></span>
+                        }
+                        @if (Model.Save > 0)
+                        {
+                            <span class="product__price-sale-msg has-text-weight-bold py4 px8">Save @Model.Save%</span>
+                        }
+                    </p>
+                    <p></p>
+                </div>
+                <div>
+                    <div class="product__divider w-100"></div>
+                    <div class="product__variants-hover mt12 mb16">
+                        <div class="mb10">
+                            <div class="mb8">
+                                <span>Color: </span><label class="mb0 has-text-weight-bold">@Model.ColorName</label>
+                            </div>
+                            <div class="product__variant-button">
+                                @foreach (var item in Model.ProductColors)
+                                {
+                                    <button class="product__option relative is-uppercase px12 py8 mr6 mb6 @(item.Value<string>("title").Equals(Model.ColorName) ? "product__option--active" : "")" data-id="@Model.Id" data-key="@item.Key">
+                                        @item.Value("title")
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div data-form="product" class="">
+                    <div class="product__quantity">
+                        <label class="d-block w-100 mb8">Quantity</label>
+                        <div class="button-quantity">
+                            <div class="button-quantity__layout-vertical flex">
+                                <div class="button-quantity button-quantity__layout-vertical__decrease decrease flex align-center justify-center" disabled="false">
+                                    <i class="minus"></i>
+                                </div>
+                                <input type="number" min="1" max="Infinity" value="1">
+                                <div class="button-quantity button-quantity__layout-vertical__increase increase flex align-center justify-center" disabled="false">
+                                    <i class="plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product__cart-form flex flex-wrap mt16 mb12 relative">
+                        <button type="button" class="btn btn-outline btn-add-cart" data-id="@Model.Id" onclick="cart.handleAddtoCartDetail(this)">
+                            <span>Add to cart</span>
+                        </button>
+                        <button type="button" class="btn btn-buy-now" data-id="@Model.Id" onclick="cart.handleBuyNow(this)">
+                            <span>Buy Now</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="my12">
+                    <div class="product__divider w-100 mb24"></div>
+                    <img src="https://img.thesitebase.net/themes/3/assets/0x540@trust_badge.png" data-loaded="true">
+                </div>
+                <div class="flex flex-wrap align-center">
+                    <div class="product__divider w-100 my16"></div>
+                    <div class="flex align-center social-sharing">
+                        <a target="_blank"
+                           href="//www.facebook.com/sharer.php?u=www.xaviasale.com/products/long-handle-shower-bath-soap-dispenser-massage-cleaning-brush"
+                           class="flex align-center pointer px8 py6 mr8 brdr-1 share-facebook"
+                           title="Share on Facebook">
+                            <div class="svg-container">
+                                <svg viewBox="0 0 24 24"
+                                     version="1.2" xmlns="http://www.w3.org/2000/svg"
+                                     xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     class="svg-class">
+                                    <g stroke="none" stroke-width="1" fill="none"
+                                       fill-rule="evenodd">
+                                        <path d="M17.015625,2.015625 L17.015625,6 L15,6 C14.6562483,6.03125016 14.4062508,6.19531102 14.25,6.4921875 C14.0937492,6.78906398 14.015625,7.12499812 14.015625,7.5 L14.015625,9.984375 L17.015625,9.984375 L17.015625,14.015625 L14.015625,14.015625 L14.015625,21.984375 L9.984375,21.984375 L9.984375,14.015625 L6.984375,14.015625 L6.984375,9.984375 L9.984375,9.984375 L9.984375,6 C10.0156252,4.87499437 10.4062463,3.93750375 11.15625,3.1875 C11.9062537,2.43749625 12.8593692,2.04687516 14.015625,2.015625 L17.015625,2.015625 Z"
+                                              fill="#222222" fill-rule="nonzero"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <span class="subtle ml6"
+                                  aria-hidden="true">Share</span>
+                        </a>
+                        <a target="_blank"
+                           href="//twitter.com/share?text=Long Handle Shower Bath Soap Dispenser Massage Cleaning Brush&amp;url=www.xaviasale.com/products/long-handle-shower-bath-soap-dispenser-massage-cleaning-brush"
+                           class="flex align-center pointer px8 py6 mr8 brdr-1 share-twitter"
+                           title="Share on Twitter">
+                            <div class="svg-container">
+                                <svg viewBox="0 0 24 24"
+                                     version="1.2" xmlns="http://www.w3.org/2000/svg"
+                                     xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     class="svg-class">
+                                    <g transform="translate(1.000000, 3.000000)"
+                                       fill="#222222" fill-rule="nonzero">
+                                        <path d="M21.453125,3 C20.859372,3.87500437 20.1406292,4.62499688 19.296875,5.25 L19.34375,5.8125 C19.3124998,8.78126484 18.2578229,11.5156125 16.1796875,14.015625 C14.1015521,16.5156375 11.0781448,17.8437492 7.109375,18 C5.89061891,18 4.72656805,17.8281267 3.6171875,17.484375 C2.50780695,17.1406233 1.48437969,16.671878 0.546875,16.078125 C0.890626719,16.1093752 1.23437328,16.125 1.578125,16.125 C2.57813,16.125 3.53124547,15.9687516 4.4375,15.65625 C5.34375453,15.3437484 6.15624641,14.890628 6.875,14.296875 C5.93749531,14.2656248 5.10937859,13.9765652 4.390625,13.4296875 C3.67187141,12.8828098 3.17187641,12.1718794 2.890625,11.296875 C3.14062625,11.3593753 3.40624859,11.390625 3.6875,11.390625 C4.09375203,11.390625 4.46874828,11.3437505 4.8125,11.25 C3.812495,11.0312489 2.9921907,10.5390663 2.3515625,9.7734375 C1.7109343,9.00780867 1.390625,8.09375531 1.390625,7.03125 L1.390625,6.984375 C1.95312781,7.29687656 2.59374641,7.46874984 3.3125,7.5 C2.74999719,7.12499812 2.29687672,6.62500312 1.953125,6 C1.60937328,5.37499688 1.4375,4.67969133 1.4375,3.9140625 C1.4375,3.14843367 1.62499812,2.43750328 2,1.78125 C3.06250531,3.09375656 4.35155492,4.14062109 5.8671875,4.921875 C7.38282008,5.70312891 9.04686594,6.15624938 10.859375,6.28125 C10.7656245,5.96874844 10.71875,5.64062672 10.71875,5.296875 C10.7500002,4.07811891 11.1718709,3.06250406 11.984375,2.25 C12.7968791,1.43749594 13.7968691,1.01562516 14.984375,0.984375 C16.2968816,1.01562516 17.3593709,1.46874563 18.171875,2.34375 C19.1406298,2.15624906 20.0468708,1.8125025 20.890625,1.3125 C20.5468733,2.34375516 19.9218795,3.14062219 19.015625,3.703125 C19.8593792,3.57812438 20.6718711,3.34375172 21.453125,3 Z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <span class="subtle ml6"
+                                  aria-hidden="true">Tweet</span>
+                        </a>
+                        <a target="_blank"
+                           href="//pinterest.com/pin/create/button/?url=www.xaviasale.com/products/long-handle-shower-bath-soap-dispenser-massage-cleaning-brush&amp;media=https://img.thesitebase.net/10334/10334406/products/16604162746562fe387b.jpeg&amp;description=Long Handle Shower Bath Soap Dispenser Massage Cleaning Brush"
+                           class=":hover-no-underline flex align-center pointer px8 py6 mr8 brdr-1 share-pinterest"
+                           title="Pin on Pinterest">
+                            <div class="svg-container">
+                                <svg viewBox="0 0 24 24"
+                                     version="1.2" xmlns="http://www.w3.org/2000/svg"
+                                     xmlns:xlink="http://www.w3.org/1999/xlink"
+                                     class="svg-class">
+                                    <g transform="translate(2.000000, 2.000000)"
+                                       fill="#222222" fill-rule="nonzero">
+                                        <path d="M7.046875,19.5625 C7.26562609,19.2187483 7.49999875,18.7968775 7.75,18.296875 C8.00000125,17.7968725 8.18749937,17.3281272 8.3125,16.890625 L9.015625,14.5 C9.20312594,14.8125016 9.49999797,15.0781239 9.90625,15.296875 C10.312502,15.5156261 10.7656225,15.625 11.265625,15.625 C12.7968827,15.5937498 14.0390577,14.9921934 14.9921875,13.8203125 C15.9453173,12.6484316 16.421875,11.1875087 16.421875,9.4375 C16.3906248,7.74999156 15.8046932,6.37500531 14.6640625,5.3125 C13.5234318,4.24999469 12.0781337,3.70312516 10.328125,3.671875 C8.17186422,3.73437531 6.53906805,4.35155664 5.4296875,5.5234375 C4.32030695,6.69531836 3.765625,8.09374187 3.765625,9.71875 C3.765625,10.4687537 3.93749828,11.2187462 4.28125,11.96875 C4.62500172,12.7187538 5.12499672,13.2499984 5.78125,13.5625 C5.96875094,13.6562505 6.0625,13.6250008 6.0625,13.46875 L6.34375,12.34375 C6.37500016,12.2187494 6.35937531,12.1250003 6.296875,12.0625 C6.04687375,11.7812486 5.85937563,11.437502 5.734375,11.03125 C5.60937437,10.624998 5.546875,10.2031272 5.546875,9.765625 C5.546875,8.60936922 5.93749609,7.60937922 6.71875,6.765625 C7.50000391,5.92187078 8.60936781,5.48437516 10.046875,5.453125 C11.2968813,5.48437516 12.2968713,5.85937141 13.046875,6.578125 C13.7968787,7.29687859 14.1874998,8.26561891 14.21875,9.484375 C14.1874998,10.8593819 13.8828154,11.9609334 13.3046875,12.7890625 C12.7265596,13.6171916 11.9843795,14.0468748 11.078125,14.078125 C10.5468723,14.078125 10.1406264,13.8984393 9.859375,13.5390625 C9.57812359,13.1796857 9.46874969,12.7500025 9.53125,12.25 C9.68750078,11.656247 9.86718648,11.0703154 10.0703125,10.4921875 C10.2734385,9.91405961 10.3828124,9.41406461 10.3984375,8.9921875 C10.4140626,8.57031039 10.3125011,8.22656383 10.09375,7.9609375 C9.87499891,7.69531117 9.56250203,7.54687516 9.15625,7.515625 C8.62499734,7.54687516 8.18750172,7.78124781 7.84375,8.21875 C7.49999828,8.65625219 7.31250016,9.23437141 7.28125,9.953125 C7.31250016,10.4218773 7.36718711,10.7890612 7.4453125,11.0546875 C7.52343789,11.3203138 7.57812484,11.453125 7.609375,11.453125 L6.4375,16.375 C6.34374953,16.8437523 6.30468742,17.3515598 6.3203125,17.8984375 C6.33593758,18.4453152 6.37499969,18.921873 6.4375,19.328125 C4.53124047,18.5781212 2.99219336,17.3750083 1.8203125,15.71875 C0.648431641,14.0624917 0.0468751563,12.1562608 0.015625,10 C0.0781253125,7.15623578 1.04686563,4.79688437 2.921875,2.921875 C4.79688437,1.04686562 7.15623578,0.0781253125 10,0.015625 C12.8437642,0.0781253125 15.2031156,1.04686562 17.078125,2.921875 C18.9531344,4.79688437 19.9218747,7.15623578 19.984375,10 C19.9218747,12.8437642 18.9531344,15.2031156 17.078125,17.078125 C15.2031156,18.9531344 12.8437642,19.9218747 10,19.984375 C8.96874484,19.984375 7.98437969,19.8437514 7.046875,19.5625 Z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </div>
+                            <span class="subtle ml6"
+                                  aria-hidden="true">Pin it</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="product_collapse py12 brdr-bottom-1">
+                        <div class="is-uppercase pointer flex items-center">
+                            <span class="toggle_heading flex-grow">Product description</span>
+                            <span class="flex-basis triangle triangle-top"></span>
+                        </div>
+                        <div class="sb-images sb-images--loading toggle_content mt12">
+                            <div class="product__description-html">
+                                @Html.Raw(Model.Description)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product_collapse py12 brdr-bottom-1">
+                        <div class="is-uppercase pointer flex items-center">
+                            <span class="toggle_heading flex-grow">Return &amp; Warranty</span>
+                            <span class="flex-basis triangle triangle-bottom"></span>
+                        </div>
+                        <div class="sb-images sb-images--loading toggle_content mt12">
+                            <div class="product__description-html">
+                                @Html.Raw(Model.Warranty)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+<div id="sticky-bar" class="sticky-button flex flow-column items-center py16 px0">
+    <div class="container">
+        <div class="row align-center product-detail-wrapper">
+            <div class="col-lg-4 product-detail hidden-xs flex align-center">
+                <div class="product-detail__image mr10">
+                    <div class="aspect-ratio-img aspect-ratio-img--68 relative p0 flex flex-grow shape-sharp-t-l-b-r">
+                        <img src="@(Model.Images != null && Model.Images.Any() ? Model.Images.FirstOrDefault().GetCropUrl(68, 68, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/68x68")"
+                             alt="@Model.Name"
+                             class="image sb-lazy absolute w-100" data-loaded="true">
+                    </div>
+                </div>
+                <div class="product-detail__content">
+                    <p class="product-detail__name mb8 is-uppercase">@Model.Name</p>
+                    <div>
+                        <div>
+                            <span class="product-detail__price has-text-weight-bold">$@Model.Price</span>
+                            &nbsp; 
+                            @if (Model.OldPrice > 0)
+                            {
+                        <span class="product-detail__price price-original has-text-weight-bold">$@Model.OldPrice</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <div class="product-action align-end justify-end">
+                    <div class="flex justify-end flex-basis">
+                        <div class="product-action__variant">
+                            <label class="subtle variants-label mb0 hidden-xs w-100">Color</label>
+                            <div class="select-box">
+                                <div class="base-select flex relative">
+                                    <select name="" autocomplete="" class="w-100 px12 py8 pr32">
+                                        @foreach (var item in Model.ProductColors)
+                                        {
+                                            <option value="@item.Value("title")" @(item.Value<string>("title").Equals(Model.ColorName) ? "selected" : "") data-id="@Model.Id" data-key="@item.Key">@item.Value("title")</option>
+                                        }
+                                    </select>
+                                    <div class="base-select__icon triangle triangle-bottom absolute"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-action__quantity relative hidden-xs">
+                        <label class="subtle hidden-xs mb4">Quantity</label>
+                        <div class="button-quantity" disabled="false">
+                            <div class="button-quantity__layout-horizontal flex">
+                                <input type="number" min="1" max="Infinity" value="1">
+                                <div class="flex flow-column">
+                                    <div class="button-quantity button-quantity__layout-horizontal__control__increase increase flex align-center justify-center"
+                                         disabled="false">
+                                        <i class="chevron chevron-top"></i>
+                                    </div>
+                                    <div class="button-quantity button-quantity__layout-horizontal__control__decrease decrease flex align-center justify-center"
+                                         disabled="false">
+                                        <i class="chevron chevron-bottom"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary ml24 btn-add-to-cart has-text-weight-bold" data-id="@Model.Id" onclick="cart.handleAddtoCartDetail(this)">
+                        <span>Add to cart</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        initOwlCarouselWithThumb();
+        setRecentlyProduct();
+    });
+    function handleLoadProduct(id, key) {
+        $(".loading_div").css("display", "block");
+        $.ajax({
+            type: "POST",
+            data: { pageId: id, keyId: key },
+            url: "/umbraco/surface/product/loadproductcontentajax",
+            success: function (res) {
+                if (res) {
+                    setTimeout(function () {
+                        $("#product_content--ajax").html(res);
+                    }, 100);
+                }
+                else {
+                    toastr.error("Error", "Error");
+                }
+                $(".loading_div").css("display", "none");
+            }
+        });
+    }
+    $(".product__variant-button .product__option").on("click", function (e) {
+        handleLoadProduct($(this).data("id"), $(this).data("key"));
+    });
+    $(".product-action__variant select").on("change", function () {
+        handleLoadProduct($(this).find(':selected').data("id"), $(this).find(':selected').data("key"));
+    });
+    $(".button-quantity__layout-vertical .button-quantity, .button-quantity__layout-horizontal .button-quantity").click(function () {
+        var input = $("#product_content--ajax input[type='number']");
+        var value = input.val() !== "" ? input.val() : 0;
+        if ($(this).hasClass("increase")) {
+            input.val(parseInt(value) + 1);
+        }
+        else {
+            if (value > 1) {
+                input.val(parseInt(value) - 1);
+            }
+        }
+    });
+    $(".product_collapse .toggle_content:not(:first)").hide();
+    $(".product_collapse .pointer").click(function () {
+        $accordion = $(this).next();
+        if ($accordion.is(':hidden') === true) {
+            $accordion.slideDown();
+            $(this).children('.triangle').removeClass('triangle-bottom').addClass('triangle-top');
+        } else {
+            $accordion.slideUp();
+            $(this).children('.triangle').removeClass('triangle-top').addClass('triangle-bottom');
+        }
+    });
+    function setRecentlyProduct() {
+        if (typeof (Storage) !== "undefined") {
+            var recently = localStorage.getItem("prod_recently");
+            if (recently) {
+                var recentlyArr = recently.split("|");
+                if (!recentlyArr.includes('@Model.Id')) {
+                    recently += ("|" + @Model.Id);
+                    localStorage.setItem("prod_recently", recently);
+                }
+            }
+            else {
+                localStorage.setItem("prod_recently", @Model.Id);
+            }
+        } else {
+            // Sorry! No Web Storage support..
+        }
+    };
+</script>

@@ -1,0 +1,97 @@
+﻿@model Xaviasale.Models.BackOffice.GroupNewsletterViewModel
+
+<div class="row mgb-15">
+    <div class="col-2">
+        <label>Group Name:</label>
+    </div>
+    <div class="col-10">
+        <input type="text" class="k-input" id="name" name="name" value="@Model.Name" style="width: 100%; padding: 3px 8px; border-radius: 3px; height: 24px;" autocomplete="on" />
+    </div>
+</div>
+<div class="row mgb-15">
+    <div class="col-2">
+        <label>Select email:</label>
+    </div>
+    <div class="col-10">
+        <select id="group-emails" multiple="multiple" autocomplete="on">
+            @foreach (var item in Model.NewsletterViewModels)
+            {
+                <option value="@item.Id" @(item.IsSelected ? "selected" : null)>@item.Email</option>
+            }
+        </select>
+    </div>
+</div>
+<div class="row mgb-15">
+    <div class="col-12 text-end">
+        @if (Model.Id > 0)
+        {
+            <button id="edit-group">Edit</button>
+        }
+        else
+        {
+            <button id="add-group">Add</button>
+        }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#group-emails").kendoMultiSelect({
+            placeholder: "Select Email"
+        }).data("kendoMultiSelect");
+    });
+
+    $("#add-group").bind("click", function () {
+        var grid = $("#grid").data("kendoGrid");
+        var gridgroup = $("#gridgroup").data("kendoGrid");
+        var windowWidget = $("#window-group").data("kendoWindow");
+        var emails = $("#group-emails").data("kendoMultiSelect");
+        var name = $("#name").val();
+        kendo.ui.progress(windowWidget.element, true);
+        $.ajax({
+            type: "POST",
+            url: "/umbraco/surface/backofficenewsletter/addgroup",
+            data: { name: name, ids: emails.value() },
+            success: function (res) {
+                if (res.success) {
+                    swal("Success!", res.message, "success");
+                    kendo.ui.progress(windowWidget.element, false);
+                    windowWidget.close();
+                    grid.dataSource.read();
+                    gridgroup.dataSource.read();
+                }
+                else {
+                    swal("Error!", res.message, "error");
+                    kendo.ui.progress(windowWidget.element, false);
+                }
+            }
+        })
+    });
+    $("#edit-group").bind("click", function () {
+        var grid = $("#grid").data("kendoGrid");
+        var gridgroup = $("#gridgroup").data("kendoGrid");
+        var windowWidget = $("#window-group").data("kendoWindow");
+        var emails = $("#group-emails").data("kendoMultiSelect");
+        var name = $("#name").val();
+        kendo.ui.progress(windowWidget.element, true);
+        $.ajax({
+            type: "POST",
+            url: "/umbraco/surface/backofficenewsletter/editgroup",
+            data: { id: @Model.Id, name: name, ids: emails.value() },
+            success: function (res) {
+                if (res.success) {
+                    swal("Success!", res.message, "success");
+                    kendo.ui.progress(windowWidget.element, false);
+                    windowWidget.close();
+                    grid.dataSource.read();
+                    gridgroup.dataSource.read();
+                }
+                else {
+                    swal("Error!", res.message, "error");
+                    kendo.ui.progress(windowWidget.element, false);
+                }
+            }
+        })
+    });
+
+</script>

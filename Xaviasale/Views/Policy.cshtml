@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+}
+
+<div class="content">
+    <section data-section-id="nbS" id="nbS">
+        <section>
+            <section id="policy" class="mt24 policy-page">
+                <div class="container-page mb48">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 offset-lg-2">
+                            <h1 class="text-align-center is-capitalized my32">@Model.Name</h1>
+                            <div class="policy-content">
+                                @Model.Value("content")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </section>
+</div>

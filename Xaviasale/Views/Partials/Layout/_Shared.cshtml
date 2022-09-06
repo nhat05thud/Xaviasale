@@ -1,0 +1,52 @@
+﻿@using Umbraco.Web.Models
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
+
+@if (Umbraco.AssignedContentItem != null)
+{
+    <title>@(!string.IsNullOrEmpty(Umbraco.AssignedContentItem.Value<string>("metaTitle")) ? Umbraco.AssignedContentItem.Value("metaTitle") : Umbraco.AssignedContentItem.Name)</title>
+    <meta name="description" content="@Umbraco.AssignedContentItem.Value("metaDescription")" />
+    <meta property="og:description" itemprop="description" content="@Umbraco.AssignedContentItem.Value("metaDescription")" />
+    <meta property="og:url" itemprop="url" content="@Request.Url" />
+    <meta property="og:title" itemprop="headline" content="@Umbraco.AssignedContentItem.Value("metaTitle")" />
+    <meta property="og:type" content="article" />
+    var image = string.Empty;
+    var metaThumbnails = Umbraco.AssignedContentItem.Value<IPublishedContent>("metaThumbnails");
+    if (metaThumbnails == null)
+    {
+        image = Umbraco.AssignedContentItem.Value<IPublishedContent>("image") != null ? image.GetCropUrl(630, 380, imageCropMode: ImageCropMode.BoxPad, furtherOptions: "&bgcolor=fff&slimmage=true") : "/images/no-image.png";
+    }
+    else
+    {
+        image = image.GetCropUrl(630, 380, imageCropMode: ImageCropMode.BoxPad, furtherOptions: "&bgcolor=fff&slimmage=true");
+    }
+    <meta property="og:image" itemprop="thumbnailUrl" content="@image" />
+    var keywords = Umbraco.AssignedContentItem.Value<string[]>("metaKeywords");
+    if (keywords != null)
+    {
+        var stringKeyWords = string.Empty;
+        for (var i = 0; i < keywords.Length; i++)
+        {
+            if (i == keywords.Length - 1)
+            {
+                stringKeyWords += keywords[i];
+            }
+            else
+            {
+                stringKeyWords += keywords[i] + ", ";
+            }
+        }
+        <meta name="keywords" content="@stringKeyWords" />
+    }
+    else
+    {
+        <meta name="keywords" content="Xaviasale" />
+    }
+
+    <meta property="og:image:width" content="630" />
+    <meta property="og:image:height" content="380" />
+    <meta property="og:site_name" content="Xaviasale" />
+}
+else
+{
+    <title>Xaviasale</title>
+}

@@ -1,0 +1,125 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+}
+
+<div class="content">
+    <section data-section-id="htd" id="htd">
+        <section>
+            <section id="online-store-page" class="other-page">
+                <div class="container-page mb48">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 offset-lg-2">
+                            <h1 class="text-align-center my32">@Model.Name</h1>
+                            <div class="other-page-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </section>
+    <section data-section-id="JX5" blocks="" handles="" id="JX5" type="order-tracking">
+        <section class="mb48 pt16 section container-page order-tracking">
+            <div class="col-lg-8 offset-lg-2">
+                <div>
+                    Once your order has shipped, you will receive an email from us with a link to track
+                    your order. You can also enter the order name and your email in the box below to get
+                    the status of your shipment.
+                </div>
+                <div class="mt16">
+                    <div class="find-order">
+                        <div class="pt16 pb16 ml16 mr16">
+                            <form name="trackOrderForm" accept-charset="UTF-8" class="mt12">
+                                <div class="mb8">
+                                    <div class="relative input-base">
+                                        <div class="flex align-end"></div>
+                                        <input class="w-100 py6 px12 empty shape-sharp-t-l-b-r" type="text" name="order_name" autocomplete="" placeholder="Enter your order number">
+                                        <div></div>
+                                    </div>
+                                </div>
+                                <div class="mb8">
+                                    <div class="relative input-base">
+                                        <div class="flex align-end"></div>
+                                        <input class="w-100 py6 px12 empty shape-sharp-t-l-b-r" type="text" name="email" autocomplete="" placeholder="Enter your order email">
+                                        <div></div>
+                                    </div>
+                                </div>
+                                <div class="mb8">
+                                    <div class="h-captcha-script">
+                                        <iframe src="https://newassets.hcaptcha.com/captcha/v1/1f7dc62/static/hcaptcha.html#frame=checkbox&amp;id=0dwkp9q6k73q&amp;host=www.xaviasale.com&amp;sentry=true&amp;reportapi=https%3A%2F%2Faccounts.hcaptcha.com&amp;recaptchacompat=true&amp;custom=false&amp;tplinks=on&amp;sitekey=43a9c04d-19e7-4604-aa51-7e4c3c08c809&amp;theme=light"
+                                                title="widget containing checkbox for hCaptcha security challenge"
+                                                tabindex="0" frameborder="0" scrolling="no"
+                                                data-hcaptcha-widget-id="0dwkp9q6k73q"
+                                                data-hcaptcha-response=""
+                                                style="width: 303px; height: 78px; overflow: hidden;"></iframe><textarea id="g-recaptcha-response-0dwkp9q6k73q"
+                                                                                                                         name="g-recaptcha-response"
+                                                                                                                         style="display: none;"></textarea><textarea id="h-captcha-response-0dwkp9q6k73q"
+                                                                                                                                                                     name="h-captcha-response" style="display: none;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="order-tracking__button">
+                                    <button class="w-100 btn btn-primary shape-sharp-t-l-b-r">Track order</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mt16 ml16 forget-order"><a href="">I forgot my order name</a></div>
+                </div>
+                <!---->
+                <div>
+                    <div class="flex mt16 ml12">
+                        <div class="icon-info"></div>
+                        <div class="order-tracking__notification">
+                            If you just received a shipment
+                            notification, please allow <strong>3 to 5 working days</strong> for the
+                            tracking information to update.
+                        </div>
+                    </div>
+                    <div class="mt48 order-tracking__title">TRACKING FAQS</div>
+                    <div class="py12 brdr-bottom-1 mt8">
+                        <div class="flex items-center has-text-weight-bold justify-space-between">
+                            <span>When will I get my order?</span><span class="flex-basis triangle triangle-bottom"></span>
+                        </div>
+                        <div class="mt12" data-old-padding-top="" data-old-padding-bottom=""
+                             data-old-overflow="" style="transition-property: height; display: none;">
+                            We
+                            proudly offer worldwide shipping via DHL, USPS, and other prestigious firms!
+                            Please note order processing time is typically <strong>
+                                3-7 business
+                                days
+                            </strong>.<br>Once your order has shipped, the estimated delivery
+                            time is between <strong>7 and 14 business days</strong>. Please check
+                            specific delivery and processing time at product checkout.<br><strong>
+                                Please
+                                note:
+                            </strong> Your order may split into multiple shipments. If this
+                            occurs, you will be notified and receive a tracking number for each separate
+                            shipment.
+                        </div>
+                    </div>
+                    <div class="py12 brdr-bottom-1 mt8">
+                        <div class="flex items-center has-text-weight-bold justify-space-between">
+                            <span>Can I add or remove products from my order?</span><span class="flex-basis triangle triangle-bottom"></span>
+                        </div>
+                        <div class="mt12" data-old-padding-top="" data-old-padding-bottom=""
+                             data-old-overflow="" style="transition-property: height; display: none;">
+                            Sorry! To ensure your order arrives on time, we generally begin processing
+                            an order as soon as it is placed. As a result we are unable to make any
+                            changes to your order after it is placed.
+                        </div>
+                    </div>
+                    <div class="py12 brdr-bottom-1 mt8">
+                        <div class="flex items-center has-text-weight-bold justify-space-between">
+                            <span>Where can I find my order number?</span><span class="flex-basis triangle triangle-bottom"></span>
+                        </div>
+                        <div class="mt12" style="display: none;">
+                            Your order number can be found at the
+                            top of your confirmation email. Please check your inbox, including your spam
+                            folder, for your confirmation email. If you still cannot locate your
+                            confirmation email, complete the form below.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</div>

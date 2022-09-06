@@ -1,0 +1,59 @@
+﻿@using Umbraco.Web.Models
+@using Xaviasale.ClassHelper
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var collections = Umbraco.AssignedContentItem.Root().DescendantOfType("collections");
+}
+
+@if (collections != null)
+{
+    var lstProducts = collections.Children.Where(x => x.Value<bool>("isBestSeller"));
+    if (lstProducts.Any())
+    {
+        <section class="container">
+            <section data-section-id="JQz" type="best-seller" app="upsell" id="JQz">
+                <div class="upsell section section--app">
+                    <div class="upsell-product-widget">
+                        <div class="upsell-product-widget__carousel upsell-product-widget__widget_setting_best_seller_desktop" page-type="home">
+                            <h2 class="upsell-relative upsell-my24 upsell-product-widget__heading">Store best sellers</h2>
+                            <div class="sell-carousel owl-carousel">
+                                @foreach (var item in lstProducts)
+                                {
+                                    var lstProductColors = item.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                                    var productImages = lstProductColors.FirstOrDefault().Value<IEnumerable<IPublishedContent>>("images");
+                                    <div class="item">
+                                        <div class="upsell-widget-product upsell-relative">
+                                            <div class="upsell-relative upsell-widget-product__image">
+                                                <a href="@item.Url()" class="upsell-block">
+                                                    <img data-src="@(productImages != null && productImages.Any() ? productImages.FirstOrDefault().GetCropUrl(232, 232, imageCropMode:ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/232x232")" alt="@item.Name" class="image sb-lazy owl-lazy" data-loaded="true">
+                                                </a>
+                                            </div>
+                                            <div class="upsell-p16">
+                                                <div class="upsell-mb8 upsell-widget-product__name">
+                                                    <a href="@item.Url()" class="upsell-color-product-name">@item.Name</a>
+                                                </div>
+                                                <div class="upsell-flex upsell-flow-wrap upsell-widget-product__prices">
+                                                    <div class="upsell-mr4 upsell-widget-product__price upsell-color-price">$@(lstProductColors.FirstOrDefault().Value<decimal>("price"))</div>
+                                                    @if (lstProductColors.FirstOrDefault().Value<decimal>("price") > 0)
+                                                    {
+                                                        <div class="upsell-widget-product__original-price upsell-color-compare-price">$@(lstProductColors.FirstOrDefault().Value<decimal>("oldPrice"))</div>
+                                                    }
+                                                </div>
+                                                <div class="upsell-mt8 upsell-widget-product__action">
+                                                    <button type="button" data-button="add-to-cart" data-id="@item.Id" class="upsell-relative upsell-py10 upsell-px4 upsell-w-100 upsell-widget-product__add-cart">
+                                                        <span>ADD TO CART</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    }
+
+}

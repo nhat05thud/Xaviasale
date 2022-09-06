@@ -1,0 +1,29 @@
+﻿@using Xaviasale.Models
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+}
+
+<div class="content">
+    <section>
+        <section>
+            <section id="online-store-page" class="other-page">
+                <div class="container-page mb48">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 offset-lg-2">
+                            <h1 class="text-align-center my32">Contact Us</h1>
+                            <div class="other-page-content">
+                                @Model.Value("contactInfo")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </section>
+    <section data-section-id="section_1" blocks="" handles="" type="contact-us" id="section_1" index="1">
+        <section class="section container-page mb48 pt16 contact-us">
+            @Html.Partial("~/Views/Partials/Contact/_Contact.cshtml", new ContactModel { CultureLcid = System.Globalization.CultureInfo.CurrentUICulture.LCID })
+        </section>
+    </section>
+</div>
+

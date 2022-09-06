@@ -1,0 +1,47 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var lstIndex = new List<int> {0,1,2};
+    var lstFaqs = Model.Value<IEnumerable<IPublishedElement>>("faqNested");
+}
+
+<div class="content">
+    <section data-section-id="htd" id="htd">
+        <section>
+            <section id="online-store-page" class="other-page">
+                <div class="container-page mb48">
+                    <div class="row">
+                        <div class="col-12 col-lg-8 offset-lg-2">
+                            <h1 class="text-align-center my32">@Model.Name</h1>
+                            <div class="other-page-content">
+                                @if (lstFaqs != null && lstFaqs.Any())
+                                {
+                                    foreach (var item in lstFaqs)
+                                    {
+                                        <div class="sb-accordion mceNonEditable">
+                                            <input id="inp_@lstFaqs.IndexOf(item)" class="sb-accordion__toggler" @(lstIndex.Contains(lstFaqs.IndexOf(item)) ? "checked=checked" : "") type="checkbox">
+                                            <label class="sb-accordion__label" for="inp_@lstFaqs.IndexOf(item)">
+                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <div class="sb-accordion__heading mceEditable">@item.Value("question")</div>
+                                                    <div class="sb-accordion__icon">
+                                                        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M13 7V19" stroke="#111111" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M19 13.0001H7" stroke="#111111" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <circle cx="13" cy="13" r="12" stroke="#111111" stroke-linecap="round" stroke-linejoin="round"></circle>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                            <div class="sb-accordion__content">
+                                                @item.Value("answer")
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </section>
+</div>

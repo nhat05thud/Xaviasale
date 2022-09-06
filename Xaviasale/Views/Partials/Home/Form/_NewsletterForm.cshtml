@@ -1,0 +1,26 @@
+﻿@inherits UmbracoViewPage<Xaviasale.Models.NewsletterModel>
+
+@using (Ajax.BeginForm("HandleSubscribe", "Newsletter", null, new AjaxOptions
+{
+    UpdateTargetId = "contentAjaxForm", 
+    HttpMethod = "POST", 
+    OnSuccess = "onSubcribeSuccess", 
+    OnFailure = "onSubcribeFailure"
+}, new { id = "requestForm", @class = "form-wrapper newsletter-form flex-inline items-center relative" }))
+{
+    <div id="contentAjaxForm" class="w-100" style="font-size: 0">
+        @Html.Partial("~/Views/Partials/Home/Form/_Form.cshtml", Model)
+    </div>
+}
+<script>
+    function onSubcribeSuccess(e) {
+        swal(e.success ? "Success" : "Error", e.message, e.success ? "success" : "error");
+        $("#contentAjaxForm").html(e.view);
+        $(".loading_div").css("display", "none");
+    }
+    function onSubcribeFailure(e) {
+        swal(e.success ? "Success" : "Error", e.message, e.success ? "success" : "error");
+        $("#contentAjaxForm").html(e.view);
+        $(".loading_div").css("display", "none");
+    }
+</script>

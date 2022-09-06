@@ -1,0 +1,78 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<Xaviasale.Models.CartViewModel>
+
+@if (Model?.CartModels?.Count > 0)
+{
+    <div class="product-cart-wrapper mb16">
+        @foreach (var item in Model.CartModels)
+        {
+        <div class="product-cart mb16 flex flex-wrap align-start mb16">
+            <div class="product-cart__image mr12 flex align-start justify-center relative">
+                <a href="@item.ProductUrl"
+                   class="aspect-ratio w-100 h-100">
+                    <img src="@item.ThumbnailPath" alt="@item.ProductName" class="image sb-lazy image-wrap w-100 h-100 shape-sharp-t-l-b-r" data-loaded="true">
+                </a>
+            </div>
+            <div class="product-cart__details flex flex-wrap">
+                <div class="info-wrapper w-100">
+                    <p class="product-cart__name mb4">
+                        <a href="@item.ProductUrl" class="">@item.ProductName</a>
+                    </p>
+                    <p class="h6 product-cart__price mb12">
+                        <span>$@item.ProductPrice</span>
+                        @if (item.ProductOldPrice > 0)
+                        {
+                            <span class="product-cart__price--original">$@item.ProductOldPrice</span>
+                        }
+                    </p>
+                    <div class="mb12">
+                        <p class="product-cart__options subtle mb4">@item.Color</p>
+                    </div>
+                </div>
+                <div class="product-cart__action w-100 flex align-end">
+                    <div class="product-cart__quantity flex flow-column flex-wrap">
+                        <label class="subtle quantity-label">Quantity: x @item.Quantity</label>
+                    </div>
+                    <a href="javascript:void(0);" class="product-cart__remove subtle mb8 ml12" data-id="@item.ProductId" data-color="@item.Color">Remove item</a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="cart-drawer-footer p16">
+        <div class="mini-total-line cart__table flex justify-space-between mb4">
+            <h6 class="h6 mini-total-line__name m0">Subtotal</h6>
+            <h6 class="h6 mini-total-line__price cart__subtotal-price m0">$@Model.TotalPrice</h6>
+        </div>
+        <p class="subtle mini-total-line__text mb12">
+            Shipping fee is calculated at checkout
+        </p>
+        <button class="btn btn-subtle w-100 cart-drawer-button cart-drawer-summary__go-to-cart mb8 has-text-weight-bold shape-sharp-t-l-b-r" onclick="gotopage('@Model.CartUrl')">
+            Go to cart
+        </button>
+        <button type="button" name="checkout" class="btn btn-primary w-100 flex cart-drawer-button cart-drawer-summary__checkout has-text-weight-bold shape-sharp-t-l-b-r" onclick="gotopage('@Model.CheckOutUrl')">
+            <div class="svg-container mr12">
+                <svg viewBox="0 0 20 24" version="1.1"
+                     xmlns="http://www.w3.org/2000/svg"
+                     xmlns:xlink="http://www.w3.org/1999/xlink" class="svg-class">
+                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g transform="translate(-1058.000000, -283.000000)" fill="#FFFFFF">
+                            <g transform="translate(928.000000, 192.000000)">
+                                <g transform="translate(0.000000, 79.000000)">
+                                    <g transform="translate(128.000000, 12.000000)">
+                                        <rect fill-opacity="0" x="0" y="0" width="24" height="24"></rect>
+                                        <path d="M21.4291204,3.88621574 L12.3550463,0.0716660692 C12.1277315,-0.0238652508 11.8722222,-0.0239121258 11.6449537,0.0716660692 L2.57087963,3.88621574 C2.22527778,4.03152834 2,4.37315359 2,4.7520445 L2,9.38915727 C2,15.7741463 5.81152778,21.5176037 11.6500926,23.930496 C11.8743519,24.023168 12.1256019,24.023168 12.3499074,23.930496 C18.1883796,21.5176505 22,15.7741932 22,9.38915727 L22,4.7520445 C22,4.37315359 21.7747685,4.03152834 21.4291204,3.88621574 Z M20.1481481,9.38915727 C20.1481481,14.8170519 17,19.8137899 12,22.0441978 C7.13361111,19.8733681 3.85185185,14.9641457 3.85185185,9.38915727 L3.85185185,5.37791996 L12,1.9525737 L20.1481481,5.37791996 L20.1481481,9.38915727 Z M10.9765741,12.5491908 L14.9563889,8.51967226 C15.317963,8.15357824 15.904213,8.15353136 16.2658333,8.51967226 C16.6274537,8.88581315 16.6274074,9.47939171 16.265787,9.84548573 L11.6312963,14.537911 C11.2696296,14.9040988 10.6833796,14.9039582 10.3218519,14.537911 L7.73416667,11.9178779 C7.3725463,11.551737 7.3725463,10.9581584 7.73416667,10.5920644 C8.09578704,10.2259704 8.68203704,10.2259235 9.04361111,10.5920644 L10.9765741,12.5491908 Z"></path>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+            </div> Checkout
+        </button>
+    </div>
+}
+else
+{
+    <p><i>Cart empty!</i></p>
+}

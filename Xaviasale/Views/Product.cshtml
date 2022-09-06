@@ -1,0 +1,20 @@
+﻿@using Xaviasale.ClassHelper
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+}
+<style>
+    .product__name-product {
+        font-size: var(--font-size-embase-50) !important;
+    }
+</style>
+<div class="product-template pt26 pb40" cartformkey="default">
+    <div class="content">
+        <section id="product_content--ajax">
+            @Html.Action("LoadProductContentAjax", "Product", new { pageId = Model.Id })
+        </section>
+        @Html.Partial("Layout/ProductsCarousel/_RecentlyViewed")
+        @Html.Partial("Product/_ProductReview")
+        @Html.Partial("Layout/ProductsCarousel/_BestSeller")
+        @Html.Partial("Layout/ProductsCarousel/_CartCommendations")
+    </div>
+</div>

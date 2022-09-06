@@ -1,0 +1,109 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var home = Umbraco.AssignedContentItem.Root();
+    var lstNavigations = home.Children().Where(x => x.Value<bool>("showOnNavigation"));
+}
+
+<div class="mobile-menu">
+    <div class="popover-left__overlay"></div>
+    <div class="h-100 popover-left__content">
+        <ul class="mobile-nav-menu p0">
+            <li class="p16 flex justify-space-between align-center mobile-nav-menu__header">
+                <div class="flex align-center">
+                    <div class="flex justify-center align-center mr8 mobile-nav-menu__header-hamburger">
+                        <div class="relative">
+                            <span class="d-block w-100 p0 absolute"></span>
+                            <span class="d-block w-100 p0 absolute"></span>
+                            <span class="d-block w-100 p0 absolute"></span>
+                        </div>
+                    </div>
+                    <div class="mobile-nav-menu__header-title has-text-weight-bold">Menu</div>
+                </div>
+                <div class="flex justify-center align-center mobile-nav-menu__header-close">
+                    <div class="relative"><span class="d-block w-100 p0 absolute"></span><span class="d-block w-100 p0 absolute"></span></div>
+                </div>
+            </li>
+            @foreach (var cate in lstNavigations)
+            {
+                var isShowChild = cate.Value<bool>("isShowChildOnNavigation");
+                <li class="mobile-nav-menu__item px16 py12">
+                    <div class="flex items-center mobile-nav-menu__has-sublist">
+                        <a href="@(isShowChild ? "javascript:void(0);" : cate.Url())" class="mobile-nav-menu__link has-text-weight-bold">@cate.Name</a>
+                        @if (isShowChild && cate.Children().Any())
+                        {
+                            <div class="flex justify-center items-center icon-toggle pointer">
+                                <div class="relative"><span class="d-block w-100 p0 absolute"></span><span class="d-block w-100 p0 absolute"></span></div>
+                            </div>
+                        }
+                    </div>
+                    @if (isShowChild && cate.Children().Any())
+                    {
+                        <ul class="mobile-nav-menu__sublist pl16 m0" style="display: none;">
+                            @foreach (var item in cate.Children())
+                            {
+                                <li class="mobile-nav-menu__item pt24">
+                                    <div class="flex items-center mobile-nav-menu__has-sublist"><a href="@item.Url()" class="mobile-nav-menu__link">@item.Name</a></div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+            @*<li class="w-100 p0 absolute mobile-nav-menu__footer">
+                    <div class="flex items-center currency-language-select">
+                        <div class="flex-1 flex items-center justify-center brdr-top-1 px16 py12 currency-language-select__item brdr-left-1">
+                            <div class="svg-container flex items-center justify-center currency-icon currency-language-select__icon">
+                                <svg viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-class">
+                                    <path d="M19 0H1C0.734784 0 0.48043 0.105357 0.292893 0.292893C0.105357 0.48043 0 0.734784 0 1V15C0 15.2652 0.105357 15.5196 0.292893 15.7071C0.48043 15.8946 0.734784 16 1 16H19C19.2652 16 19.5196 15.8946 19.7071 15.7071C19.8946 15.5196 20 15.2652 20 15V1C20 0.734784 19.8946 0.48043 19.7071 0.292893C19.5196 0.105357 19.2652 0 19 0ZM18 11C17.2044 11 16.4413 11.3161 15.8787 11.8787C15.3161 12.4413 15 13.2044 15 14H5C5 13.2044 4.68393 12.4413 4.12132 11.8787C3.55871 11.3161 2.79565 11 2 11V5C2.79565 5 3.55871 4.68393 4.12132 4.12132C4.68393 3.55871 5 2.79565 5 2H15C15 2.79565 15.3161 3.55871 15.8787 4.12132C16.4413 4.68393 17.2044 5 18 5V11Z" fill="#000000"></path><path d="M10 4C7.794 4 6 5.794 6 8C6 10.206 7.794 12 10 12C12.206 12 14 10.206 14 8C14 5.794 12.206 4 10 4ZM10 10C8.897 10 8 9.103 8 8C8 6.897 8.897 6 10 6C11.103 6 12 6.897 12 8C12 9.103 11.103 10 10 10Z" fill="#000000"></path>
+                                </svg>
+                            </div>
+                            <div class="mobile-nav-menu__item">
+                                <a tabindex="0" class="has-text-weight-bold mx6 mobile-nav-menu__link">USD</a>
+                            </div>
+                            <div class="svg-container flex items-center justify-center currency-icon currency-language-select__icon currency-language-select__icon--small">
+                                <svg viewBox="0 0 8 6" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svg-class">
+                                    <title>Icon/Nav/Right</title>
+                                    <g id="↳-Header" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g id="Components/Header/Mobile/Inline/Menu-Expand" transform="translate(-129.000000, -656.000000)" fill="#000000">
+                                            <g id="Group-3" transform="translate(0.000000, 622.000000)">
+                                                <g id="Group-2" transform="translate(50.000000, 25.000000)">
+                                                    <g id="Icon/Nav/Right" transform="translate(77.000000, 6.000000)">
+                                                        <polygon id="Icon-color" points="2.25 3.75 6 8.25 9.75 3.75"></polygon>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div></div>
+                        <div class="flex-1 flex items-center justify-center brdr-top-1 px16 py12 currency-language-select__item">
+                            <div class="svg-container flex items-center justify-center currency-language-select__icon currency-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><path d="M7.992,0 C3.576,0 0,3.584 0,8 C0,12.416 3.576,16 7.992,16 C12.416,16 16,12.416 16,8 C16,3.584 12.416,0 7.992,0 Z M13.536,4.8 L11.176,4.8 C10.92,3.8 10.552,2.84 10.072,1.952 C11.544,2.456 12.768,3.48 13.536,4.8 Z M8,1.632 C8.664,2.592 9.184,3.656 9.528,4.8 L6.472,4.8 C6.816,3.656 7.336,2.592 8,1.632 Z M1.808,9.6 C1.68,9.088 1.6,8.552 1.6,8 C1.6,7.448 1.68,6.912 1.808,6.4 L4.512,6.4 C4.448,6.928 4.4,7.456 4.4,8 C4.4,8.544 4.448,9.072 4.512,9.6 L1.808,9.6 Z M2.464,11.2 L4.824,11.2 C5.08,12.2 5.448,13.16 5.928,14.048 C4.456,13.544 3.232,12.528 2.464,11.2 L2.464,11.2 Z M4.824,4.8 L2.464,4.8 C3.232,3.472 4.456,2.456 5.928,1.952 C5.448,2.84 5.08,3.8 4.824,4.8 L4.824,4.8 Z M8,14.368 C7.336,13.408 6.816,12.344 6.472,11.2 L9.528,11.2 C9.184,12.344 8.664,13.408 8,14.368 Z M9.872,9.6 L6.128,9.6 C6.056,9.072 6,8.544 6,8 C6,7.456 6.056,6.92 6.128,6.4 L9.872,6.4 C9.944,6.92 10,7.456 10,8 C10,8.544 9.944,9.072 9.872,9.6 Z M10.072,14.048 C10.552,13.16 10.92,12.2 11.176,11.2 L13.536,11.2 C12.768,12.52 11.544,13.544 10.072,14.048 L10.072,14.048 Z M11.488,9.6 C11.552,9.072 11.6,8.544 11.6,8 C11.6,7.456 11.552,6.928 11.488,6.4 L14.192,6.4 C14.32,6.912 14.4,7.448 14.4,8 C14.4,8.552 14.32,9.088 14.192,9.6 L11.488,9.6 Z" fill="#000000"></path></g>
+                                </svg>
+                            </div>
+                            <div class="mobile-nav-menu__item">
+                                <a tabindex="0" class="has-text-weight-bold mx6 mobile-nav-menu__link">English</a>
+                            </div>
+                            <div class="svg-container flex items-center justify-center currency-icon currency-language-select__icon currency-language-select__icon--small">
+                                <svg viewBox="0 0 8 6" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svg-class">
+                                    <title>Icon/Nav/Right</title>
+                                    <g id="↳-Header" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g id="Components/Header/Mobile/Inline/Menu-Expand" transform="translate(-129.000000, -656.000000)" fill="#000000">
+                                            <g id="Group-3" transform="translate(0.000000, 622.000000)">
+                                                <g id="Group-2" transform="translate(50.000000, 25.000000)">
+                                                    <g id="Icon/Nav/Right" transform="translate(77.000000, 6.000000)">
+                                                        <polygon id="Icon-color" points="2.25 3.75 6 8.25 9.75 3.75"></polygon>
+                                                    </g>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </li>*@
+        </ul>
+    </div>
+</div>

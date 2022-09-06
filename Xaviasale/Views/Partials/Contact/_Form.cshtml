@@ -1,0 +1,89 @@
+﻿﻿@inherits UmbracoViewPage<Xaviasale.Models.ContactModel>
+
+@Html.AntiForgeryToken()
+<div class="row contact-us__form">
+    <div class="col-12 col-lg-8 offset-lg-2">
+        <div class="row">
+            @{
+                if (!string.IsNullOrEmpty(Model.ErrorMsg))
+                {
+                    <div class="col-12" id="divUpdateMessage">
+                        @Model.ErrorMsg
+                    </div>
+                }
+            }
+            <div class="col-12 col-lg-6 mb16 contact-us__form-name">
+                <label class="subtle">Name</label>
+                <div class="relative input-base">
+                    @Html.TextBoxFor(model => model.Name, new { @class = "w-100 py6 px12 empty shape-sharp-t-l-b-r", placeholder = "Your name", autocomplete = "name" })
+                    @Html.ValidationMessageFor(x => x.Name)
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 mb16 contact-us__form-email">
+                <label class="subtle">Email</label>
+                <div class="relative input-base">
+                    @Html.TextBoxFor(model => model.Email, new { @class = "w-100 py6 px12 empty shape-sharp-t-l-b-r", placeholder = "Your email", autocomplete = "email" })
+                    @Html.ValidationMessageFor(x => x.Email)
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 mb16">
+                <label class="subtle">Phone</label>
+                <div class="relative input-base">
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "w-100 py6 px12 empty shape-sharp-t-l-b-r", placeholder = "Your phone", autocomplete = "phone", pattern = "[0-9\\-]*" })
+                    @Html.ValidationMessageFor(x => x.Phone)
+                </div>
+            </div>
+            <div class="col-12 mb16">
+                <label class="subtle">Issue type</label>
+                <div class="select-box">
+                    <div class="base-select flex relative">
+                        <select name="IssueType" autocomplete="" class="w-100 px12 py8 pr32 empty shape-sharp-t-l-b-r">
+                            <option disabled="" hidden="" value="">Issue type</option>
+                            <option value="I have not received my order"> I have not received my order</option>
+                            <option value="I want to claim my order">I want to claim my order</option>
+                            <option value="I want to cancel my order">I want to cancel my order</option>
+                            <option value="I want to update my order">I want to update my order</option>
+                            <option value="I have a question about a product/collection">I have a question about a product/collection</option>
+                            <option value="I have not received my confirmation email">I have not received my confirmation email</option>
+                            <option value="Other reasons">Other reasons</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mb16">
+                <label class="subtle">Product/Collection link</label>
+                @Html.TextBoxFor(model => model.ProductLink, new { @class = "w-100 py6 px12 empty shape-sharp-t-l-b-r", placeholder = "Product/Collection link", autocomplete = "link" })
+            </div>
+            <div class="col-12 mb16">
+                <label class="subtle">Order number</label>
+                <div class="relative input-base">
+                    @Html.TextBoxFor(model => model.OrderNumber, new { @class = "w-100 py6 px12 empty shape-sharp-t-l-b-r", placeholder = "Order number", autocomplete = "order_number" })
+                </div>
+            </div>
+            <div class="col-12 mb24 contact-us__form-message">
+                <label class="subtle">Message</label>
+                <div class="textarea-base">
+                    @Html.TextAreaFor(model => model.Message, new { @class = "w-100 p12 s-textarea shape-sharp-t-l-b-r", placeholder = "Your message" })
+                    @Html.ValidationMessageFor(x => x.Message)
+                </div>
+            </div>
+            @*<div class="col-12 mb24">
+                <div class="h-captcha-script">
+                    <iframe src="https://newassets.hcaptcha.com/captcha/v1/1f7dc62/static/hcaptcha.html#frame=checkbox&amp;id=1ppp6v8f2kb&amp;host=www.xaviasale.com&amp;sentry=true&amp;reportapi=https%3A%2F%2Faccounts.hcaptcha.com&amp;recaptchacompat=true&amp;custom=false&amp;hl=vi&amp;tplinks=on&amp;sitekey=43a9c04d-19e7-4604-aa51-7e4c3c08c809&amp;theme=light"
+                            title="widget containing checkbox for hCaptcha security challenge"
+                            tabindex="0" frameborder="0" scrolling="no"
+                            data-hcaptcha-widget-id="1ppp6v8f2kb" data-hcaptcha-response=""
+                            style="width: 303px; height: 78px; overflow: hidden;"></iframe>
+                    <textarea id="g-recaptcha-response-1ppp6v8f2kb" name="g-recaptcha-response"
+                              style="display: none;"></textarea>
+                    <textarea id="h-captcha-response-1ppp6v8f2kb" name="h-captcha-response"
+                              style="display: none;"></textarea>
+                </div>
+            </div>*@
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary contact-us__form-submit shape-sharp-t-l-b-r">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(x => x.CultureLcid)

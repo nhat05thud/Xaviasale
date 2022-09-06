@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32802.440
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xaviasale", "Xaviasale\Xaviasale.csproj", "{5859A4CD-B6F5-4A3A-B1AA-C3CDB429CB03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xaviasale.EntityFramework", "Xaviasale.EntityFramework\Xaviasale.EntityFramework.csproj", "{7822D78F-8D0A-45CD-8552-F92920CE35AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5859A4CD-B6F5-4A3A-B1AA-C3CDB429CB03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5859A4CD-B6F5-4A3A-B1AA-C3CDB429CB03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5859A4CD-B6F5-4A3A-B1AA-C3CDB429CB03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5859A4CD-B6F5-4A3A-B1AA-C3CDB429CB03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7822D78F-8D0A-45CD-8552-F92920CE35AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7822D78F-8D0A-45CD-8552-F92920CE35AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7822D78F-8D0A-45CD-8552-F92920CE35AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7822D78F-8D0A-45CD-8552-F92920CE35AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DAB53763-ED1C-4BEF-8E67-3C6670E1F39B}
+	EndGlobalSection
+EndGlobal

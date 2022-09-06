@@ -1,0 +1,101 @@
+﻿﻿@inherits UmbracoViewPage<Xaviasale.Models.ReviewModel>
+
+@Html.AntiForgeryToken()
+
+<div class="rv-widget__form--wrapper">
+    <div class="review-p0 rv-widget__form">
+        <div class="review-flex review-items-center rv-widget__form-heading">
+            <div class="rv-widget__form-title">Write a review</div>
+            <div class="rv-widget__form-close">CLOSE</div>
+        </div>
+        <div class="review-flex review-items-center review-flex-wrap review-p16 rv-widget__form-rating-star">
+            @Html.HiddenFor(x => x.Star, new { Value = "5" })
+            <div class="review-flex review-items-center rv-widget__form-star" data-rating="5">
+                <div class="review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                <div class="review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                <div class="review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                <div class="review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+                <div class="review-icon-symbols"><svg id="review-icons-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#dadada" width="16px" height="16px"><path d="M14.3502222,5.83466667 L10.5128889,5.27644444 L8.8,1.8 C8.63435285,1.51502671 8.3296191,1.33968471 8,1.33968471 C7.6703809,1.33968471 7.36564715,1.51502671 7.2,1.8 L5.48711111,5.27733333 L1.64977778,5.83466667 C1.31455321,5.88274486 1.03577211,6.11712854 0.930834093,6.43911462 C0.825896075,6.76110069 0.913035163,7.11474089 1.15555556,7.35111111 L3.93155556,10.0577778 L3.27644444,13.88 C3.21930785,14.2134664 3.35642866,14.5504556 3.63015923,14.7492923 C3.90388979,14.948129 4.26676326,14.9743334 4.56622222,14.8168889 L8,13.0115556 L11.432,14.8151111 C11.731459,14.9725556 12.0943324,14.9463512 12.368063,14.7475145 C12.6417936,14.5486778 12.7789144,14.2116887 12.7217778,13.8782222 L12.0666667,10.056 L14.8444444,7.35111111 C15.0863486,7.11492322 15.1733229,6.76195351 15.0688464,6.44041497 C14.96437,6.11887643 14.686533,5.88444363 14.352,5.83555556 L14.3502222,5.83466667 Z"></path></svg><!----><!----><!----><!----><!----><!----><!----><!----><!----></div>
+            </div>
+            <div class="rv-widget__form-feeling rv-widget__form-feeling-5">Wonderful</div>
+            <div class="rv-widget__form-noti" style="display: none;">We are so sorry that you do not have the best experience with us. Please let us know if there is anything we could do better. </div>
+        </div>
+        <div class="rv-widget__form-group">
+            <div class="rv-widget__group-field">
+                <label class="rv-widget__form-label rv-widget__form-character">Title of review <span>0/70 characters</span></label>
+                <div class="rv-widget__control">
+                    @Html.TextBoxFor(model => model.Title, new { @class = "rv-widget__input", maxlength = "70", autocomplete = "on" })
+                    @Html.ValidationMessageFor(x => x.Title)
+                </div>
+            </div>
+            <div class="rv-widget__group-field">
+                <label class="rv-widget__form-label">What's great</label>
+                <div class="review-flex review-flex-wrap rv-widget__control rv-widget__control-list">
+                    <div class="review-text-center rv-widget__control-suggest">GREAT PRODUCT QUALITY</div>
+                    <div class="review-text-center rv-widget__control-suggest">REASONABLE PRICE</div>
+                    <div class="review-text-center rv-widget__control-suggest">DEDICATED SELLER</div>
+                    <div class="review-text-center rv-widget__control-suggest">FAST SHIPPING</div>
+                    <div class="review-text-center rv-widget__control-suggest">HIGHLY RECOMMEND</div>
+                </div>
+            </div>
+            <div class="rv-widget__group-field">
+                <label class="rv-widget__form-label rv-widget__form-character">Review* <span>0/1000 characters</span></label><div class="rv-widget__control">
+                    @Html.TextAreaFor(model => model.Review, new { @class = "rv-widget__input", spellcheck = "false", maxlength = "1000" })
+                    @Html.ValidationMessageFor(x => x.Review)
+                </div>
+            </div>
+            <!--<div class="rv-widget__group-field rv-widget__group-upload">
+                <label class="rv-widget__form-label">Photos 0/5</label>
+                <div class="rv-widget__control"><ul class="review-flex review-items-center rv-widget__list_image"><li><label for="rv_file_upload" class="rv-widget__add-img"></label><input id="rv_file_upload" type="file" name="file" multiple="" accept="image/x-png,image/png,image/gif,image/jpeg"></li></ul></div>-->
+            <!---->
+            <!--</div>-->
+            <div class="rv-widget__group-horizontal">
+                <div class="rv-widget__group-field">
+                    <label class="rv-widget__form-label">Your name*</label>
+                    <div class="rv-widget__control">
+                        @Html.TextBoxFor(model => model.Name, new { @class = "rv-widget__input", autocomplete = "on" })
+                        @Html.ValidationMessageFor(x => x.Name)
+                    </div>
+                </div>
+                <div class="rv-widget__group-field">
+                    <label class="rv-widget__form-label">Your email*</label>
+                    <div class="rv-widget__control">
+                        @Html.TextBoxFor(model => model.Email, new { @class = "rv-widget__input", placeholder = "We do not public your email", autocomplete = "on" })
+                        @Html.ValidationMessageFor(x => x.Email)
+                    </div>
+                </div>
+            </div>
+            @*<div class="rv-widget__group-field">
+                            <label class="rv-widget__form-label">Is this a store review or product review?</label>
+                            <div class="review-flex rv-widget__radio">
+                                <div class="review-radio" native-value="" value="">
+                                <input type="radio" id="1662319550626shop-review" value="">
+                                <label class="review-flex review-items-center review-pointer" for="1662319550626shop-review">
+                                    <span class="review-relative review-inline-block review-mr8 box">
+                                        <span class="dot" style="background: rgb(32, 168, 72);"></span>
+                                    </span>
+                                    <span>Store review</span>
+                                </label>
+                            </div>
+                        <div class="review-radio">
+                            <input type="radio" id="product-review" value="" checked="checked">
+                            <label class="review-flex review-items-center review-pointer" for="product-review">
+                                <span class="review-relative review-inline-block review-mr8 box">
+                                    <span class="dot" style="background: rgb(32, 168, 72);"></span>
+                                </span>
+                                <span>Product review</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+        <div class="review-mt24 rv-widget__form-submit">
+            <button type="submit" class="rv-widget__btn rv-primary">
+                <span>Submit review</span>
+            </button>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(x => x.CreatedDate, new { Value = DateTime.Now.ToString("dd/MM/yyyy")})
+@Html.HiddenFor(x => x.CultureLcid)
+@Html.HiddenFor(x => x.PageId)

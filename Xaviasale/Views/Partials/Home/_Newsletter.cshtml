@@ -1,0 +1,26 @@
+﻿@using Xaviasale.Models
+
+<section type="newsletter">
+    <section class="section newsletter-section relative">
+        <div class="container-fluid text-align-center">
+            <div class="row">
+                <div class="newsletter-section__wrap relative w-100">
+                    <div class="newsletter-shadow newsletter-shadow--no-img"></div>
+                    <div class="newsletter-wrap">
+                        <div class="container">
+                            <div class="w-100">
+                                <h2 class="h4 mb8 newsletter-heading">Subscribe to our newsletter</h2>
+                                <div class="mb16 newsletter-sub-heading">
+                                    <p>Subscribe to our newsletter for sneak peeks at new collections and early access to flash sales!</p>
+                                </div>
+                                <div class="form-wrapper">
+                                    @Html.Partial("Home/Form/_NewsletterForm", new NewsletterModel{ CultureLcid = System.Globalization.CultureInfo.CurrentUICulture.LCID })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>

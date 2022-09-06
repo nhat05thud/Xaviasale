@@ -1,0 +1,8 @@
+﻿@inherits UmbracoViewPage<Xaviasale.Models.ReviewModel>
+
+@using (Ajax.BeginForm("HandleReview", "Product", null, new AjaxOptions { UpdateTargetId = "contentAjaxForm", HttpMethod = "POST", OnSuccess = "onSuccess", OnFailure = "onFailure" }, new { id = "rv_add_form", @class = "ajaxForm" }))
+{
+    <div id="contentAjaxForm">
+        @Html.Partial("~/Views/Partials/Product/Review/_Form.cshtml", Model)
+    </div>
+}

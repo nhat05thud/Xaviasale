@@ -1,7 +1,63 @@
-﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+﻿@using Umbraco.Web.Models
+@inherits Umbraco.Web.Mvc.UmbracoViewPage
 @{
-	Layout = null;
+    var searchQuery = Request.QueryString["keyword"];
+    var culture = System.Globalization.CultureInfo.CurrentCulture;
 }
-
-@* the fun starts here *@
-
+<div class="container">
+    @{
+        if (!string.IsNullOrEmpty(searchQuery))
+        {
+            var results = Umbraco.ContentQuery.Search(searchQuery, culture.Name).Where(x => x.Content.ContentType.Alias.Equals("product"));
+            <br />
+            <p>Result for keywords: <strong>@searchQuery</strong></p>
+            <br />
+            if (results.Any())
+            {
+                <div class="row mt16 product-grid">
+                    @foreach (var item in results)
+                    {
+                        var lstProductColors = item.Content.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                        var productImages = lstProductColors.FirstOrDefault().Value<IEnumerable<IPublishedContent>>("images");
+                        <div class="col-6 mb16 product-col col-lg-3" style="">
+                            <div class="collection-product-wrap relative">
+                                <a href="@item.Content.Url()" class="d-block">
+                                    <div class="collection-detail__product-image mb12">
+                                        <div class="w-100 collection-image-container image-wrap text-align-center shape-sharp-t-l-b-r">
+                                            <img src="@(productImages != null && productImages.Any() ? productImages.FirstOrDefault().GetCropUrl(570, 350, imageCropMode:ImageCropMode.BoxPad, furtherOptions: "&bgcolor=fff&slimmage=true") : "https://via.placeholder.com/352x352")" alt="@item.Content.Name" class="image sb-lazy priority" data-loaded="true">
+                                        </div>
+                                    </div>
+                                    <div class="collection-detail__product-details text-align-left">
+                                        <span title="@item.Content.Name" class="title d-block cl-black" itemprop="name">@item.Content.Name</span>
+                                        <span class="d-block mt8 price flex flex-wrap">
+                                            <span class="has-text-weight-medium money money-original cl-black">$@(lstProductColors.FirstOrDefault().Value<decimal>("price"))</span>
+                                            @if (lstProductColors.FirstOrDefault().Value<int>("oldPrice") > 0)
+                                            {
+                                                <span class="was_price ml4">
+                                                    <span class="has-text-weight-medium money compare-money decoration-line-through">$@(lstProductColors.FirstOrDefault().Value<decimal>("oldPrice"))</span>
+                                                </span>
+                                            }
+                                        </span>
+                                        @*@Html.Partial("Product/_Review", item)*@
+                                    </div>
+                                </a>
+                                <div class="banner_holder">
+                                    @if (item.Content.Value<bool>("isSale"))
+                                    {
+                                        <div class="sale_banner thumbnail_banner h6 is-uppercase px8 shape-sharp-t-l-b-r">Sale</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center" style="padding: 30px 0;">
+                    <i>No result for this keywords</i>
+                </div>
+            }
+        }
+    }
+</div>

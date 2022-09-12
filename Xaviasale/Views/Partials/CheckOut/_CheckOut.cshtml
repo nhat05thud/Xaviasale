@@ -18,13 +18,16 @@
 }
 <script>
     function onCheckoutSuccess(e) {
-        swal({
-            title: e.success ? "Success" : "Error",
-            text: e.message,
-            icon: e.success ? "success" : "error"
-        }).then((value) => {
-            console.log(123); // handle redirect
-        });
+        if (e.data.data != null) {
+            window.location.href = e.data.data.payUrl
+        }
+        else {
+            swal({
+                title: e.success ? "Success" : "Error",
+                text: e.message,
+                icon: e.success ? "success" : "error"
+            });
+        };
         $("#contentAjaxForm").html(e.view);
         $(".loading_div").css("display", "none");
     }
@@ -34,7 +37,7 @@
             text: e.message,
             icon: e.success ? "success" : "error"
         }).then((value) => {
-            console.log(123); // handle redirect
+           // console.log(123); // handle redirect
         });
         $("#contentAjaxForm").html(e.view);
         $(".loading_div").css("display", "none");

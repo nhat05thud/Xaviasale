@@ -13,6 +13,9 @@ using Xaviasale.ClassHelper;
 using Xaviasale.EntityFramework.Context;
 using Xaviasale.Models;
 using Xaviasale.EntityFramework.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 namespace Xaviasale.Controllers
 {
@@ -33,138 +36,94 @@ namespace Xaviasale.Controllers
                     view = ConvertViewToString("~/Views/Partials/CheckOut/_Form.cshtml", model)
                 }, JsonRequestBehavior.AllowGet);
             }
-
             var home = Umbraco.Content(model.Carts.FirstOrDefault().ProductId).Root();
-            var email = RenderMailMessage(model);
-            SaveOrdersToDatabase(model);
-
-            try
+            var returnData = Checkout(model.Carts, model.PaymentMethod, home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute) + "?data=" + Utils.EncryptString(JsonConvert.SerializeObject(model)));
+            var result = JsonConvert.DeserializeObject<CoinHomePayOrderReturnModel>(returnData);
+            Session[AppConstant.SESSION_CART_ITEMS] = null;
+            return Json(new
             {
-
-                Session[AppConstant.SESSION_CART_ITEMS] = null;
-                var smtp = new SmtpClient();
-                smtp.Send(email);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Success",
-                    redirectUrl = home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute)
-                }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "error",
-                    redirectUrl = home.DescendantOfType("checkOutFailPage")?.Url(mode: UrlMode.Absolute)
-                }, JsonRequestBehavior.AllowGet);
-            }
+                success = Convert.ToBoolean(result.success),
+                message = result.message,
+                data = result
+            }, JsonRequestBehavior.AllowGet);
         }
-        private void SaveOrdersToDatabase(CheckOutModel model)
+        private string Checkout(List<Cart> model, string paymentMethod, string redirectUrl)
         {
-            using (var db = new XaviasaleContext())
+            var merchanId = AppConstant.COINHOMEPAY_MERCHAN_ID;
+            var token = AppConstant.COINHOMEPAY_TOKEN;
+            var url = AppConstant.COINHOMEPAY_CREATEORDER_URL;
+            var client = new HttpClient
             {
-                var transaction = db.Database.BeginTransaction();
-                try
-                {
-                    var order = new Order
-                    {
-                        Email = model.Email,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Address = model.Address,
-                        Apartment = model.Apartment,
-                        ZipCode = model.ZipCode,
-                        City = model.City,
-                        State = model.State,
-                        Country = model.Country,
-                        Phone = model.Phone,
-                        IsReaded = false,
-                        CreateDate = DateTime.Now
-                    };
-                    db.Orders.Add(order);
-                    db.SaveChanges();
-
-                    if (model.Carts != null)
-                    {
-                        foreach (var product in model.Carts)
-                        {
-                            var item = new ShoppingCart
-                            {
-                                OrderId = order.OrderId,
-                                ProductId = product.ProductId,
-                                Quantity = product.Quantity,
-                                Color = product.Color
-                            };
-                            db.ShoppingCarts.Add(item);
-                            db.SaveChanges();
-                        }
-                    }
-
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    // TODO: Log exception....    
-                    transaction.Rollback();
-                }
-            }
-        }
-        private MailMessage RenderMailMessage(CheckOutModel model)
-        {
-            decimal total = 0;
-
-            var sendTo = WebConfigurationManager.AppSettings["EmailContactReceive"];
-            var messageString = "<h3>" + WebConfigurationManager.AppSettings["EmailCheckOutTitle"] + "</h3>";
-            messageString += "<b>Email: </b>" + model.Email + "<br />";
-            messageString += "<b>First Name: </b>" + model.FirstName + "<br />";
-            messageString += "<b>Last Name: </b>" + model.LastName + "<br />";
-            messageString += "<b>Address: </b>" + model.Address + "<br />";
-            messageString += "<b>Apartment, suite, etc.: </b>" + model.Apartment + "<br />";
-            messageString += "<b>Zip Code: </b>" + model.ZipCode + "<br />";
-            messageString += "<b>City: </b>" + model.City + "<br />";
-            messageString += "<b>State: </b>" + model.State + "<br />";
-            messageString += "<b>Country: </b>" + model.Country + "<br />";
-            messageString += "<b>Phone number: </b>" + model.Phone + "<br />";
-            messageString += "<p>==================================================</p>";
-            messageString += "<b>Orders: </b><br />";
-            messageString += "<ul>";
-            if (model.Carts != null)
-            {
-                foreach (var item in model.Carts)
-                {
-                    var product = Umbraco.Content(item.ProductId);
-                    if (product != null)
-                    {
-                        var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
-                        if (itemColorNested != null)
-                        {
-                            messageString += "<li>";
-                            messageString += "<b>Sản phẩm:</b> <a href='" + product.Url(mode: UrlMode.Absolute) + "'>" + product.Name + "</a><br />";
-                            messageString += "<b>Color:</b>" + item.Color + "<br />";
-                            messageString += "<b>Số lượng:</b> " + item.Quantity + "<br />";
-                            messageString += "<b>Giá (đơn vị 1 cái):</b> $" + itemColorNested.Value<decimal>("price") + "<br />";
-                            messageString += "<b>Tổng:</b> $" + itemColorNested.Value<decimal>("price") * item.Quantity + "<br />";
-                            messageString += "</li>";
-                            total += itemColorNested.Value<decimal>("price") * item.Quantity;
-                        }
-                    }
-                }
-            }
-            messageString += "</ul>";
-            messageString += "<p>==================================================</p>";
-            messageString += "<b>Tổng tiền: </b>$" + total + "<br />";
-
-            var email = new MailMessage
-            {
-                Subject = "Order",
-                Body = messageString,
-                IsBodyHtml = true,
-                To = { sendTo }
+                BaseAddress = new Uri(url)
             };
-            return email;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var httpRequestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri(url)
+            };
+            var outTradeNo = Utils.GetTimestamp(DateTime.Now);
+            var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
+            var goodName = $"Payment of #" + outTradeNo;
+            var outBody = "";
+            var sweepFeeUser = 0;
+            decimal money = 0;
+            foreach (var item in model)
+            {
+                var product = Umbraco.Content(item.ProductId);
+                if (product != null)
+                {
+                    var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
+                    if (itemColorNested != null)
+                    {
+                        money += itemColorNested.Value<decimal>("price") * item.Quantity;
+                    }
+                }
+            }
+
+            var signString = $"channel={paymentMethod}&goodsName={goodName}&merchantId={merchanId}&money={money}&notifyUrl={redirectUrl}&outBody={outBody}&outTradeNo={outTradeNo}&returnUrl={redirectUrl}";
+            if (sweepFeeUser > 0)
+            {
+                signString += "&sweepFeeUser=" + sweepFeeUser;
+            }
+            signString += "&timestamp=" + timestamp;
+            var sign = Utils.ToMd5(signString + token).ToUpper();
+
+            List<KeyValuePair<string, string>> requestParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("merchantId", merchanId),
+                new KeyValuePair<string, string>("sign", sign),
+                new KeyValuePair<string, string>("timestamp", timestamp),
+                new KeyValuePair<string, string>("money", money.ToString()),
+                new KeyValuePair<string, string>("channel", paymentMethod),
+                new KeyValuePair<string, string>("outTradeNo", outTradeNo),
+                new KeyValuePair<string, string>("notifyUrl", redirectUrl),
+                new KeyValuePair<string, string>("returnUrl", redirectUrl),
+                new KeyValuePair<string, string>("goodsName", goodName),
+                new KeyValuePair<string, string>("outBody", outBody)
+            };
+            if (sweepFeeUser > 0)
+            {
+                requestParams.Add(new KeyValuePair<string, string>("sweepFeeUser", sweepFeeUser.ToString()));
+            }
+
+            var content = new FormUrlEncodedContent(requestParams);
+            httpRequestMessage.Content = content;
+
+            var response = client.SendAsync(httpRequestMessage).Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var dataObjects = response.Content.ReadAsStringAsync();
+                client.Dispose();
+                return dataObjects.Result;
+            }
+            else
+            {
+                client.Dispose();
+                return null;
+            }
         }
         private string ConvertViewToString(string viewName, object model)
         {

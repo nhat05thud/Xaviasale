@@ -482,6 +482,7 @@
     <Compile Include="Controllers\BackOfficeShoppingCartController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CheckOutController.cs" />
+    <Compile Include="Controllers\checkOutSuccessPageController.cs" />
     <Compile Include="Controllers\NewsletterController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\SiteController.cs" />
@@ -501,7 +502,6 @@
     <Content Include="config\imageprocessor\security.config" />
     <Content Include="config\imageprocessor\processing.config" />
     <Content Include="config\imageprocessor\cache.config" />
-    <Content Include="Media\Web.config" />
     <Content Include="config\umbracoSettings.config" />
     <Content Include="config\tinyMceConfig.config" />
     <Content Include="config\serilog.user.config" />
@@ -609,6 +609,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fonts\" />
+    <Folder Include="Media\" />
+    <Folder Include="Views\checkOutSuccessPage\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xaviasale.EntityFramework\Xaviasale.EntityFramework.csproj">
@@ -658,7 +660,7 @@
     </ItemGroup>
     <MakeDir Directories="$(WebProjectOutputDir)\bin\roslyn" />
     <Copy SourceFiles="@(RoslynFiles)" DestinationFolder="$(WebProjectOutputDir)\bin\roslyn" SkipUnchangedFiles="true" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" />
-</Target>
+  </Target>
   <Import Project="..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets" Condition="Exists('..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets')" />
   <Import Project="..\packages\UmbracoCms.8.18.5\build\UmbracoCms.targets" Condition="Exists('..\packages\UmbracoCms.8.18.5\build\UmbracoCms.targets')" />
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />

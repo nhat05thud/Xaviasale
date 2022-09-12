@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using Umbraco.Core.Composing;
 
@@ -50,6 +52,39 @@ namespace Xaviasale.ClassHelper
         public static string ConvertThousandPrice(decimal price)
         {
             return string.Format("{0:n0}", price);
+        }
+        public static string GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
+        }
+        public static string ToMd5(this string str)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var inputBytes = Encoding.UTF8.GetBytes(str);
+                var hashBytes = md5.ComputeHash(inputBytes);
+
+                var sb = new StringBuilder();
+                foreach (var hashByte in hashBytes)
+                {
+                    sb.Append(hashByte.ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
+        }
+        public static string EncryptString(string plainText)
+        {
+            var textBytes = Encoding.UTF8.GetBytes(plainText);
+            //var encryptedBytes = Encrypt256(textBytes);
+            return Convert.ToBase64String(textBytes);
+        }
+
+        public static string DecryptString(string encryptedText)
+        {
+            var textBytes = Convert.FromBase64String(encryptedText);
+            //var decryptedBytes = Decrypt256(textBytes);
+            return Encoding.UTF8.GetString(textBytes);
         }
     }
 }

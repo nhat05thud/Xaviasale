@@ -27,6 +27,7 @@ namespace Xaviasale.Models
         [UmbracoRequired("FormField.Country.Required")]
         public string Country { get; set; }
         public string Phone { get; set; }
+        public string PaymentMethod { get; set; }
         public bool IsSameBillingAddress { get; set; }
         public decimal TotalPrice { get; set; }
         public List<Cart> Carts { get; set; }
@@ -43,5 +44,39 @@ namespace Xaviasale.Models
         public string State { get; set; }
         public string Country { get; set; }
         public string Phone { get; set; }
+    }
+
+    public class CoinHomePayOrderReturnModel
+    {
+        public string success { get; set; }
+        public string message { get; set; }
+        public string code { get; set; }
+        public string showType { get; set; }
+        public DataObject data { get; set; }
+        public string timestamp { get; set; }
+    }
+    public class DataObject
+    {
+        public string tradeNo { get; set; }
+        public string merchantId { get; set; }
+        public string outTradeNo { get; set; }
+        public string outBody { get; set; }
+        public string channelType { get; set; }
+        public string channel { get; set; }
+        public string money { get; set; }
+        public string payMoney { get; set; }
+        public string realMoney { get; set; }
+        public string moneyScale { get; set; }
+        public string status { get; set; }
+        public string statusDesc { get; set; }
+        public string payUrl { get; set; }
+        public string qrcodeUrl { get; set; }
+        public string qrcodeContent { get; set; }
+        public string paySucc { get; set; }
+        public string paySuccTime { get; set; }
+        public string notifySucc { get; set; }
+        public string notifySuccTime { get; set; }
+        public string validTime { get; set; }
+        public string validTimeMills { get; set; }
     }
 }

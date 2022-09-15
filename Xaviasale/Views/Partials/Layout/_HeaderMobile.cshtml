@@ -1,4 +1,9 @@
-﻿
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@{
+    var home = Umbraco.AssignedContentItem.Root();
+    var logo = home.Value<IPublishedContent>("logo");
+    var lstNavigations = home.Children().Where(x => x.Value<bool>("showOnNavigation"));
+}
 <header id="header" data-section="header" class="header-mobile fixed-header--true">
     <div class="container">
         <div class="header-wrapper">
@@ -12,8 +17,8 @@
                     </div>
                 </label>
                 <div class="logo w-100 mx8 visible-search-cart">
-                    <a aria-current="page" href="/" class="flex items-center link-initial logo-img" tag="a">
-                        <img src="https://img.thesitebase.net/files/10334406/2022/06/04/0x180@16543067838b0bf17bd2.jpeg" alt="Xaviasale" class="image sb-lazy priority is-medium" data-loaded="true">
+                    <a aria-current="page" href="@home.Url()" class="flex items-center link-initial logo-img" tag="a">
+                        <img src="@(logo != null ? logo.Url() : "/images/logo.png")" alt="Xaviasale" class="image sb-lazy priority is-medium" data-loaded="true">
                     </a>
                 </div>
                 <a href="" class="search-icon relative flex align-center justify-center">

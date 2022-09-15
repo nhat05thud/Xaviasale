@@ -1,0 +1,132 @@
+﻿@model Xaviasale.Models.BackOffice.SendMailViewModel
+<style>
+    .text-right {
+        text-align: right;
+    }
+
+    #btn-send-mail {
+        width: 150px;
+        height: 40px;
+        font-weight: bold;
+        color: #fff;
+        border: 0;
+        background: #006fce;
+    }
+    .swal-overlay--show-modal {
+        z-index: 999999;
+    }
+    #Subject {
+        width: 100%;
+        height: 26px;
+        border: 1px solid #ccc;
+        padding: 2px 7px;
+        border-radius: 3px;
+    }
+</style>
+<div class="row mgb-15">
+    <div class="col-2">
+        <label>Email:</label>
+    </div>
+    <div class="col-10">
+        <select id="emails" autocomplete="on"></select>
+    </div>
+</div>
+<div class="row mgb-15">
+    <div class="col-2">
+        <label>Group:</label>
+    </div>
+    <div class="col-10">
+        <select id="groups" autocomplete="on"></select>
+    </div>
+</div>
+<div class="row mgb-15">
+    <div class="col-2">
+        <label>Subject:</label>
+    </div>
+    <div class="col-10">
+        @Html.TextBoxFor(x => x.Subject)
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        <label>Content:</label>
+    </div>
+    <div class="col-10">
+        @Html.TextAreaFor(x => x.Content)
+    </div>
+</div>
+<div class="text-right" style="margin-top: 15px">
+    <button type="button" class="btn btn-primary" id="btn-send-mail">Send</button>
+</div>
+
+<script src="/Content/ckeditor/ckeditor.js"></script>
+<script src="/Content/ckeditor/sk-init.js"></script>
+<script type="text/javascript">
+    $("#emails").kendoMultiSelect({
+        placeholder: "Select email",
+        dataTextField: "Email",
+        dataValueField: "Id",
+        autoBind: false,
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "/umbraco/surface/backofficenewsletter/getlistemailonsendmail",
+                }
+            }
+        }
+    });
+    $("#groups").kendoMultiSelect({
+        placeholder: "Select group",
+        dataTextField: "Name",
+        dataValueField: "Id",
+        autoBind: false,
+        dataSource: {
+            type: "json",
+            transport: {
+                read: {
+                    url: "/umbraco/surface/backofficenewsletter/getlistgrouponsendmail",
+                }
+            }
+        }
+    });
+    CKEDITOR.replace("Content", {
+        height: "405px"
+    });
+    $(document).on('click', "#btn-send-mail", function () {
+        var windowWidget = $("#window-sendmail").data("kendoWindow");
+        kendo.ui.progress(windowWidget.element, true);
+        var content = CKEDITOR.instances.Content.getData();
+        var emails = $("#emails").data("kendoMultiSelect");
+        var groups = $("#groups").data("kendoMultiSelect");
+        var datra = {
+            Emails: emails.value().toString(),
+            Groups: groups.value().toString(),
+            Subject: $("#Subject").val(),
+            Content: content
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/umbraco/surface/backofficenewsletter/sendmail/',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ 'model': datra }),
+            dataType: "json",
+            success: function (res) {
+                if (res.success) {
+                    swal("Success!", "Send mail success!!", "success").then(function () {
+                        windowWidget.close();
+                    });
+                }
+                else {
+                    if (res.message != "") {
+                        swal("Error!", res.message, "error");
+                    }
+                    else {
+                        swal("Error!", "Send mail fail!!", "error");
+                    }
+                }
+                kendo.ui.progress(windowWidget.element, false);
+            }
+        });
+    });
+</script>

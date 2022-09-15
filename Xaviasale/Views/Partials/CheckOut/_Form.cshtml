@@ -108,10 +108,10 @@
                                         @Html.LabelFor(model => model.PaymentMethod, "Chanel", new { @class = "s-label" })
                                         @Html.DropDownListFor(model => model.PaymentMethod, new SelectList(
                                             new List<SelectListItem> {
-                                                new SelectListItem { Selected = true, Text = "USDT.TRC20", Value = "USDT.TRC20" },
-                                                new SelectListItem { Selected = false, Text = "PAYPAL", Value = "PAYPAL.GIFTS" },
-                                                new SelectListItem { Selected = false, Text = "TRX", Value = "TRX" },
-                                                new SelectListItem { Selected = false, Text = "ETH", Value = "ETH" }
+                                                //new SelectListItem { Selected = true, Text = "USDT.TRC20", Value = "USDT.TRC20" },
+                                                new SelectListItem { Selected = false, Text = "PAYPAL", Value = "PAYPAL.GIFTS" }
+                                                //new SelectListItem { Selected = false, Text = "TRX", Value = "TRX" },
+                                                //new SelectListItem { Selected = false, Text = "ETH", Value = "ETH" }
                                            }, "Value", "Text"
                                         ), new { @class = "s-input__inner" })
                                     </div>

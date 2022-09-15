@@ -1,21 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using Umbraco.Web.Mvc;
 using Xaviasale.EntityFramework.Context;
 using Xaviasale.EntityFramework.Models;
 using Xaviasale.Models.BackOffice;
+using Xaviasale.TemplateEngine;
 
 namespace Xaviasale.Controllers
 {
     public class BackOfficeNewsletterController : SurfaceController
     {
-        // GET: BackOfficeNewsletter
+        public static string EmailTemplatePath = ConfigurationManager.AppSettings["Mailer.TemplatePath"];
+        private readonly DotLiquidTemplate _textTemplate = new DotLiquidTemplate(HostingEnvironment.MapPath(EmailTemplatePath));
         public ActionResult Page()
         {
             return PartialView("~/Views/BackOfficeNewsletter/Index.cshtml");
+        }
+        public ActionResult GetSendMailView()
+        {
+            var model = new SendMailViewModel
+            {
+                Content = _textTemplate.Render("NewsletterTemplate", null)
+            };
+            return PartialView("~/Views/BackOfficeNewsletter/_ViewSendMail.cshtml", model);
+        }
+        [ValidateInput(false)]
+        public ActionResult SendMail(SendMailViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.Emails) || string.IsNullOrEmpty(model.Groups))
+            {
+                return Json(new { success = false, message = "Email or Group cannot be left blank" }, JsonRequestBehavior.AllowGet);
+            }
+            using (var db = new XaviasaleContext())
+            {
+                var sendTo = new List<string>();
+                foreach (var id in model.Emails.Split(','))
+                {
+                    var item = db.Newsletters.FirstOrDefault(x => x.Id.ToString().Equals(id));
+                    sendTo.Add(item.Email);
+                }
+                foreach (var id in model.Groups.Split(','))
+                {
+                    var lstEmails = db.Newsletters.Where(x => x.GroupNewsletterId.ToString().Equals(id));
+                    foreach (var item in lstEmails)
+                    {
+                        if (!sendTo.Contains(item.Email))
+                        {
+                            sendTo.Add(item.Email);
+                        }
+                    }
+                }
+                var email = new MailMessage
+                {
+                    Subject = !string.IsNullOrEmpty(model.Subject) ? model.Subject : "Newsletter",
+                    Body = model.Content,
+                    IsBodyHtml = true,
+                    To = { string.Join(",", sendTo) }
+                };
+
+                try
+                {
+                    var smtp = new SmtpClient();
+                    smtp.Send(email);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        success = false
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            return Json(new
+            {
+                success = true
+            }, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
         public ActionResult GetNewsletter()
@@ -149,40 +214,47 @@ namespace Xaviasale.Controllers
         [HttpPost]
         public ActionResult AddGroup(string name, List<int> ids)
         {
-            try
+            if (!string.IsNullOrEmpty(name))
             {
-                using (var db = new XaviasaleContext())
+                try
                 {
-                    var item = db.GroupNewsletters.FirstOrDefault(x => x.Name.ToLower().Equals(name.ToLower()));
-                    if (item != null)
+                    using (var db = new XaviasaleContext())
                     {
-                        return Json(new { success = false, message = Umbraco.GetDictionaryValue("GroupNewsletter.Name.Duplicate") }, JsonRequestBehavior.AllowGet);
-                    }
+                        var item = db.GroupNewsletters.FirstOrDefault(x => x.Name.ToLower().Equals(name.ToLower()));
+                        if (item != null)
+                        {
+                            return Json(new { success = false, message = Umbraco.GetDictionaryValue("GroupNewsletter.Name.Duplicate") }, JsonRequestBehavior.AllowGet);
+                        }
 
-                    // add group
-                    var group = new GroupNewsletter
-                    {
-                        Name = name
-                    };
-                    db.GroupNewsletters.Add(group);
-                    db.SaveChanges();
-
-                    var groupId = group.Id;
-                    var lstEmails = db.Newsletters.Where(x => ids.Contains(x.Id)).ToList();
-                    foreach (var email in lstEmails)
-                    {
-                        email.GroupNewsletterId = groupId;
-                        db.Newsletters.Attach(email);
-                        db.Entry(email).Property(x => x.GroupNewsletterId).IsModified = true;
+                        // add group
+                        var group = new GroupNewsletter
+                        {
+                            Name = name
+                        };
+                        db.GroupNewsletters.Add(group);
                         db.SaveChanges();
-                    }
 
-                    return Json(new { success = true, message = Umbraco.GetDictionaryValue("GroupNewsletter.Add.Success") }, JsonRequestBehavior.AllowGet);
+                        var groupId = group.Id;
+                        var lstEmails = db.Newsletters.Where(x => ids.Contains(x.Id)).ToList();
+                        foreach (var email in lstEmails)
+                        {
+                            email.GroupNewsletterId = groupId;
+                            db.Newsletters.Attach(email);
+                            db.Entry(email).Property(x => x.GroupNewsletterId).IsModified = true;
+                            db.SaveChanges();
+                        }
+
+                        return Json(new { success = true, message = Umbraco.GetDictionaryValue("GroupNewsletter.Add.Success") }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                catch (Exception e)
+                {
+                    return Json(new { success = false, message = Umbraco.GetDictionaryValue("GroupNewsletter.Error") }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception e)
+            else
             {
-                return Json(new { success = false, message = Umbraco.GetDictionaryValue("GroupNewsletter.Error") }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = Umbraco.GetDictionaryValue("GroupNewsletter.Name.Required") }, JsonRequestBehavior.AllowGet);
             }
         }
         [HttpPost]

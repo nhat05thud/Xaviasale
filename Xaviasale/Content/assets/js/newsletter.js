@@ -98,35 +98,6 @@ $(document).ready(function () {
             left: "25%"
         }
     }).data("kendoWindow");
-
-    $("#emails").kendoMultiSelect({
-        placeholder: "Select email",
-        dataTextField: "Email",
-        dataValueField: "Id",
-        autoBind: false,
-        dataSource: {
-            type: "json",
-            transport: {
-                read: {
-                    url: "/umbraco/surface/backofficenewsletter/getlistemailonsendmail",
-                }
-            }
-        }
-    });
-    $("#groups").kendoMultiSelect({
-        placeholder: "Select group",
-        dataTextField: "Name",
-        dataValueField: "Id",
-        autoBind: false,
-        dataSource: {
-            type: "json",
-            transport: {
-                read: {
-                    url: "/umbraco/surface/backofficenewsletter/getlistgrouponsendmail",
-                }
-            }
-        }
-    });
 });
 
 function deleteEmail(e) {
@@ -213,6 +184,9 @@ function showGroupDetails(e) {
 
 $(".sendmain-btn").bind("click", function () {
     var dialog = $("#window-sendmail").data("kendoWindow");
+    dialog.refresh({
+        url: "/umbraco/surface/backofficenewsletter/getSendMailView/"
+    });
     dialog.open();
 });
 

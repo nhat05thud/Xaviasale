@@ -86,5 +86,25 @@ namespace Xaviasale.ClassHelper
             //var decryptedBytes = Decrypt256(textBytes);
             return Encoding.UTF8.GetString(textBytes);
         }
+        public static DateTime UnixTimeStampToDateTime(double timestamp)
+        {
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return origin.AddSeconds(timestamp/1000);
+        }
+        public static DateTime StartOfDay(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, 0);
+        }
+
+        public static DateTime EndOfDay(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, date.Day, 23, 59, 59, 999);
+        }
+
+        public static DateTimeOffset EndOfDayOffset(this DateTimeOffset date)
+        {
+            var dateTime = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59, 999);
+            return new DateTimeOffset(dateTime);
+        }
     }
 }

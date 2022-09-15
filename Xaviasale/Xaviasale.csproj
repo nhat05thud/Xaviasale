@@ -782,6 +782,9 @@
     <Content Include="Content\ckeditor\skins\moono-lisa\images\refresh.png" />
     <Content Include="Content\ckeditor\skins\moono-lisa\images\spinner.gif" />
     <Content Include="Content\ckeditor\styles.js" />
+    <Content Include="Content\daterangepicker\daterangepicker.css" />
+    <Content Include="Content\daterangepicker\daterangepicker.min.js" />
+    <Content Include="Content\daterangepicker\moment.min.js" />
     <Content Include="css\appcopt.css" />
     <Content Include="css\appreview.css" />
     <Content Include="css\appupsell.css" />
@@ -796,6 +799,7 @@
     <Content Include="Global.asax" />
     <Content Include="images\ajax-loader.gif" />
     <Content Include="images\logo.jpg" />
+    <Content Include="images\spinner.svg" />
     <Content Include="scripts\cart-controller.js" />
     <Content Include="scripts\jquery.fancybox.min.js" />
     <Content Include="scripts\jquery.js" />
@@ -958,6 +962,7 @@
     <Content Include="Views\CheckOutFailPage.cshtml" />
     <Content Include="Views\CheckOutSuccessPage.cshtml" />
     <Content Include="Views\BackOfficeNewsletter\_ViewSendMail.cshtml" />
+    <Content Include="Views\BackOfficeShoppingCart\_Statistic.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

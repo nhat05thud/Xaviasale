@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
+using Xaviasale.ClassHelper;
 
 namespace Xaviasale.Controllers
 {
@@ -18,18 +19,43 @@ namespace Xaviasale.Controllers
         {
             return PartialView("~/Views/BackOfficeShoppingCart/Index.cshtml");
         }
+        public ActionResult RenderViewStatistic()
+        {
+            return PartialView("~/Views/BackOfficeShoppingCart/_Statistic.cshtml");
+        }
         public ActionResult GetData()
         {
             using (var db = new XaviasaleContext())
             {
-                var orders = db.Orders.Select(x => new OrderViewModel
+                var orders = db.Orders
+                    .Select(x => new OrderViewModel
+                    {
+                        Id = x.OrderId,
+                        CreateDate = x.CreateDate,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        Email = x.Email,
+                        OrderProducts = (from b in db.ShoppingCarts where b.OrderId == x.OrderId select new OrderProduct
+                        {
+                            ProductId = b.ProductId,
+                            Quantity = b.Quantity,
+                            Color = b.Color
+                        }).ToList()
+                    }).ToList();
+
+                foreach (var order in orders)
                 {
-                    Id = x.OrderId,
-                    CreateDate = x.CreateDate,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Email = x.Email
-                }).ToList();
+                    foreach (var item in order.OrderProducts)
+                    {
+                        var product = Umbraco.Content(item.ProductId);
+                        var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
+                        if (itemColorNested != null)
+                        {
+                            order.TotalPrice += itemColorNested.Value<decimal>("price") * item.Quantity;
+                        }
+                    }
+                }
+
                 return Json(orders, JsonRequestBehavior.AllowGet);
             }
         }
@@ -128,6 +154,44 @@ namespace Xaviasale.Controllers
                     transaction.Rollback();
                     return Json(new { success = false, message = Umbraco.GetDictionaryValue("Order.Error") }, JsonRequestBehavior.AllowGet);
                 }
+            }
+        }
+        [HttpGet]
+        public ActionResult GetStatisticByDateRange(string startDate, string endDate)
+        {
+            using (var db = new XaviasaleContext())
+            {
+                var start = Utils.UnixTimeStampToDateTime(Convert.ToDouble(startDate)).EndOfDay();
+                var end = Utils.UnixTimeStampToDateTime(Convert.ToDouble(endDate)).EndOfDay();
+                var orders = db.Orders.Where(x => x.CreateDate >= start && x.CreateDate <= end).ToList();
+                var lstProducts = new List<OrderProduct>();
+                foreach (var o in orders)
+                {
+                    var products = db.ShoppingCarts
+                        .Where(x => x.OrderId == o.OrderId)
+                        .Select(x => new OrderProduct
+                        {
+                            ProductId = x.ProductId,
+                            Quantity = x.Quantity,
+                            Color = x.Color
+                        })
+                        .ToList();
+
+                    foreach (var item in products)
+                    {
+                        var product = Umbraco.Content(item.ProductId);
+                        var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
+                        if (itemColorNested != null)
+                        {
+                            item.ProductName = product.Name;
+                            item.ProductUrl = product.Url(mode: UrlMode.Absolute);
+                            item.ProductPrice = itemColorNested.Value<decimal>("price");
+                        }
+                        lstProducts.Add(item);
+                    }
+                }
+
+                return Json(lstProducts, JsonRequestBehavior.AllowGet);
             }
         }
     }

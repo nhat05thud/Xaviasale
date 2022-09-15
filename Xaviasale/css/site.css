@@ -184,6 +184,19 @@
     outline: 0;
     background: url("/images/ajax-loader.gif") rgba(0, 0, 0, 0.4) center no-repeat;
 }
+
+#product-loading {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+    background: url("/images/spinner.svg") center no-repeat;
+}
 /****/
 #sync1 {
     margin-bottom: 15px;

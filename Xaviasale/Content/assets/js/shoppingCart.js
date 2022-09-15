@@ -34,6 +34,10 @@ $(document).ready(function () {
             title: "Email"
         },
         {
+            template: "$#= TotalPrice #",
+            title: "Total"
+        },
+        {
             title: "Create Date",
             template: "#= kendo.toString(kendo.parseDate(CreateDate), 'dd/MM/yyyy hh:mm') #"
         },
@@ -107,3 +111,23 @@ $("#window").kendoWindow({
         left: "5%"
     }
 }).data("kendoWindow");
+
+$("#statistic-window").kendoWindow({
+    title: "Statistic",
+    modal: true,
+    visible: false,
+    resizable: false,
+    width: "70%",
+    position: {
+        top: 50,
+        left: "15%"
+    }
+}).data("kendoWindow");
+
+$("#statistic-btn").click(function () {
+    var dialog = $("#statistic-window").data("kendoWindow");
+    dialog.refresh({
+        url: "/umbraco/surface/backofficeshoppingcart/RenderViewStatistic/"
+    });
+    dialog.open();
+}); 

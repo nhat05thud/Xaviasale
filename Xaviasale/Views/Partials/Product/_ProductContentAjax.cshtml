@@ -259,7 +259,7 @@
         setRecentlyProduct();
     });
     function handleLoadProduct(id, key) {
-        $(".loading_div").css("display", "block");
+        $("body").append("<div id='product-loading'></div>");
         $.ajax({
             type: "POST",
             data: { pageId: id, keyId: key },
@@ -273,7 +273,7 @@
                 else {
                     toastr.error("Error", "Error");
                 }
-                $(".loading_div").css("display", "none");
+                $("#product-loading").remove();
             }
         });
     }

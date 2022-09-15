@@ -5,6 +5,10 @@ namespace Xaviasale.Models.BackOffice
 {
     public class OrderViewModel
     {
+        public OrderViewModel()
+        {
+            TotalPrice = 0;
+        }
         public int Id { get; set; }
         public DateTime CreateDate { get; set; }
         public string Email { get; set; }
@@ -17,6 +21,7 @@ namespace Xaviasale.Models.BackOffice
         public string State { get; set; }
         public string Country { get; set; }
         public string Phone { get; set; }
+        public decimal TotalPrice { get; set; }
         public List<OrderProduct> OrderProducts { get; set; }
     }
     public class OrderProduct

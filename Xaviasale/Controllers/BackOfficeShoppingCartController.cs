@@ -161,6 +161,7 @@ namespace Xaviasale.Controllers
         {
             using (var db = new XaviasaleContext())
             {
+                var itemCount = 0;
                 var start = Utils.UnixTimeStampToDateTime(Convert.ToDouble(startDate)).EndOfDay();
                 var end = Utils.UnixTimeStampToDateTime(Convert.ToDouble(endDate)).EndOfDay();
                 var orders = db.Orders.Where(x => x.CreateDate >= start && x.CreateDate <= end).ToList();
@@ -179,6 +180,8 @@ namespace Xaviasale.Controllers
 
                     foreach (var item in products)
                     {
+                        itemCount += 1;
+                        item.ItemNo = itemCount;
                         var product = Umbraco.Content(item.ProductId);
                         var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                         if (itemColorNested != null)

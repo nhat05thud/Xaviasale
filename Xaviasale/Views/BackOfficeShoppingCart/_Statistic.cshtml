@@ -18,31 +18,43 @@
         background: #006fce;
         cursor: pointer;
     }
+    .wrap-border {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 5px 10px;
+    }
 </style>
 <div class="row">
     <div class="col-6">
         <input type="text" name="daterange" class="form-control" value="" />
     </div>
+    <div class="col-3">
+        <div class="wrap-border">
+            <p style="font-size: 16px;" id="total"><b>Orders: <span id="totalOrders"></span></b></p>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="wrap-border">
+            <p style="font-size: 16px;" id="total"><b>Total: <span id="totalPrice"></span></b></p>
+        </div>
+    </div>
+    <p>&nbsp;</p>
     <div class="col-12">
-        <p style="text-align: right; font-size: 16px; margin: 10px 0; display: none;" id="total"><b>Total: <span id="totalPrice"></span></b></p>
         <div id="grid-product"></div>
     </div>
 </div>
-@{ 
-    var startOfDay = Utils.EndOfDayOffset((DateTimeOffset.Now.AddDays(-1)));
-    var endOfDay = Utils.EndOfDayOffset((DateTimeOffset.Now));
-}
 <script>
     $(function () {
-        renderGrid(@startOfDay.ToUnixTimeMilliseconds().ToString(), @endOfDay.ToUnixTimeMilliseconds().ToString());
         $('input[name="daterange"]').daterangepicker({
             opens: 'left'
         }, function (start, end, label) {
+            var gridData = $("#grid-product").data("kendoGrid");
+            gridData.destroy();
             renderGrid(start, end);
         });
+        renderGrid($('input[name="daterange"]').data('daterangepicker').startDate, $('input[name="daterange"]').data('daterangepicker').endDate);
     });
     function renderGrid(start, end) {
-        var record = 0;
         $("#grid-product").kendoGrid({
             dataSource: {
                 type: "json",
@@ -64,7 +76,7 @@
             },
             columns: [{
                 title: "No.",
-                template: "#= ++record #",
+                field: "ItemNo",
                 width: 50
             },
             {
@@ -84,13 +96,13 @@
                 template: "$ #= ProductPrice #"
             }],
             dataBound: function (e) {
-                var gridData = $("#grid-product").data().kendoGrid.dataSource.view();
+                var grid = $("#grid-product").data("kendoGrid");
                 var total_price = 0;
-                gridData.forEach(element => {
+                grid.dataSource.data().forEach(element => {
                     total_price = total_price + (element.ProductPrice * element.Quantity);
                 });
+                $("#totalOrders").text(grid.dataSource.total());
                 $("#totalPrice").text("$ " + total_price + "");
-                $("#total").show();
             }
         });
     }

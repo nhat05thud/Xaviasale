@@ -26,6 +26,7 @@ namespace Xaviasale.Models.BackOffice
     }
     public class OrderProduct
     {
+        public int ItemNo { get; set; }
         public int ProductId { get; set; }
         public string ProductUrl { get; set; }
         public string ProductName { get; set; }

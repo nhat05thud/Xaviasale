@@ -98,7 +98,7 @@
                     <div class="product__divider w-100 my16"></div>
                     <div class="flex align-center social-sharing">
                         <a target="_blank"
-                           href="//www.facebook.com/sharer.php?u=www.xaviasale.com/products/long-handle-shower-bath-soap-dispenser-massage-cleaning-brush"
+                           href="//www.facebook.com/sharer.php?u=@HttpContext.Current.Request.Url.AbsolutePath"
                            class="flex align-center pointer px8 py6 mr8 brdr-1 share-facebook"
                            title="Share on Facebook">
                             <div class="svg-container">
@@ -117,7 +117,7 @@
                                   aria-hidden="true">Share</span>
                         </a>
                         <a target="_blank"
-                           href="//twitter.com/share?text=Long Handle Shower Bath Soap Dispenser Massage Cleaning Brush&amp;url=www.xaviasale.com/products/long-handle-shower-bath-soap-dispenser-massage-cleaning-brush"
+                           href="//twitter.com/share?text=@(Model.MetaDescription)&amp;url=@HttpContext.Current.Request.Url.AbsolutePath"
                            class="flex align-center pointer px8 py6 mr8 brdr-1 share-twitter"
                            title="Share on Twitter">
                             <div class="svg-container">
@@ -136,7 +136,7 @@
                                   aria-hidden="true">Tweet</span>
                         </a>
                         <a target="_blank"
-                           href="//pinterest.com/pin/create/button/?url=www.xaviasale.com/products/long-handle-shower-bath-soap-dispenser-massage-cleaning-brush&amp;media=https://img.thesitebase.net/10334/10334406/products/16604162746562fe387b.jpeg&amp;description=Long Handle Shower Bath Soap Dispenser Massage Cleaning Brush"
+                           href="//pinterest.com/pin/create/button/?url=@HttpContext.Current.Request.Url.AbsolutePath&amp;media=@(Model.MetaThumbnails)&amp;description=@(Model.MetaDescription)"
                            class=":hover-no-underline flex align-center pointer px8 py6 mr8 brdr-1 share-pinterest"
                            title="Pin on Pinterest">
                             <div class="svg-container">

@@ -1,3 +1,9 @@
+/*.owl-carousel {
+    -ms-touch-action: none;
+    touch-action: none;
+}*/
+/************/
+
 .fs-14 {
     font-size: 14px;
 }
@@ -243,6 +249,15 @@
 @media only screen and (min-width: 1024px) {
     .search-modal.fadeIn .search-modal__overlay {
         display: block;
+    }
+}
+@media only screen and (max-width: 1024px) {
+    .image-with-text .feature-set-content-wrap {
+        flex-wrap: wrap;
+    }
+    .image-with-text .feature-set-content-wrap .feature-image,
+    .image-with-text .feature-set-content-wrap .feature-content {
+        width: 100%;
     }
 }
 

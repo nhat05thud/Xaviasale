@@ -78,7 +78,10 @@ namespace Xaviasale.Controllers
                 Price = data.Value<decimal>("price"),
                 OldPrice = data.Value<decimal>("oldPrice"),
                 Save = data.Value<int>("save"),
-                ColorName = data.Value<string>("title")
+                ColorName = data.Value<string>("title"),
+                MetaTitle = !string.IsNullOrEmpty(currentPage.Value<string>("metaTitle")) ? currentPage.Value<string>("metaTitle") : currentPage.Name,
+                MetaDescription = !string.IsNullOrEmpty(currentPage.Value<string>("metaDescription")) ? currentPage.Value<string>("metaDescription") : currentPage.Name,
+                MetaThumbnails = currentPage.Value<IPublishedContent>("metaThumbnails") != null ? currentPage.Value<IPublishedContent>("metaThumbnails").Url(mode: UrlMode.Absolute) : data.Value<IEnumerable<IPublishedContent>>("images") != null && data.Value<IEnumerable<IPublishedContent>>("images").Any() ? data.Value<IEnumerable<IPublishedContent>>("images").First()?.Url(mode: UrlMode.Absolute) : ""
             };
             return PartialView("~/Views/Partials/Product/_ProductContentAjax.cshtml", model);
         }

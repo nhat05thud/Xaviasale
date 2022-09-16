@@ -150,7 +150,7 @@ function loadRecentlyProd() {
     }
 }
 /**===========**/
-$(".mini-cart").click(function (e) {
+$(".cart-container").click(function (e) {
     e.preventDefault();
     $(".cart-drawer").addClass("active");
 });
@@ -182,7 +182,12 @@ $("#requestForm, #rv_add_form").on('submit', function () {
         if (!$("input, textarea, select").hasClass("input-validation-error")) {
             $(".loading_div").css("display", "block");
         }
-    }, 50);
+    });
+});
+$("#newsletterForm").on('submit', function () {
+    if (!$("input, textarea, select").hasClass("input-validation-error")) {
+        $(".loading_div").css("display", "block");
+    }
 });
 function onSuccess() {
     $(".loading_div").css("display", "none");

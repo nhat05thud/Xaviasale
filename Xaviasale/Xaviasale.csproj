@@ -973,7 +973,6 @@
   <ItemGroup>
     <Folder Include="fonts\" />
     <Folder Include="Media\" />
-    <Folder Include="Views\checkOutSuccessPage\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xaviasale.EntityFramework\Xaviasale.EntityFramework.csproj">

@@ -12,6 +12,7 @@ namespace Xaviasale.Models
         public int Id { get; set; }
         public IEnumerable<IPublishedContent> Images { get; set; }
         public IEnumerable<IPublishedElement> ProductColors { get; set; }
+        public IEnumerable<IPublishedContent> Coupons { get; set; }
         public string Name { get; set; }
         public string ColorName { get; set; }
         public decimal Price { get; set; }

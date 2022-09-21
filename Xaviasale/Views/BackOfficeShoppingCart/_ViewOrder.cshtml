@@ -55,7 +55,7 @@
         },
         columns: [{
             title: "No.",
-            template: "#= ++record #",
+            field: "ItemNo",
             width: 50
         },
         {
@@ -72,8 +72,17 @@
         },
         {
             title: "Product Price",
-            template: "$ #= ProductPrice #"
-        }],
+            template: "$#= ProductPrice #"
+        },
+        {
+            title: "Discount",
+            template: "-$#= Discount #"
+        },
+        {
+            title: "Coupon",
+            field: "CouponName"
+        }
+        ],
         dataBound: function (e) {
             var gridData = $("#grid-product").data().kendoGrid.dataSource.view();
             var total_price = 0;

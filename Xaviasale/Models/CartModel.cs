@@ -7,6 +7,7 @@ namespace Xaviasale.Models
 {
     public class CartViewModel
     {
+        public decimal Discount { get; set; }
         public decimal TotalPrice { get; set; }
         public List<CartModel> CartModels { get; set; }
         public string CartUrl { get; set; }
@@ -31,6 +32,7 @@ namespace Xaviasale.Models
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public string Color { get; set; }
+        public int CouponId { get; set; }
     }
 
     public class EmptyCart

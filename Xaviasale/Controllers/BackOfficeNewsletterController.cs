@@ -90,9 +90,10 @@ namespace Xaviasale.Controllers
                 using (var db = new XaviasaleContext())
                 {
                     var lstNewsletter = db.Newsletters
-                        .Where(x => x.GroupNewsletterId == 0 || x.GroupNewsletterId == null)
-                        .Select(x => new NewsletterViewModel
+                        .Where(x => x.GroupNewsletterId == 0 || x.GroupNewsletterId == null).ToList()
+                        .Select((x, index) => new NewsletterViewModel
                         {
+                            ItemNo = index + 1,
                             Id = x.Id,
                             Email = x.Email
                         }).ToList();
@@ -148,9 +149,10 @@ namespace Xaviasale.Controllers
             {
                 using (var db = new XaviasaleContext())
                 {
-                    var lstNewsletter = db.GroupNewsletters
-                        .Select(x => new GroupNewsletterViewModel
+                    var lstNewsletter = db.GroupNewsletters.ToList()
+                        .Select((x, index) => new GroupNewsletterViewModel
                         {
+                            ItemNo = index + 1,
                             Id = x.Id,
                             Name = x.Name
                         }).ToList();

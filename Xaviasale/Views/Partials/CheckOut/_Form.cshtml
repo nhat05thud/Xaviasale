@@ -7,13 +7,22 @@
     var cart = home.DescendantOfType("cart");
     var logo = home.Value<IPublishedContent>("logo");
     decimal totalPrice = 0;
+    var hasCoupon = false;
+    var hasTotalCoupon = false;
+    decimal totalDiscount = 0;
     foreach (var item in Model.Carts)
     {
+        if (item.CouponId > 0 && hasCoupon == false)
+        {
+            hasTotalCoupon = true;
+            var coupon = Umbraco.Content(item.CouponId);
+            totalDiscount = coupon.Value<decimal>("discount");
+        }
         var product = Umbraco.Content(item.ProductId);
         if (product != null)
         {
             var node = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
-            totalPrice += (node.Value<decimal>("price") * item.Quantity);
+            totalPrice += (totalDiscount > 0 ? (node.Value<decimal>("price") - node.Value<decimal>("price") * (totalDiscount / 100)) * item.Quantity : (node.Value<decimal>("price") * item.Quantity));
         }
     }
 }
@@ -278,6 +287,13 @@
                             <tbody>
                                 @foreach (var item in Model.Carts)
                                 {
+                                    decimal discount = 0;
+                                    if (item.CouponId > 0 && hasCoupon == false)
+                                    {
+                                        hasCoupon = true;
+                                        var coupon = Umbraco.Content(item.CouponId);
+                                        discount = coupon.Value<decimal>("discount");
+                                    }
                                     var product = Umbraco.Content(item.ProductId);
                                     if (product != null)
                                     {
@@ -298,7 +314,7 @@
                                                 </div>
                                             </td>
                                             <td class="checkout-product__price">
-                                                <span class="discounted-price order-summary__emphasis">$@(node.Value<decimal>("price"))</span>
+                                                <span class="discounted-price order-summary__emphasis">$@(discount > 0 ? node.Value<decimal>("price") - node.Value<decimal>("price") * (discount / 100) : node.Value<decimal>("price"))</span>
                                             </td>
                                         </tr>
                                     }
@@ -423,6 +439,7 @@
     @Html.HiddenFor(model => Model.Carts[i].ProductId)
     @Html.HiddenFor(model => Model.Carts[i].Quantity)
     @Html.HiddenFor(model => Model.Carts[i].Color)
+    @Html.HiddenFor(model => Model.Carts[i].CouponId)
 }
 @Html.HiddenFor(x => x.CultureLcid)
 <div class="loading_div"></div>

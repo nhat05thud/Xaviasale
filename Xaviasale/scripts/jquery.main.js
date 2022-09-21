@@ -3,16 +3,103 @@
         myfunload();
         initOwlCarousel();
         loadRecentlyProd();
+        initCoptRealtime(30, 90);
+        initCountDownDate();
     });
 })(jQuery);
+function addLoadSpinner() {
+    $("body").append("<div id='product-loading'></div>");
+}
+function removeLoadSpinner() {
+    $("#product-loading").remove();
+}
 //function===============================================================================================
 /*=============================fun=========================================*/
+var prevNowPlaying = null;
+if (prevNowPlaying) {
+    clearInterval(prevNowPlaying);
+}
+prevNowPlaying = setInterval(function () {
+    var currentView = $(".copt-realtime-visitors__number").text();
+    var randomInt = getRandomArbitrary(1, 5);
+    var randomNum = getRandomArbitrary(1, 10);
+    if (parseInt(currentView) < 10 || randomNum % 2 == 0) {
+        $(".copt-realtime-visitors__number").text(parseInt(currentView) + randomInt);
+    }
+    else {
+        $(".copt-realtime-visitors__number").text(parseInt(currentView) - randomInt);
+    }
+}, 3000);
+function initCoptRealtime(min, max) {
+    $(".copt-realtime-visitors__number").text(getRandomArbitrary(min, max));
+}
+function getRandomArbitrary(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 function myfunload() {
     $(".wrap-content p").each(function () {
         if ($(this).html() === "") {
             $(this).html("&nbsp;");
         }
     });
+}
+function initCountDownDate() {
+    var dt = new Date();
+    var toTime = 0;
+    if (dt.getHours() >= 20) {
+        toTime = new Date().setHours(24, 0, 0, 0);
+        counDownDate(toTime);
+        return;
+    }
+    if (dt.getHours() >= 16) {
+        toTime = new Date().setHours(20, 0, 0, 0);
+        counDownDate(toTime);
+        return;
+    }
+    if (dt.getHours() >= 12) {
+        toTime = new Date().setHours(16, 0, 0, 0);
+        counDownDate(toTime);
+        return;
+    }
+    if (dt.getHours() >= 8) {
+        toTime = new Date().setHours(12, 0, 0, 0);
+        counDownDate(toTime);
+        return;
+    }
+    if (dt.getHours() >= 4) {
+        toTime = new Date().setHours(8, 0, 0, 0);
+        counDownDate(toTime);
+        return;
+    }
+    if (dt.getHours() >= 0) {
+        toTime = new Date().setHours(4, 0, 0, 0);
+        counDownDate(toTime);
+        return;
+    }
+}
+function counDownDate(countDownDate) {
+    var x = setInterval(function () {
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        $(".copt-countdown-timer__digit").text((hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds));
+        if ($(".copt-countdown-timer__digit").is(":hidden")) {
+            $(".copt-countdown-timer__digit").show();
+        }
+        if (distance < 0) {
+            clearInterval(x);
+            $(".copt-countdown-timer").remove();
+        }
+    }, 1000);
 }
 function initOwlCarousel() {
     $(".main-banner").owlCarousel({
@@ -296,6 +383,13 @@ $(document).on("click", ".upsell-widget-product__add-cart",function () {
 });
 $(document).on("click", ".product-cart__remove",function () {
     cart.handleRemoveItemInCartSideBar(this);
+});
+$(document).on("click", ".upsell-quantity__discount-button .upsell-quantity__add-cart", function () {
+    $("button.upsell-quantity__add-cart").prop('disabled', false);
+    $(this).prop('disabled', true);
+    $(".upsell-button-dual-ring").remove();
+    $(this).prepend("<div class='upsell-absolute upsell-button-dual-ring'></div>");
+    cart.handleAddCoupon(this);
 });
 
 /*******======================*******/

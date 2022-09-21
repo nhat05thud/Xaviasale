@@ -27,6 +27,7 @@ namespace Xaviasale.Controllers
         {
             using (var db = new XaviasaleContext())
             {
+                var itemCount = 0;
                 var orders = db.Orders
                     .Select(x => new OrderViewModel
                     {
@@ -39,19 +40,37 @@ namespace Xaviasale.Controllers
                         {
                             ProductId = b.ProductId,
                             Quantity = b.Quantity,
-                            Color = b.Color
+                            Color = b.Color,
+                            CouponId = b.CouponId
                         }).ToList()
                     }).ToList();
 
                 foreach (var order in orders)
                 {
+                    var hasCoupon = false;
+                    itemCount += 1;
+                    order.ItemNo = itemCount;
                     foreach (var item in order.OrderProducts)
                     {
+                        #region coupon
+                        decimal discount = 0;
+                        if (item.CouponId > 0 && hasCoupon == false)
+                        {
+                            var coupon = Umbraco.Content(item.CouponId);
+                            discount = coupon.Value<decimal>("discount");
+                        }
+                        #endregion
                         var product = Umbraco.Content(item.ProductId);
                         var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                         if (itemColorNested != null)
                         {
-                            order.TotalPrice += itemColorNested.Value<decimal>("price") * item.Quantity;
+                            var productPrice = itemColorNested.Value<decimal>("price");
+                            order.TotalPrice += (discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity);
+                            if (item.CouponId > 0 && hasCoupon == false)
+                            {
+                                order.Discount = discount > 0 ? productPrice * (discount / 100) * item.Quantity : 0;
+                                hasCoupon = true;
+                            }
                         }
                     }
                 }
@@ -63,6 +82,7 @@ namespace Xaviasale.Controllers
         {
             if (id > 0)
             {
+                var itemCount = 0;
                 using (var db = new XaviasaleContext())
                 {
                     var products = db.ShoppingCarts
@@ -71,18 +91,40 @@ namespace Xaviasale.Controllers
                         {
                             ProductId = x.ProductId,
                             Quantity = x.Quantity,
-                            Color = x.Color
+                            Color = x.Color,
+                            CouponId = x.CouponId
                         })
                         .ToList();
+                    var hasCoupon = false;
                     foreach (var item in products)
                     {
+                        itemCount += 1;
+                        item.ItemNo = itemCount;
+                        #region coupon
+                        decimal discount = 0;
+                        var couponName = string.Empty;
+                        if (item.CouponId > 0 && hasCoupon == false)
+                        {
+                            var coupon = Umbraco.Content(item.CouponId);
+                            discount = coupon.Value<decimal>("discount");
+                            couponName = coupon.Name;
+                        }
+                        #endregion
                         var product = Umbraco.Content(item.ProductId);
                         var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                         if (itemColorNested != null)
                         {
+                            var productPrice = itemColorNested.Value<decimal>("price");
                             item.ProductName = product.Name;
                             item.ProductUrl = product.Url(mode: UrlMode.Absolute);
-                            item.ProductPrice = itemColorNested.Value<decimal>("price");
+                            item.ProductPrice = (discount > 0 ? (productPrice - productPrice * (discount / 100)) : productPrice);
+
+                            if (item.CouponId > 0 && hasCoupon == false)
+                            {
+                                item.CouponName = couponName;
+                                item.Discount = discount > 0 ? productPrice * (discount / 100) : 0;
+                                hasCoupon = true;
+                            }
                         }
                     }
                     return Json(products, JsonRequestBehavior.AllowGet);
@@ -174,21 +216,32 @@ namespace Xaviasale.Controllers
                         {
                             ProductId = x.ProductId,
                             Quantity = x.Quantity,
-                            Color = x.Color
+                            Color = x.Color,
+                            CouponId = x.CouponId
                         })
                         .ToList();
 
+                    var hasCoupon = false;
                     foreach (var item in products)
                     {
+                        #region coupon
+                        decimal discount = 0;
+                        if (item.CouponId > 0 && hasCoupon == false)
+                        {
+                            var coupon = Umbraco.Content(item.CouponId);
+                            discount = coupon.Value<decimal>("discount");
+                        }
+                        #endregion
                         itemCount += 1;
                         item.ItemNo = itemCount;
                         var product = Umbraco.Content(item.ProductId);
                         var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                         if (itemColorNested != null)
                         {
+                            var productPrice = itemColorNested.Value<decimal>("price");
                             item.ProductName = product.Name;
                             item.ProductUrl = product.Url(mode: UrlMode.Absolute);
-                            item.ProductPrice = itemColorNested.Value<decimal>("price");
+                            item.ProductPrice = (discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity);
                         }
                         lstProducts.Add(item);
                     }

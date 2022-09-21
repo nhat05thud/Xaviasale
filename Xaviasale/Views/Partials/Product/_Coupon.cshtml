@@ -1,0 +1,68 @@
+﻿
+@using Umbraco.Web.Models
+@using Xaviasale.ClassHelper
+﻿@inherits UmbracoViewPage<int>
+@{
+    var current = Umbraco.Content(Model);
+}
+@if (current != null)
+{
+    var coupons = current.Value<IEnumerable<IPublishedContent>>("coupons");
+    if (coupons != null && coupons.Any())
+    {
+        var cartSession = (Xaviasale.Models.CartSession)Session[AppConstant.SESSION_CART_ITEMS];
+        IPublishedContent coupon = null;
+        if (cartSession != null)
+        {
+            var cartCoupon = cartSession.Carts?.FirstOrDefault(x => x.ProductId == current.Id && x.CouponId > 0);
+            if (cartCoupon != null)
+            {
+                coupon = Umbraco.Content(cartCoupon.CouponId);
+            }
+        }
+        <div class="upsell">
+            <div class="upsell-quantity upsell-mb16">
+                <div class="upsell-quantity__title upsell-mb8">Buy More Save More!</div>
+                <div class="upsell-quantity__discounts">
+                    @foreach (var item in coupons)
+                    {
+                        <div class="upsell-flex upsell-items-center upsell-justify-space-between upsell-px16 upsell-py8 upsell-mb4 upsell-w-100 upsell-quantity__discount">
+                            <div class="upsell-quantity__discount">
+                                <div class="upsell-quantity__discount-text">@item.Name</div>
+                                <div class="upsell-quantity__discount-subtext">on each product</div>
+                            </div>
+                            <div class="upsell-quantity__discount-button">
+                                @if (coupon != null)
+                                {
+                                    if (coupon.Value<int>("amount") < item.Value<int>("amount"))
+                                    {
+                                        <button class="upsell-px8 upsell-py4 upsell-relative upsell-quantity__add-cart" data-product="@current.Id" data-coupon="@item.Id" data-button="add-cart-outline">
+                                            <span>Add</span>
+                                        </button>
+                                    }
+                                    if (coupon.Id == item.Id)
+                                    {
+                                        <button class="upsell-flex upsell-items-center upsell-justify-center upsell-px8 upsell-py4 upsell-relative upsell-quantity__add-cart upsell-quantity__add-cart--added" disabled="">
+                                            <div class="upsell-icon-symbols upsell-mr8">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 16 16">
+                                                    <polygon fill="#bcbcbc" fill-rule="evenodd" points="5.6 9.6 2.4 6.4 0 8.8 5.6 14.4 16 4 13.6 1.6"></polygon>
+                                                </svg>
+                                            </div>
+                                            <span>Added</span>
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <button class="upsell-px8 upsell-py4 upsell-relative upsell-quantity__add-cart" data-product="@current.Id" data-coupon="@item.Id" data-button="add-cart-outline">
+                                        <span>Add</span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}

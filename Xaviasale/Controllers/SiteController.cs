@@ -83,8 +83,15 @@ namespace Xaviasale.Controllers
                 var cartObject = (CartSession)Session[AppConstant.SESSION_CART_ITEMS];
                 if (cartObject.Carts != null)
                 {
+                    var hasCoupon = false;
                     foreach (var item in cartObject.Carts)
                     {
+                        decimal discount = 0;
+                        if (item.CouponId > 0 && hasCoupon == false)
+                        {
+                            var coupon = Umbraco.Content(item.CouponId);
+                            discount = coupon.Value<decimal>("discount");
+                        }
                         var product = Umbraco.Content(item.ProductId);
                         if (product != null)
                         {
@@ -94,7 +101,8 @@ namespace Xaviasale.Controllers
                                 Quantity = item.Quantity,
                                 Color = item.Color,
                                 ProductName = product.Name,
-                                ProductUrl = product.Url(mode: UrlMode.Absolute)
+                                ProductUrl = product.Url(mode: UrlMode.Absolute),
+                                CouponId = item.CouponId
                             };
                             var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                             if (itemColorNested != null)
@@ -106,7 +114,12 @@ namespace Xaviasale.Controllers
                                         .GetCropUrl(224, 224, imageCropMode: ImageCropMode.Crop,
                                             furtherOptions: "&bgcolor=fff&slimmage=true")
                                     : "https://via.placeholder.com/224x224";
-                                obj.SubTotal = itemColorNested.Value<decimal>("price") * item.Quantity;
+                                obj.SubTotal = discount > 0 ? (obj.ProductPrice - obj.ProductPrice * (discount / 100)) * obj.Quantity : obj.ProductPrice * obj.Quantity;
+                            }
+                            if (item.CouponId > 0 && hasCoupon == false)
+                            {
+                                model.Discount = discount > 0 ? itemColorNested.Value<decimal>("price") * (discount / 100) * item.Quantity : 0;
+                                hasCoupon = true;
                             }
                             model.CartModels.Add(obj);
                         }

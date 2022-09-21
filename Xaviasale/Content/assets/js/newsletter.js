@@ -20,8 +20,8 @@ $(document).ready(function () {
         },
         columns: [{
             title: "No.",
-            template: "#= ++record #",
-            width: 40
+            field: "ItemNo",
+            width: 50
         },
         {
             field: "Email",
@@ -54,8 +54,8 @@ $(document).ready(function () {
         },
         columns: [{
             title: "No.",
-            template: "#= ++recordgroup #",
-            width: 40
+            field: "ItemNo",
+            width: 50
         },
         {
             field: "Name",

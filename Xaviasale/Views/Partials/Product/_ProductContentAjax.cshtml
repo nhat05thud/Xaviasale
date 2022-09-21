@@ -1,8 +1,8 @@
 ﻿@using Umbraco.Web.Models
 @using Xaviasale.ClassHelper
-@model Xaviasale.Models.ProductDetailModel
+﻿@inherits UmbracoViewPage<Xaviasale.Models.ProductDetailModel>
 @{
-    
+
 }
 <section class="product section mt12">
     <input type="hidden" name="ProductColor" value="@Model.ColorName" />
@@ -16,7 +16,7 @@
                         {
                             <div class="item">
                                 <a href="@item.Url()" data-fancybox="gallery">
-                                    <img src="@(item.GetCropUrl(606, 606, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true"))" alt="@Model.Name"/>
+                                    <img src="@(item.GetCropUrl(606, 606, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true"))" alt="@Model.Name" />
                                 </a>
                             </div>
                         }
@@ -26,7 +26,7 @@
                         @foreach (var item in Model.Images)
                         {
                             <div class="item">
-                                <img src="@(item.GetCropUrl(110, 110, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true"))" alt="@Model.Name"/>
+                                <img src="@(item.GetCropUrl(110, 110, imageCropMode: ImageCropMode.Crop, furtherOptions: "&bgcolor=fff&slimmage=true"))" alt="@Model.Name" />
                             </div>
                         }
                     </div>
@@ -48,6 +48,32 @@
                     </p>
                     <p></p>
                 </div>
+                <section type="countdown" tool="countdown-timer">
+                    <div class="copt-countdown" name="copt">
+                        <div class="copt-my16 copt-countdown-timer">
+                            <div class="copt-flex copt-items-center copt-countdown-timer__block">
+                                <svg class="copt-mr5 copt-countdown-timer__icon" viewBox="0 0 16 16" width="16" height="16">
+                                    <path d="M10.3206522,0 L5.66413043,0 L5.66413043,1.52238806 L10.3206522,1.52238806 L10.3206522,0 Z M7.21630435,9.89552239 L8.76847826,9.89552239 L8.76847826,5.32835821 L7.21630435,5.32835821 L7.21630435,9.89552239 Z M13.425,4.87164179 L14.5891304,3.80597015 C14.201087,3.42537313 13.8130435,3.04477612 13.425,2.74029851 L12.3384783,3.80597015 C11.1743478,2.89253731 9.62217391,2.28358209 7.9923913,2.28358209 C4.11195652,2.28358209 1.0076087,5.32835821 1.0076087,9.13432836 C1.0076087,12.9402985 4.11195652,15.9850746 7.9923913,15.9850746 C11.8728261,15.9850746 14.9771739,12.9402985 14.9771739,9.13432836 C14.9771739,7.5358209 14.433913,6.01343284 13.425,4.87164179 Z M7.9923913,14.4626866 C4.96565217,14.4626866 2.55978261,12.1029851 2.55978261,9.13432836 C2.55978261,6.16567164 4.96565217,3.80597015 7.9923913,3.80597015 C11.0191304,3.80597015 13.425,6.16567164 13.425,9.13432836 C13.425,12.1029851 11.0191304,14.4626866 7.9923913,14.4626866 Z"></path>
+                                </svg>
+                                <div class="copt-countdown-timer__digit" style="display: none;"></div>
+                                <div class="copt-countdown-timer__message">&nbsp; left to buy</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section type="countdown" tool="product-timer">
+                    <div class="copt-countdown" name="copt">
+                        <div class="copt-my24 copt-product-countdown">
+                            <div class="copt-flex copt-items-center copt-product-countdown__block">
+                                <svg class="copt-mr5 copt-product-countdown__icon" viewBox="0 0 16 16" width="16" height="16">
+                                    <path d="M11.8438898,5.20424752 C11.3872395,4.75344916 11.1553007,4.68802152 11.0861636,4.71157355 C11.0168186,4.735973 11.0226227,4.95520038 11.0226227,4.95520038 C10.9355777,7.71528105 9.44300564,8.1246355 9.44300564,8.1246355 C10.4493953,3.58403403 7.48171141,1.51860239 7.18643959,1.34077095 C6.8915835,1.16293952 6.71794123,1.07381595 6.50386238,1.07381595 C6.2902472,1.07381595 6.24965073,1.60772597 6.24965073,1.60772597 C6.14508162,4.42111448 5.3861242,4.85088711 3.81917059,6.15710548 C2.28329992,7.43769325 2.28329992,9.46044981 2.28329992,9.46044981 C2.28329992,13.769912 5.85897161,14.8633307 6.09305291,14.8458545 C6.32731008,14.8277228 6.19714233,14.5253838 6.19714233,14.5253838 C5.30322041,11.6774587 6.28751306,10.3855986 6.28751306,10.3855986 C6.651922,12.9499399 8.48853278,14.6418009 8.48853278,14.6418009 C9.05239048,15.2648025 9.48612841,15.0153236 9.48612841,15.0153236 C9.77287798,14.8999618 12.7234535,14.0797659 13.4695237,10.9378002 C14.2166651,7.79503497 12.3013877,5.6559093 11.8438898,5.20424752 L11.8438898,5.20424752 Z"></path>
+                                </svg>
+                                <div class="copt-product-countdown__message"><span>33 items left in stock</span></div>
+                            </div>
+                            <div class="copt-my10 copt-product-countdown__progress"><progress max="100" class="copt-relative" value="20"></progress></div>
+                        </div>
+                    </div>
+                </section>
                 <div>
                     <div class="product__divider w-100"></div>
                     <div class="product__variants-hover mt12 mb16">
@@ -66,6 +92,13 @@
                         </div>
                     </div>
                 </div>
+                <section type="countdown" tool="realtime-visitors">
+                    <div class="copt-countdown" name="copt">
+                        <div class="copt-mt16 copt-realtime-visitors">
+                            <div>There are<span class="copt-p4 copt-mx6 copt-inline-block copt-realtime-visitors__number">0</span>people viewing this product right now.</div>
+                        </div>
+                    </div>
+                </section>
                 <div data-form="product" class="">
                     <div class="product__quantity">
                         <label class="d-block w-100 mb8">Quantity</label>
@@ -89,6 +122,9 @@
                             <span>Buy Now</span>
                         </button>
                     </div>
+                    <section type="quantity" id="coupons-section">
+                        @Html.Partial("Product/_Coupon", Model.Id)
+                    </section>
                 </div>
                 <div class="my12">
                     <div class="product__divider w-100 mb24"></div>
@@ -98,7 +134,7 @@
                     <div class="product__divider w-100 my16"></div>
                     <div class="flex align-center social-sharing">
                         <a target="_blank"
-                           href="//www.facebook.com/sharer.php?u=@HttpContext.Current.Request.Url.AbsolutePath"
+                           href="//www.facebook.com/sharer.php?u=@HttpContext.Current.Request.Url.AbsoluteUri"
                            class="flex align-center pointer px8 py6 mr8 brdr-1 share-facebook"
                            title="Share on Facebook">
                             <div class="svg-container">
@@ -117,7 +153,7 @@
                                   aria-hidden="true">Share</span>
                         </a>
                         <a target="_blank"
-                           href="//twitter.com/share?text=@(Model.MetaDescription)&amp;url=@HttpContext.Current.Request.Url.AbsolutePath"
+                           href="//twitter.com/share?text=@(Model.MetaDescription)&amp;url=@HttpContext.Current.Request.Url.AbsoluteUri"
                            class="flex align-center pointer px8 py6 mr8 brdr-1 share-twitter"
                            title="Share on Twitter">
                             <div class="svg-container">
@@ -136,7 +172,7 @@
                                   aria-hidden="true">Tweet</span>
                         </a>
                         <a target="_blank"
-                           href="//pinterest.com/pin/create/button/?url=@HttpContext.Current.Request.Url.AbsolutePath&amp;media=@(Model.MetaThumbnails)&amp;description=@(Model.MetaDescription)"
+                           href="//pinterest.com/pin/create/button/?url=@HttpContext.Current.Request.Url.AbsoluteUri&amp;media=@(Model.MetaThumbnails)&amp;description=@(Model.MetaDescription)"
                            class=":hover-no-underline flex align-center pointer px8 py6 mr8 brdr-1 share-pinterest"
                            title="Pin on Pinterest">
                             <div class="svg-container">
@@ -200,10 +236,10 @@
                     <div>
                         <div>
                             <span class="product-detail__price has-text-weight-bold">$@Model.Price</span>
-                            &nbsp; 
+                            &nbsp;
                             @if (Model.OldPrice > 0)
                             {
-                        <span class="product-detail__price price-original has-text-weight-bold">$@Model.OldPrice</span>
+                                <span class="product-detail__price price-original has-text-weight-bold">$@Model.OldPrice</span>
                             }
                         </div>
                     </div>
@@ -257,6 +293,8 @@
     $(document).ready(function () {
         initOwlCarouselWithThumb();
         setRecentlyProduct();
+        initCoptRealtime(30, 90);
+        initCountDownDate();
     });
     function handleLoadProduct(id, key) {
         $("body").append("<div id='product-loading'></div>");

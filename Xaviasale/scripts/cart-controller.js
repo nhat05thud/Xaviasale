@@ -17,7 +17,7 @@
             this.processAddtoCart($(e).data("id"), color, quantity);
         }
         else {
-            toastr.warning("Hãy chọn color", "Color");
+            toastr.warning("Select Color", "Color");
         }
     },
     handleBuyNow: function (e) {
@@ -30,19 +30,40 @@
             toastr.warning("Hãy chọn color", "Color");
         }
     },
+    handleAddCoupon: function (e) {
+        var color = $("input[name='ProductColor']").val();
+        this.processAddCoupon($(e).data("product"), $(e).data("coupon"), color);
+    },
+    processAddCoupon: function (id, couponid, color) {
+        addLoadSpinner();
+        $.ajax({
+            type: "POST",
+            data: { id: id, couponId: couponid, color: color},
+            url: "/umbraco/surface/cart/addcoupon",
+            success: function (res) {
+                if (res.success) {
+                    window.location.href = res.redirectUrl
+                }
+                else {
+                    toastr.error(res.responseMessage, res.responseType);
+                }
+            }
+        });
+    },
     processAddtoCart: function (id, color, quantity) {
-        $(".loading_div").show();
-        var $this = this;
+        addLoadSpinner();
         $.ajax({
             type: "POST",
             data: { id: id, color: color, quantity: quantity },
             url: "/umbraco/surface/cart/addtocart",
             success: function (res) {
-                $(".loading_div").hide();
+                removeLoadSpinner();
                 if (res.success) {
                     $(".cart-number").text(res.cartNumber);
                     $("#site-nav--cart").html(res.cartAside);
-                    //$(".cart-drawer").addClass("active");
+                    if ($("#coupons-section").length > 0) {
+                        $("#coupons-section").html(res.couponSection);
+                    }
                     toastr.success(res.responseMessage, res.responseType);
                 }
                 else {
@@ -52,8 +73,7 @@
         });
     },
     processBuyNow: function (id, color, quantity) {
-        $(".loading_div").show();
-        var $this = this;
+        addLoadSpinner();
         $.ajax({
             type: "POST",
             data: { id: id, color: color, quantity: quantity },
@@ -64,18 +84,20 @@
         });
     },
     processRemoveItemInCart: function (id, color) {
-        $(".loading_div").show();
-        var $this = this;
+        addLoadSpinner();
         $.ajax({
             type: "POST",
             data: { id: id, color: color },
             url: "/umbraco/surface/cart/removeitemincart",
             success: function (res) {
-                $(".loading_div").hide();
+                removeLoadSpinner();
                 if (res.success) {
                     $(".cart-number").text(res.cartNumber);
                     $("#site-nav--cart").html(res.cartAside);
                     $(".cart-drawer").addClass("active");
+                    if ($("#coupons-section").length > 0) {
+                        $("#coupons-section").html(res.couponSection);
+                    }
                     toastr.success(res.responseMessage, res.responseType);
                 }
                 else {
@@ -93,6 +115,9 @@
         });
         $(".input-color").each(function (e) {
             $(this).attr("name", "model.Carts[" + e + "].Color");
+        });
+        $(".input-couponId").each(function (e) {
+            $(this).attr("name", "model.Carts[" + e + "].CouponId");
         });
     },
     init: function () {

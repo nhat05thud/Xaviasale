@@ -32,6 +32,7 @@
                                 <div class="product-cart mb16 flex flex-wrap align-start">
                                     <input type="hidden" class="input-productId" value="@item.ProductId"/>
                                     <input type="hidden" class="input-color" value="@item.Color"/>
+                                    <input type="hidden" class="input-couponId" value="@item.CouponId"/>
                                     <div class="product-cart__image mr12 flex align-start justify-center relative">
                                         <a href="@item.ProductUrl" class="aspect-ratio w-100 h-100">
                                             <img src="@item.ThumbnailPath" alt="@item.ProductName" class="image sb-lazy image-wrap w-100 h-100 shape-sharp-t-l-b-r" data-loaded="true">
@@ -73,6 +74,7 @@
                     </div>
                     <div class="col-12 col-lg-4 cart-summary-container mb24 pt24">
                         <div class="cart-summary">
+                            <div class="total-line discount-line mb6 cart__table flex justify-space-between align-center cl-black"><div class="is-uppercase flex align-center"><div class="svg-container"><svg viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svg-class"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(-14.000000, -478.000000)"><g transform="translate(12.000000, 476.000000)"><g><g><polygon points="0 0 16 0 16 16 0 16"></polygon><path d="M13.646,7.748 C13.862,7.964 14,8.27 14,8.6 C14,8.93 13.868,9.23 13.646,9.446 L9.446,13.646 C9.23,13.868 8.93,14 8.6,14 C8.27,14 7.97,13.868 7.754,13.652 L2.354,8.252 C2.132,8.03 2,7.73 2,7.4 L2,3.2 C2,2.54 2.54,2 3.2,2 L7.4,2 C7.73,2 8.03,2.132 8.246,2.348 L13.646,7.748 Z M8.6,12.806 L12.8,8.594 L7.4,3.194 L7.4,3.2 L3.2,3.2 L3.2,7.4 L8.6,12.806 Z M4.7,5.6 C4.20294373,5.6 3.8,5.19705627 3.8,4.7 C3.8,4.20294373 4.20294373,3.8 4.7,3.8 C5.19705627,3.8 5.6,4.20294373 5.6,4.7 C5.6,5.19705627 5.19705627,5.6 4.7,5.6 Z" fill="#000000" fill-rule="nonzero"></path></g></g></g></g></g></svg></div><p class="mb0 subtle ml6">Offer Discount</p></div><p class="subtle cart-total-discount__price mb0"> -$@Model.Discount</p></div>
                             <div class="total-line cart__table flex justify-space-between mb6">
                                 <div class="h6 mb0 total-line__name">Subtotal</div>
                                 <div class="h6 mb0 total-line__price cart__subtotal-price">

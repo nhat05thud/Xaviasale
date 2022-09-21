@@ -270,3 +270,113 @@
             display: none;
         }
 }
+.copt-mx6 {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+.copt-my10 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.copt-my16 {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+.copt-my24 {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+.copt-flex {
+    display: flex;
+}
+.copt-inline-block {
+    display: inline-block;
+}
+.copt-items-center {
+    align-items: center;
+}
+.copt-countdown .copt-countdown-timer__block {
+    font-family: var(--copt-timer-font);
+    font-size: var(--copt-timer-size);
+    line-height: normal;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--copt-timer-color);
+}
+.copt-mr5 {
+    margin-right: 5px;
+}
+.copt-countdown .copt-countdown-timer__icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--copt-timer-color);
+    overflow: hidden;
+    vertical-align: middle;
+}
+.copt-countdown .copt-countdown-timer__message {
+    opacity: .6;
+}
+.copt-countdown .copt-product-countdown__message span {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    opacity: .6;
+}
+.copt-countdown .copt-product-countdown__progress {
+    line-height: 0;
+}
+.copt-relative {
+    position: relative;
+}
+progress {
+    vertical-align: baseline;
+}
+.copt-countdown .copt-product-countdown__progress progress[value] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 6px;
+    width: 100%;
+    color: var(--copt-product-color);
+    background: var(--copt-product-background);
+    border-radius: 0;
+    border: none;
+}
+.copt-countdown .copt-product-countdown__icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--copt-product-color);
+}
+.copt-countdown .copt-realtime-visitors__number {
+    border-radius: 3px;
+    line-height: normal;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--copt-visitors-number-color);
+    background-color: var(--copt-visitors-background);
+    border: var(--copt-visitors-border);
+    padding: var(--copt-visitors-padding);
+}
+.upsell-absolute {
+    position: absolute;
+}
+.upsell-button-dual-ring {
+    top: calc(50% - 11px);
+    left: calc(50% - 11px);
+}
+
+.upsell-button-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 1px;
+    border-radius: 50%;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #222222 rgba(255,255,255,.7) #222222 rgba(255,255,255,.7);
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+.upsell-absolute upsell-button-dual-ring+span{
+    visibility: hidden;
+}

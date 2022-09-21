@@ -5,41 +5,65 @@
     <div class="product-cart-wrapper mb16">
         @foreach (var item in Model.CartModels)
         {
-        <div class="product-cart mb16 flex flex-wrap align-start mb16">
-            <div class="product-cart__image mr12 flex align-start justify-center relative">
-                <a href="@item.ProductUrl"
-                   class="aspect-ratio w-100 h-100">
-                    <img src="@item.ThumbnailPath" alt="@item.ProductName" class="image sb-lazy image-wrap w-100 h-100 shape-sharp-t-l-b-r" data-loaded="true">
-                </a>
-            </div>
-            <div class="product-cart__details flex flex-wrap">
-                <div class="info-wrapper w-100">
-                    <p class="product-cart__name mb4">
-                        <a href="@item.ProductUrl" class="">@item.ProductName</a>
-                    </p>
-                    <p class="h6 product-cart__price mb12">
-                        <span>$@item.ProductPrice</span>
-                        @if (item.ProductOldPrice > 0)
-                        {
-                            <span class="product-cart__price--original">$@item.ProductOldPrice</span>
-                        }
-                    </p>
-                    <div class="mb12">
-                        <p class="product-cart__options subtle mb4">@item.Color</p>
+            <div class="product-cart mb16 flex flex-wrap align-start mb16">
+                <div class="product-cart__image mr12 flex align-start justify-center relative">
+                    <a href="@item.ProductUrl"
+                       class="aspect-ratio w-100 h-100">
+                        <img src="@item.ThumbnailPath" alt="@item.ProductName" class="image sb-lazy image-wrap w-100 h-100 shape-sharp-t-l-b-r" data-loaded="true">
+                    </a>
+                </div>
+                <div class="product-cart__details flex flex-wrap">
+                    <div class="info-wrapper w-100">
+                        <p class="product-cart__name mb4">
+                            <a href="@item.ProductUrl" class="">@item.ProductName</a>
+                        </p>
+                        <p class="h6 product-cart__price mb12">
+                            <span>$@item.ProductPrice</span>
+                            @if (item.ProductOldPrice > 0)
+                            {
+                                <span class="product-cart__price--original">$@item.ProductOldPrice</span>
+                            }
+                        </p>
+                        <div class="mb12">
+                            <p class="product-cart__options subtle mb4">@item.Color</p>
+                        </div>
+                    </div>
+                    <div class="product-cart__action w-100 flex align-end">
+                        <div class="product-cart__quantity flex flow-column flex-wrap">
+                            <label class="subtle quantity-label">Quantity: x @item.Quantity</label>
+                        </div>
+                        <a href="javascript:void(0);" class="product-cart__remove subtle mb8 ml12" data-id="@item.ProductId" data-color="@item.Color">Remove item</a>
                     </div>
                 </div>
-                <div class="product-cart__action w-100 flex align-end">
-                    <div class="product-cart__quantity flex flow-column flex-wrap">
-                        <label class="subtle quantity-label">Quantity: x @item.Quantity</label>
-                    </div>
-                    <a href="javascript:void(0);" class="product-cart__remove subtle mb8 ml12" data-id="@item.ProductId" data-color="@item.Color">Remove item</a>
-                </div>
             </div>
-        </div>
         }
     </div>
 
     <div class="cart-drawer-footer p16">
+        @if (Model.Discount > 0)
+        {
+            <div class="total-line discount-line mb6 cart__table flex justify-space-between align-center cl-black">
+                <div class="is-uppercase flex align-center">
+                    <div class="svg-container">
+                        <svg viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="svg-class">
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g transform="translate(-14.000000, -478.000000)">
+                                    <g transform="translate(12.000000, 476.000000)">
+                                        <g>
+                                            <g>
+                                                <polygon points="0 0 16 0 16 16 0 16"></polygon>
+                                                <path d="M13.646,7.748 C13.862,7.964 14,8.27 14,8.6 C14,8.93 13.868,9.23 13.646,9.446 L9.446,13.646 C9.23,13.868 8.93,14 8.6,14 C8.27,14 7.97,13.868 7.754,13.652 L2.354,8.252 C2.132,8.03 2,7.73 2,7.4 L2,3.2 C2,2.54 2.54,2 3.2,2 L7.4,2 C7.73,2 8.03,2.132 8.246,2.348 L13.646,7.748 Z M8.6,12.806 L12.8,8.594 L7.4,3.194 L7.4,3.2 L3.2,3.2 L3.2,7.4 L8.6,12.806 Z M4.7,5.6 C4.20294373,5.6 3.8,5.19705627 3.8,4.7 C3.8,4.20294373 4.20294373,3.8 4.7,3.8 C5.19705627,3.8 5.6,4.20294373 5.6,4.7 C5.6,5.19705627 5.19705627,5.6 4.7,5.6 Z" fill="#000000" fill-rule="nonzero"></path>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                    <p class="mb0 subtle ml6">Offer Discount</p>
+                </div><p class="subtle cart-total-discount__price mb0"> -$@Model.Discount</p>
+            </div>
+        }
         <div class="mini-total-line cart__table flex justify-space-between mb4">
             <h6 class="h6 mini-total-line__name m0">Subtotal</h6>
             <h6 class="h6 mini-total-line__price cart__subtotal-price m0">$@Model.TotalPrice</h6>

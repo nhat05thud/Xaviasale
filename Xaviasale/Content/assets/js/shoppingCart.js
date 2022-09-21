@@ -18,7 +18,7 @@ $(document).ready(function () {
         },
         columns: [{
             title: "No.",
-            template: "#= ++record #",
+            field: "ItemNo",
             width: 50
         },
         {
@@ -36,6 +36,10 @@ $(document).ready(function () {
         {
             template: "$#= TotalPrice #",
             title: "Total"
+        },
+        {
+            template: "-$#= Discount #",
+            title: "Discount"
         },
         {
             title: "Create Date",

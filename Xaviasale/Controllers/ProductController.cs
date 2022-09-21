@@ -81,7 +81,8 @@ namespace Xaviasale.Controllers
                 ColorName = data.Value<string>("title"),
                 MetaTitle = !string.IsNullOrEmpty(currentPage.Value<string>("metaTitle")) ? currentPage.Value<string>("metaTitle") : currentPage.Name,
                 MetaDescription = !string.IsNullOrEmpty(currentPage.Value<string>("metaDescription")) ? currentPage.Value<string>("metaDescription") : currentPage.Name,
-                MetaThumbnails = currentPage.Value<IPublishedContent>("metaThumbnails") != null ? currentPage.Value<IPublishedContent>("metaThumbnails").Url(mode: UrlMode.Absolute) : data.Value<IEnumerable<IPublishedContent>>("images") != null && data.Value<IEnumerable<IPublishedContent>>("images").Any() ? data.Value<IEnumerable<IPublishedContent>>("images").First()?.Url(mode: UrlMode.Absolute) : ""
+                MetaThumbnails = currentPage.Value<IPublishedContent>("metaThumbnails") != null ? currentPage.Value<IPublishedContent>("metaThumbnails").Url(mode: UrlMode.Absolute) : data.Value<IEnumerable<IPublishedContent>>("images") != null && data.Value<IEnumerable<IPublishedContent>>("images").Any() ? data.Value<IEnumerable<IPublishedContent>>("images").First()?.Url(mode: UrlMode.Absolute) : "",
+                Coupons = currentPage.Value<IEnumerable<IPublishedContent>>("coupons")
             };
             return PartialView("~/Views/Partials/Product/_ProductContentAjax.cshtml", model);
         }

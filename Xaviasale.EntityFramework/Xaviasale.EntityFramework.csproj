@@ -64,6 +64,10 @@
     <Compile Include="Migrations\202209060648237_addTblOrderShoppingCart.designer.cs">
       <DependentUpon>202209060648237_addTblOrderShoppingCart.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209211313459_AddCoumnCouponCart.cs" />
+    <Compile Include="Migrations\202209211313459_AddCoumnCouponCart.designer.cs">
+      <DependentUpon>202209211313459_AddCoumnCouponCart.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupNewsletter.cs" />
     <Compile Include="Models\Newsletter.cs" />
@@ -84,6 +88,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209060648237_addTblOrderShoppingCart.resx">
       <DependentUpon>202209060648237_addTblOrderShoppingCart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209211313459_AddCoumnCouponCart.resx">
+      <DependentUpon>202209211313459_AddCoumnCouponCart.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

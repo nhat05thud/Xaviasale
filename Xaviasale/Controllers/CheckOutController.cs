@@ -37,15 +37,16 @@ namespace Xaviasale.Controllers
                 }, JsonRequestBehavior.AllowGet);
             }
             var home = Umbraco.Content(model.Carts.FirstOrDefault().ProductId).Root();
-            var returnData = Checkout(model.Carts, model.PaymentMethod, home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute) + "?data=" + Utils.EncryptString(JsonConvert.SerializeObject(model)));
-            var result = JsonConvert.DeserializeObject<CoinHomePayOrderReturnModel>(returnData);
-            Session[AppConstant.SESSION_CART_ITEMS] = null;
-            return Json(new
-            {
-                success = Convert.ToBoolean(result.success),
-                message = result.message,
-                data = result
-            }, JsonRequestBehavior.AllowGet);
+            //var returnData = Checkout(model.Carts, model.PaymentMethod, home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute) + "?data=" + Utils.EncryptString(JsonConvert.SerializeObject(model)));
+            //var result = JsonConvert.DeserializeObject<CoinHomePayOrderReturnModel>(returnData);
+            //Session[AppConstant.SESSION_CART_ITEMS] = null;
+            //return Json(new
+            //{
+            //    success = Convert.ToBoolean(result.success),
+            //    message = result.message,
+            //    data = result
+            //}, JsonRequestBehavior.AllowGet);
+            return Redirect(home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute) + "?data=" + Utils.EncryptString(JsonConvert.SerializeObject(model)));
         }
         private string Checkout(List<Cart> model, string paymentMethod, string redirectUrl)
         {

@@ -22,9 +22,11 @@ namespace Xaviasale.Controllers
         // GET: checkOutSuccessPage
         public override ActionResult Index(ContentModel model)
         {
+            Session[AppConstant.SESSION_CART_ITEMS] = null;
             if (Request.Params["data"] != null)
             {
-                var emailModel = JsonConvert.DeserializeObject<CheckOutModel>(Utils.DecryptString(Request.Params["data"]));
+                var param = Utils.DecryptString(Request.Params["data"].Replace(" ", "+"));
+                var emailModel = JsonConvert.DeserializeObject<CheckOutModel>(param);
                 var email = RenderMailMessage(emailModel);
                 try
                 {
@@ -75,7 +77,8 @@ namespace Xaviasale.Controllers
                                 OrderId = order.OrderId,
                                 ProductId = product.ProductId,
                                 Quantity = product.Quantity,
-                                Color = product.Color
+                                Color = product.Color,
+                                CouponId = product.CouponId
                             };
                             db.ShoppingCarts.Add(item);
                             db.SaveChanges();
@@ -112,8 +115,17 @@ namespace Xaviasale.Controllers
             messageString += "<ul>";
             if (model.Carts != null)
             {
+                var hasCoupon = false;
                 foreach (var item in model.Carts)
                 {
+                    decimal discount = 0;
+                    var couponName = string.Empty;
+                    if (item.CouponId > 0 && hasCoupon == false)
+                    {
+                        var coupon = Umbraco.Content(item.CouponId);
+                        discount = coupon.Value<decimal>("discount");
+                        couponName = coupon.Name;
+                    }
                     var product = Umbraco.Content(item.ProductId);
                     if (product != null)
                     {
@@ -121,13 +133,17 @@ namespace Xaviasale.Controllers
                         if (itemColorNested != null)
                         {
                             messageString += "<li>";
-                            messageString += "<b>Sản phẩm:</b> <a href='" + product.Url(mode: UrlMode.Absolute) + "'>" + product.Name + "</a><br />";
-                            messageString += "<b>Color:</b>" + item.Color + "<br />";
-                            messageString += "<b>Số lượng:</b> " + item.Quantity + "<br />";
-                            messageString += "<b>Giá (đơn vị 1 cái):</b> $" + itemColorNested.Value<decimal>("price") + "<br />";
-                            messageString += "<b>Tổng:</b> $" + itemColorNested.Value<decimal>("price") * item.Quantity + "<br />";
+                            messageString += "<b>Sản phẩm: </b> <a href='" + product.Url(mode: UrlMode.Absolute) + "'>" + product.Name + "</a><br />";
+                            messageString += "<b>Color: </b>" + item.Color + "<br />";
+                            messageString += "<b>Số lượng: </b> " + item.Quantity + "<br />";
+                            if (!string.IsNullOrEmpty(couponName))
+                            {
+                                messageString += "<b>Coupon: </b> " + couponName + "<br />";
+                            }
+                            messageString += "<b>Giá (đơn vị 1 cái): </b> $" + (discount > 0 ? itemColorNested.Value<decimal>("price") - (itemColorNested.Value<decimal>("price") * (discount / 100)) : itemColorNested.Value<decimal>("price")) + "<br />";
+                            messageString += "<b>Tổng: </b> $" + (discount > 0 ? (itemColorNested.Value<decimal>("price") - (itemColorNested.Value<decimal>("price") * (discount / 100))) * item.Quantity : itemColorNested.Value<decimal>("price") * item.Quantity) + "<br />";
                             messageString += "</li>";
-                            total += itemColorNested.Value<decimal>("price") * item.Quantity;
+                            total += (discount > 0 ? (itemColorNested.Value<decimal>("price") - (itemColorNested.Value<decimal>("price") * (discount / 100))) * item.Quantity : itemColorNested.Value<decimal>("price") * item.Quantity);
                         }
                     }
                 }

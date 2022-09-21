@@ -21,36 +21,74 @@ namespace Xaviasale.Controllers
         public ActionResult AddToCart(int id, string color, int quantity = 1)
         {
             var product = Umbraco.Content(id);
-            if (string.IsNullOrEmpty(color))
+            if (product != null)
             {
-                var productColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
-                color = productColorNested.FirstOrDefault().Value<string>("title");
-            }
-            var model = Session[AppConstant.SESSION_CART_ITEMS] != null ? (CartSession)Session[AppConstant.SESSION_CART_ITEMS] : new CartSession();
-            if (model.Carts == null)
-            {
-                model.Carts = new List<Cart>();
-            }
-            var existItem = model.Carts.FirstOrDefault(x => x.ProductId.Equals(id) && x.Color.Equals(color));
-            if (model.Carts.Count > 0 && existItem != null)
-            {
-                existItem.Quantity += quantity;
-            }
-            else
-            {
-                model.Carts.Add(new Cart { ProductId = id, Quantity = quantity, Color = color });
-            }
-            Session[AppConstant.SESSION_CART_ITEMS] = model;
-            var numberInCart = this.RenderCartNumber();
-            var viewModel = RenderViewModel(id);
+                if (string.IsNullOrEmpty(color))
+                {
+                    var productColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                    color = productColorNested.FirstOrDefault().Value<string>("title");
+                }
+                var model = Session[AppConstant.SESSION_CART_ITEMS] != null ? (CartSession)Session[AppConstant.SESSION_CART_ITEMS] : new CartSession();
+                if (model.Carts == null)
+                {
+                    model.Carts = new List<Cart>();
+                }
+                var existItem = model.Carts.FirstOrDefault(x => x.ProductId.Equals(id) && x.Color.Equals(color));
+                var newItem = new Cart();
+                if (model.Carts.Count > 0 && existItem != null)
+                {
+                    existItem.Quantity += quantity;
+                }
+                else
+                {
+                    newItem = new Cart { ProductId = id, Quantity = quantity, Color = color };
+                }
+                #region coupon
+                var coupons = product.Value<IEnumerable<IPublishedContent>>("coupons");
+                if (coupons != null && coupons.Any())
+                {
+                    var couponId = 0;
+                    foreach (var coupon in coupons.OrderByDescending(x => x.Value<int>("amount")).ToList())
+                    {
+                        if (model.Carts.Count > 0 && existItem != null)
+                        {
+                            if (coupon.Value<int>("amount") <= existItem.Quantity)
+                            {
+                                existItem.CouponId = coupon.Id;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (coupon.Value<int>("amount") <= quantity)
+                            {
+                                newItem.CouponId = coupon.Id;
+                                break;
+                            }
+                        }
+                    }
+                }
+                #endregion
+                model.Carts.Add(newItem);
+                Session[AppConstant.SESSION_CART_ITEMS] = model;
+                var numberInCart = this.RenderCartNumber();
+                var viewModel = RenderViewModel(product.Id);
 
+                return Json(new
+                {
+                    success = true,
+                    cartNumber = numberInCart,
+                    couponSection = ConvertViewToString("~/Views/Partials/Product/_Coupon.cshtml", product.Id),
+                    cartAside = ConvertViewToString("~/Views/Partials/Layout/_MiniCart.cshtml", viewModel),
+                    responseMessage = "Add product to cart success",
+                    responseType = "Success"
+                }, JsonRequestBehavior.AllowGet);
+            }
             return Json(new
             {
-                success = true,
-                cartNumber = numberInCart,
-                cartAside = ConvertViewToString("~/Views/Partials/Layout/_MiniCart.cshtml", viewModel),
-                responseMessage = "Add product to cart success",
-                responseType = "Success"
+                success = false,
+                responseMessage = "Fail to add product to cart",
+                responseType = "Fail"
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -107,6 +145,7 @@ namespace Xaviasale.Controllers
             {
                 success = true,
                 cartNumber = numberInCart,
+                couponSection = ConvertViewToString("~/Views/Partials/Product/_Coupon.cshtml", id),
                 cartAside = ConvertViewToString("~/Views/Partials/Layout/_MiniCart.cshtml", viewModel),
                 responseMessage = "Remove product success",
                 responseType = "Success"
@@ -126,6 +165,30 @@ namespace Xaviasale.Controllers
         [HttpPost]
         public ActionResult UpdateCart(CartSession model)
         {
+            #region coupon
+            if (model != null && model.Carts != null && model.Carts.Any())
+            {
+                foreach (var item in model.Carts)
+                {
+                    var product = Umbraco.Content(item.ProductId);
+                    var coupons = product.Value<IEnumerable<IPublishedContent>>("coupons");
+                    if (coupons != null && coupons.Any())
+                    {
+                        foreach (var coupon in coupons.OrderByDescending(x => x.Value<int>("amount")).ToList())
+                        {
+                            if (model.Carts.Count > 0)
+                            {
+                                if (coupon.Value<int>("amount") <= item.Quantity)
+                                {
+                                    item.CouponId = coupon.Id;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
             Session[AppConstant.SESSION_CART_ITEMS] = model;
             TempData["UpdateCartStatus"] = "Update cart success";
             return RedirectToCurrentUmbracoPage();
@@ -164,8 +227,15 @@ namespace Xaviasale.Controllers
                 var cartObject = (CartSession)Session[AppConstant.SESSION_CART_ITEMS];
                 if (cartObject.Carts != null)
                 {
+                    var hasCoupon = false;
                     foreach (var item in cartObject.Carts)
                     {
+                        decimal discount = 0;
+                        if (item.CouponId > 0 && hasCoupon == false)
+                        {
+                            var coupon = Umbraco.Content(item.CouponId);
+                            discount = coupon.Value<decimal>("discount");
+                        }
                         var itemContent = Umbraco.Content(item.ProductId);
                         if (itemContent != null)
                         {
@@ -175,7 +245,8 @@ namespace Xaviasale.Controllers
                                 Quantity = item.Quantity,
                                 Color = item.Color,
                                 ProductName = itemContent.Name,
-                                ProductUrl = itemContent.Url(mode: UrlMode.Absolute)
+                                ProductUrl = itemContent.Url(mode: UrlMode.Absolute),
+                                CouponId = item.CouponId
                             };
                             var itemColorNested = itemContent.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                             if (itemColorNested != null)
@@ -187,9 +258,13 @@ namespace Xaviasale.Controllers
                                         .GetCropUrl(224, 224, imageCropMode: ImageCropMode.Crop,
                                             furtherOptions: "&bgcolor=fff&slimmage=true")
                                     : "https://via.placeholder.com/224x224";
-                                obj.SubTotal = itemColorNested.Value<decimal>("price") * item.Quantity;
+                                obj.SubTotal = discount > 0 ? (obj.ProductPrice - obj.ProductPrice * (discount / 100)) * obj.Quantity : obj.ProductPrice * obj.Quantity;
                             }
-
+                            if (item.CouponId > 0 && hasCoupon == false)
+                            {
+                                viewModel.Discount = discount > 0 ? itemColorNested.Value<decimal>("price") * (discount / 100) * item.Quantity : 0;
+                                hasCoupon = true;
+                            }
                             viewModel.CartModels.Add(obj);
                         }
                     }
@@ -199,6 +274,63 @@ namespace Xaviasale.Controllers
             }
 
             return viewModel;
+        }
+        [HttpPost]
+        public ActionResult AddCoupon(int id, int couponId, string color)
+        {
+            var product = Umbraco.Content(id);
+            if (product != null)
+            {
+                if (string.IsNullOrEmpty(color))
+                {
+                    var productColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                    color = productColorNested.FirstOrDefault().Value<string>("title");
+                }
+                var model = Session[AppConstant.SESSION_CART_ITEMS] != null ? (CartSession)Session[AppConstant.SESSION_CART_ITEMS] : new CartSession();
+                if (model.Carts == null)
+                {
+                    model.Carts = new List<Cart>();
+                }
+                var coupon = Umbraco.Content(couponId);
+                if (coupon == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        responseMessage = "Fail to apply coupon",
+                        responseType = "Fail"
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                var quantity = coupon.Value<int>("amount");
+                var existItem = model.Carts.FirstOrDefault(x => x.ProductId.Equals(id) && x.Color.Equals(color));
+                if (model.Carts.Count > 0 && existItem != null)
+                {
+                    existItem.Quantity += quantity;
+                    existItem.CouponId = couponId;
+                }
+                else
+                {
+                    model.Carts.Add(new Cart { ProductId = id, Quantity = quantity, Color = color, CouponId = couponId });
+                }
+                Session[AppConstant.SESSION_CART_ITEMS] = model; 
+                
+                var home = product.Root();
+                var CartUrl = home.DescendantOfType("cart")?.Url(mode: UrlMode.Absolute);
+
+                return Json(new
+                {
+                    success = true,
+                    redirectUrl = CartUrl,
+                    responseMessage = "Add product to cart success",
+                    responseType = "Success"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            return Json(new
+            {
+                success = false,
+                responseMessage = "Fail to add product to cart",
+                responseType = "Fail"
+            }, JsonRequestBehavior.AllowGet);
         }
         private string ConvertViewToString(string viewName, object model)
         {

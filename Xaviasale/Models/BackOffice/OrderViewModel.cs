@@ -9,6 +9,7 @@ namespace Xaviasale.Models.BackOffice
         {
             TotalPrice = 0;
         }
+        public int ItemNo { get; set; }
         public int Id { get; set; }
         public DateTime CreateDate { get; set; }
         public string Email { get; set; }
@@ -22,6 +23,7 @@ namespace Xaviasale.Models.BackOffice
         public string Country { get; set; }
         public string Phone { get; set; }
         public decimal TotalPrice { get; set; }
+        public decimal Discount { get; set; }
         public List<OrderProduct> OrderProducts { get; set; }
     }
     public class OrderProduct
@@ -33,5 +35,8 @@ namespace Xaviasale.Models.BackOffice
         public decimal ProductPrice { get; set; }
         public string Color { get; set; }
         public int Quantity { get; set; }
+        public int CouponId { get; set; }
+        public decimal Discount { get; set; }
+        public string CouponName { get; set; }
     }
 }

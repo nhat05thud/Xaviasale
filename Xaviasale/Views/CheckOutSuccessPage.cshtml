@@ -6,3 +6,9 @@
         @Model.Value("content")
     </div>
 </div>
+@if (Request.Params["data"] != null)
+{
+    <script>
+            window.location.href = '@Model.Url(mode: UrlMode.Absolute)';
+    </script>
+}

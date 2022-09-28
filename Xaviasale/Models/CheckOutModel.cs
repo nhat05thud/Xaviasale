@@ -84,4 +84,27 @@ namespace Xaviasale.Models
         public string validTime { get; set; }
         public string validTimeMills { get; set; }
     }
+
+    public class OrderResponseModel
+    {
+        public int OrderId { get; set; }
+        public Guid ResponGuid { get; set; }
+    }
+    public class VnxOrder
+    {
+        public string merchantId { get; set; }
+        public string merchantUrl { get; set; }
+        public decimal amountOrder { get; set; }
+        public string successUrl { get; set; }
+        public string cancelUrl { get; set; }
+        public string notifyUrl { get; set; }
+        public string OrderId { get; set; }
+        public string timestamp { get; set; }
+        public string secureHash { get; set; }
+    }
+    public class VnxRequest
+    {
+        public string operation { get; set; }
+        public VnxOrder order { get; set; }
+    }
 }

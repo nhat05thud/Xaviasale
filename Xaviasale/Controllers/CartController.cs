@@ -190,6 +190,7 @@ namespace Xaviasale.Controllers
             }
             #endregion
             Session[AppConstant.SESSION_CART_ITEMS] = model;
+            Session["CheckOutOrder"] = null;
             TempData["UpdateCartStatus"] = "Update cart success";
             return RedirectToCurrentUmbracoPage();
         }

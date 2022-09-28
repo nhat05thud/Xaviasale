@@ -25,9 +25,8 @@
         });
     });
     function onCheckoutSuccess(e) {
-        console.log(123);
-        if (e.data.data != null) {
-            window.location.href = e.data.data.payUrl
+        if (e.success) {
+            window.location.reload();
         }
         else {
             swal({
@@ -38,19 +37,15 @@
                 window.location.href = '@home.Url(mode: UrlMode.Absolute)';
             });
         };
-        $("#contentAjaxForm").html(e.view);
         $(".loading_div").css("display", "none");
     }
     function onCheckoutFailure(e) {
-        console.log(456);
         swal({
-            title: e.success ? "Success" : "Error",
+            title: "Error",
             text: e.message,
-            icon: e.success ? "success" : "error"
+            icon: "error"
         }).then((value) => {
-           // console.log(123); // handle redirect
+            window.location.href = '@home.Url(mode: UrlMode.Absolute)';
         });
-        $("#contentAjaxForm").html(e.view);
-        $(".loading_div").css("display", "none");
     }
 </script>

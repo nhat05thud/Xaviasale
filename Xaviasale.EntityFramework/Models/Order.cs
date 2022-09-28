@@ -10,6 +10,7 @@ namespace Xaviasale.EntityFramework.Models
             IsReaded = false;
             IsDelete = false;
             IsSuccess = false;
+            Status = false;
             ResponGuid = Guid.NewGuid();
             CreateDate = DateTime.Now;
         }
@@ -27,6 +28,7 @@ namespace Xaviasale.EntityFramework.Models
         public bool IsReaded { get; set; }
         public bool IsSuccess { get; set; }
         public bool IsDelete { get; set; }
+        public bool Status { get; set; }
         public string RequestApi { get; set; }
         public string ResponseApi { get; set; }
         public Guid ResponGuid { get; set; }

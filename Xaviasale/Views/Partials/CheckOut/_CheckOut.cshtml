@@ -17,7 +17,15 @@
     </div>
 }
 <script>
+    $("#requestForm").on('submit', function () {
+        setTimeout(function () {
+            if (!$("input, textarea, select").hasClass("input-validation-error")) {
+                $(".loading_div").css("display", "block");
+            }
+        });
+    });
     function onCheckoutSuccess(e) {
+        console.log(123);
         if (e.data.data != null) {
             window.location.href = e.data.data.payUrl
         }
@@ -26,12 +34,15 @@
                 title: e.success ? "Success" : "Error",
                 text: e.message,
                 icon: e.success ? "success" : "error"
+            }).then((value) => {
+                window.location.href = '@home.Url(mode: UrlMode.Absolute)';
             });
         };
         $("#contentAjaxForm").html(e.view);
         $(".loading_div").css("display", "none");
     }
     function onCheckoutFailure(e) {
+        console.log(456);
         swal({
             title: e.success ? "Success" : "Error",
             text: e.message,

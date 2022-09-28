@@ -5,6 +5,14 @@ namespace Xaviasale.EntityFramework.Models
 {
     public class Order
     {
+        public Order()
+        {
+            IsReaded = false;
+            IsDelete = false;
+            IsSuccess = false;
+            ResponGuid = Guid.NewGuid();
+            CreateDate = DateTime.Now;
+        }
         public int OrderId { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }
@@ -17,6 +25,11 @@ namespace Xaviasale.EntityFramework.Models
         public string Country { get; set; }
         public string Phone { get; set; }
         public bool IsReaded { get; set; }
+        public bool IsSuccess { get; set; }
+        public bool IsDelete { get; set; }
+        public string RequestApi { get; set; }
+        public string ResponseApi { get; set; }
+        public Guid ResponGuid { get; set; }
         public DateTime CreateDate { get; set; }
         public IEnumerable<ShoppingCart> ShoppingCarts { get; set; }
     }

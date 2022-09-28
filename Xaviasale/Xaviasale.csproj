@@ -964,6 +964,8 @@
     <Content Include="Views\BackOfficeNewsletter\_ViewSendMail.cshtml" />
     <Content Include="Views\BackOfficeShoppingCart\_Statistic.cshtml" />
     <Content Include="Views\Partials\Product\_Coupon.cshtml" />
+    <Content Include="Views\Coupon.cshtml" />
+    <Content Include="Views\Coupons.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

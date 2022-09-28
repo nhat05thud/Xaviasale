@@ -22,78 +22,55 @@ namespace Xaviasale.Controllers
         // GET: checkOutSuccessPage
         public override ActionResult Index(ContentModel model)
         {
-            Session[AppConstant.SESSION_CART_ITEMS] = null;
             if (Request.Params["data"] != null)
             {
-                var param = Utils.DecryptString(Request.Params["data"].Replace(" ", "+"));
-                var emailModel = JsonConvert.DeserializeObject<CheckOutModel>(param);
-                var email = RenderMailMessage(emailModel);
-                try
+                using (var db = new XaviasaleContext())
                 {
-                    var smtp = new SmtpClient();
-                    smtp.Send(email);
+                    var param = Request.Params["data"].ToLower();
+                    var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().ToLower().Equals(param));
+                    if (order == null)
+                    {
+                        return CurrentTemplate(model);
+                    }
+                    order.IsSuccess = true;
+                    db.Orders.Attach(order);
+                    db.Entry(order).Property(x => x.IsSuccess).IsModified = true;
+                    db.SaveChanges();
+                    var data = new CheckOutModel
+                    {
+                        Email = order.Email,
+                        FirstName = order.FirstName,
+                        LastName = order.LastName,
+                        Address = order.Address,
+                        Apartment = order.Apartment,
+                        ZipCode = order.ZipCode,
+                        City = order.City,
+                        State = order.State,
+                        Country = order.Country,
+                        Phone = order.Phone
+                    };
+                    data.Carts = db.ShoppingCarts.Where(x => x.OrderId == order.OrderId)
+                        .Select(x => new Cart {
+                            Color = x.Color,
+                            CouponId = x.CouponId,
+                            ProductId = x.ProductId,
+                            Quantity = x.Quantity
+                        }).ToList();
+                    var email = RenderMailMessage(data);
+                    try
+                    {
+                        var smtp = new SmtpClient();
+                        smtp.Send(email);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw;
-                }
-                SaveOrdersToDatabase(emailModel);
             }
-
             return CurrentTemplate(model);
         }
 
-        private void SaveOrdersToDatabase(CheckOutModel model)
-        {
-            using (var db = new XaviasaleContext())
-            {
-                var transaction = db.Database.BeginTransaction();
-                try
-                {
-                    var order = new Order
-                    {
-                        Email = model.Email,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Address = model.Address,
-                        Apartment = model.Apartment,
-                        ZipCode = model.ZipCode,
-                        City = model.City,
-                        State = model.State,
-                        Country = model.Country,
-                        Phone = model.Phone,
-                        IsReaded = false,
-                        CreateDate = DateTime.Now
-                    };
-                    db.Orders.Add(order);
-                    db.SaveChanges();
-
-                    if (model.Carts != null)
-                    {
-                        foreach (var product in model.Carts)
-                        {
-                            var item = new ShoppingCart
-                            {
-                                OrderId = order.OrderId,
-                                ProductId = product.ProductId,
-                                Quantity = product.Quantity,
-                                Color = product.Color,
-                                CouponId = product.CouponId
-                            };
-                            db.ShoppingCarts.Add(item);
-                            db.SaveChanges();
-                        }
-                    }
-
-                    transaction.Commit();
-                }
-                catch (Exception e)
-                {
-                    // TODO: Log exception....    
-                    transaction.Rollback();
-                }
-            }
-        }
         private MailMessage RenderMailMessage(CheckOutModel model)
         {
             decimal total = 0;

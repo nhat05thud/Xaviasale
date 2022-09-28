@@ -8,6 +8,10 @@ namespace Xaviasale.Models
 {
     public class CheckOutModel : BaseModel
     {
+        public CheckOutModel()
+        {
+            Carts = new List<Cart>();
+        }
         [UmbracoRequired("FormField.Email.Required")]
         [UmbracoEmail("FormField.Email.Validation")]
         public string Email { get; set; }
@@ -27,6 +31,7 @@ namespace Xaviasale.Models
         [UmbracoRequired("FormField.Country.Required")]
         public string Country { get; set; }
         public string Phone { get; set; }
+        [UmbracoRequired("FormField.PaymentMethod.Required")]
         public string PaymentMethod { get; set; }
         public bool IsSameBillingAddress { get; set; }
         public decimal TotalPrice { get; set; }

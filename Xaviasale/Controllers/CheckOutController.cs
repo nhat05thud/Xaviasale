@@ -37,22 +37,22 @@ namespace Xaviasale.Controllers
                 }, JsonRequestBehavior.AllowGet);
             }
             var home = Umbraco.Content(model.Carts.FirstOrDefault().ProductId).Root();
-            //var returnData = Checkout(model.Carts, model.PaymentMethod, home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute) + "?data=" + Utils.EncryptString(JsonConvert.SerializeObject(model)));
-            //var result = JsonConvert.DeserializeObject<CoinHomePayOrderReturnModel>(returnData);
-            //Session[AppConstant.SESSION_CART_ITEMS] = null;
-            //return Json(new
-            //{
-            //    success = Convert.ToBoolean(result.success),
-            //    message = result.message,
-            //    data = result
-            //}, JsonRequestBehavior.AllowGet);
-            return Redirect(home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute) + "?data=" + Utils.EncryptString(JsonConvert.SerializeObject(model)));
+            var returnData = Checkout(model.Carts, model.PaymentMethod, home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute), model);
+            var result = JsonConvert.DeserializeObject<CoinHomePayOrderReturnModel>(returnData);
+            Session[AppConstant.SESSION_CART_ITEMS] = null;
+            return Json(new
+            {
+                success = Convert.ToBoolean(result.success),
+                message = result.message,
+                data = result
+            }, JsonRequestBehavior.AllowGet);
         }
-        private string Checkout(List<Cart> model, string paymentMethod, string redirectUrl)
+        private string Checkout(List<Cart> model, string paymentMethod, string redirectUrl, CheckOutModel checkoutModel)
         {
-            var merchanId = AppConstant.COINHOMEPAY_MERCHAN_ID;
-            var token = AppConstant.COINHOMEPAY_TOKEN;
-            var url = AppConstant.COINHOMEPAY_CREATEORDER_URL;
+            var resGuid = SaveOrdersToDatabase(checkoutModel);
+            var merchanId = WebConfigurationManager.AppSettings["CoinHomePay.MerchanId"];
+            var token = WebConfigurationManager.AppSettings["CoinHomePay.Token"];
+            var url = WebConfigurationManager.AppSettings["CoinHomePay.CreateOrderUrl"];
             var client = new HttpClient
             {
                 BaseAddress = new Uri(url)
@@ -70,19 +70,28 @@ namespace Xaviasale.Controllers
             var outBody = "";
             var sweepFeeUser = 0;
             decimal money = 0;
+            var hasCoupon = false;
             foreach (var item in model)
             {
+                decimal discount = 0;
+                if (item.CouponId > 0 && hasCoupon == false)
+                {
+                    hasCoupon = true;
+                    var coupon = Umbraco.Content(item.CouponId);
+                    discount = coupon.Value<decimal>("discount");
+                }
                 var product = Umbraco.Content(item.ProductId);
                 if (product != null)
                 {
                     var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                     if (itemColorNested != null)
                     {
-                        money += itemColorNested.Value<decimal>("price") * item.Quantity;
+                        var productPrice = itemColorNested.Value<decimal>("price");
+                        money += discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity; ;
                     }
                 }
             }
-
+            redirectUrl = redirectUrl + "?data=" + resGuid;
             var signString = $"channel={paymentMethod}&goodsName={goodName}&merchantId={merchanId}&money={money}&notifyUrl={redirectUrl}&outBody={outBody}&outTradeNo={outTradeNo}&returnUrl={redirectUrl}";
             if (sweepFeeUser > 0)
             {
@@ -112,18 +121,84 @@ namespace Xaviasale.Controllers
             var content = new FormUrlEncodedContent(requestParams);
             httpRequestMessage.Content = content;
 
-            var response = client.SendAsync(httpRequestMessage).Result;
+            var res = string.Empty;
+            using (var db = new XaviasaleContext())
+            {
+                var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().Equals(resGuid));
+                order.RequestApi = JsonConvert.SerializeObject(requestParams);
+                try
+                {
+                    var response = client.SendAsync(httpRequestMessage).Result;
 
-            if (response.IsSuccessStatusCode)
-            {
-                var dataObjects = response.Content.ReadAsStringAsync();
-                client.Dispose();
-                return dataObjects.Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var dataObjects = response.Content.ReadAsStringAsync();
+                        client.Dispose();
+                        res = dataObjects.Result;
+                        order.ResponseApi = JsonConvert.SerializeObject(dataObjects.Result);
+                    }
+                    else
+                    {
+                        client.Dispose();
+                    }
+                }
+                catch (Exception) { }
+                db.Orders.Attach(order);
+                db.Entry(order).Property(x => x.RequestApi).IsModified = true;
+                db.Entry(order).Property(x => x.ResponseApi).IsModified = true;
+                db.SaveChanges();
             }
-            else
+            return res;
+        }
+
+        private string SaveOrdersToDatabase(CheckOutModel model)
+        {
+            using (var db = new XaviasaleContext())
             {
-                client.Dispose();
-                return null;
+                var transaction = db.Database.BeginTransaction();
+                try
+                {
+                    var order = new Order
+                    {
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Address = model.Address,
+                        Apartment = model.Apartment,
+                        ZipCode = model.ZipCode,
+                        City = model.City,
+                        State = model.State,
+                        Country = model.Country,
+                        Phone = model.Phone
+                    };
+                    db.Orders.Add(order);
+                    db.SaveChanges();
+
+                    if (model.Carts != null)
+                    {
+                        foreach (var product in model.Carts)
+                        {
+                            var item = new ShoppingCart
+                            {
+                                OrderId = order.OrderId,
+                                ProductId = product.ProductId,
+                                Quantity = product.Quantity,
+                                Color = product.Color,
+                                CouponId = product.CouponId
+                            };
+                            db.ShoppingCarts.Add(item);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    transaction.Commit();
+                    return order.ResponGuid.ToString();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    return string.Empty;
+                }
             }
         }
         private string ConvertViewToString(string viewName, object model)

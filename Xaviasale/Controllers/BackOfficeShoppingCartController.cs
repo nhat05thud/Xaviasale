@@ -29,6 +29,7 @@ namespace Xaviasale.Controllers
             {
                 var itemCount = 0;
                 var orders = db.Orders
+                    .Where(x => x.IsDelete == false && x.IsSuccess == true)
                     .Select(x => new OrderViewModel
                     {
                         Id = x.OrderId,
@@ -138,7 +139,7 @@ namespace Xaviasale.Controllers
             {
                 using (var db = new XaviasaleContext())
                 {
-                    var item = db.Orders.FirstOrDefault(x => x.OrderId == id);
+                    var item = db.Orders.FirstOrDefault(x => x.OrderId == id && x.IsDelete == false && x.IsSuccess == true);
                     if (item != null)
                     {
                         var model = new OrderViewModel
@@ -177,13 +178,9 @@ namespace Xaviasale.Controllers
                         {
                             return Json(new { success = false, message = Umbraco.GetDictionaryValue("Order.Id.NotFound") }, JsonRequestBehavior.AllowGet);
                         }
-                        var lstShoppingCarts = db.ShoppingCarts.Where(x => x.OrderId == order.OrderId).ToList();
-                        foreach (var cart in lstShoppingCarts)
-                        {
-                            db.ShoppingCarts.Remove(cart);
-                        }
-
-                        db.Orders.Remove(order);
+                        order.IsDelete = true;
+                        db.Orders.Attach(order);
+                        db.Entry(order).Property(x => x.IsDelete).IsModified = true;
                         db.SaveChanges();
                         transaction.Commit();
 
@@ -206,7 +203,7 @@ namespace Xaviasale.Controllers
                 var itemCount = 0;
                 var start = Utils.UnixTimeStampToDateTime(Convert.ToDouble(startDate)).EndOfDay();
                 var end = Utils.UnixTimeStampToDateTime(Convert.ToDouble(endDate)).EndOfDay();
-                var orders = db.Orders.Where(x => x.CreateDate >= start && x.CreateDate <= end).ToList();
+                var orders = db.Orders.Where(x => x.IsDelete == false && x.IsSuccess == true && x.CreateDate >= start && x.CreateDate <= end).ToList();
                 var lstProducts = new List<OrderProduct>();
                 foreach (var o in orders)
                 {

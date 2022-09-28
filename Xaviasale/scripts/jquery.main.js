@@ -5,6 +5,7 @@
         loadRecentlyProd();
         initCoptRealtime(30, 90);
         initCountDownDate();
+        spartanUpload();
     });
 })(jQuery);
 function addLoadSpinner() {
@@ -13,6 +14,36 @@ function addLoadSpinner() {
 function removeLoadSpinner() {
     $("#product-loading").remove();
 }
+function spartanUpload() {
+    var totalPhotos = 0;
+    if ($("#image_picker").length > 0) {
+        $("#image_picker").spartanMultiImagePicker({
+            fieldName: 'fileUpload[]', // this configuration will send your images named "fileUpload" to the server
+            maxCount: 5,
+            rowHeight: '100px',
+            allowedExt: 'png|jpg|jpeg',
+            maxFileSize: 1024,
+            groupClassName: 'item',
+            maxFileSize: '',
+            onAddRow: function (index) {
+            },
+            onRenderedPreview: function (index) {
+                totalPhotos += 1;
+                $("#photos-count").text("Photos " + totalPhotos + "/5");
+            },
+            onRemoveRow: function (index) {
+                totalPhotos -= 1;
+                $("#photos-count").text("Photos " + totalPhotos + "/5");
+            },
+            onExtensionErr: function (index, file) {
+                swal("Error", "Please only input png or jpg type file", "error");
+            },
+            onSizeErr: function (index, file) {
+                swal("Error", "file size too big: max 1024 kb", "error");
+            }
+        });
+    }
+}
 //function===============================================================================================
 /*=============================fun=========================================*/
 var prevNowPlaying = null;
@@ -20,18 +51,19 @@ if (prevNowPlaying) {
     clearInterval(prevNowPlaying);
 }
 prevNowPlaying = setInterval(function () {
-    var currentView = $(".copt-realtime-visitors__number").text();
+    var currentView = $(".copt-realtime__visitors").text();
     var randomInt = getRandomArbitrary(1, 5);
     var randomNum = getRandomArbitrary(1, 10);
     if (parseInt(currentView) < 10 || randomNum % 2 == 0) {
-        $(".copt-realtime-visitors__number").text(parseInt(currentView) + randomInt);
+        $(".copt-realtime__visitors").text(parseInt(currentView) + randomInt);
     }
     else {
-        $(".copt-realtime-visitors__number").text(parseInt(currentView) - randomInt);
+        $(".copt-realtime__visitors").text(parseInt(currentView) - randomInt);
     }
 }, 3000);
 function initCoptRealtime(min, max) {
-    $(".copt-realtime-visitors__number").text(getRandomArbitrary(min, max));
+    $(".copt-realtime__visitors").text(getRandomArbitrary(min, max));
+    $(".copt-realtime__buyers").text(getRandomArbitrary(min, max));
 }
 function getRandomArbitrary(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -41,6 +73,16 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+var prevBuyersPlaying = null;
+if (prevBuyersPlaying) {
+    clearInterval(prevBuyersPlaying);
+}
+prevBuyersPlaying = setInterval(function () {
+    var currentView = $(".copt-realtime__buyers").text();
+    var randomInt = getRandomArbitrary(1, 5);
+    $(".copt-realtime__buyers").text(parseInt(currentView) + randomInt);
+}, 5000);
+
 function myfunload() {
     $(".wrap-content p").each(function () {
         if ($(this).html() === "") {

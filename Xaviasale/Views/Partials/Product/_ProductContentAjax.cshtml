@@ -78,6 +78,12 @@
                     <div class="product__divider w-100"></div>
                     <div class="product__variants-hover mt12 mb16">
                         <div class="mb10">
+                            @*@if (Model.IsOutOfStock)
+                    {
+                        <div class="mb8">
+                            <span>Status: </span><label class="mb0 has-text-weight-bold">Out Of Stock</label>
+                        </div>
+                    }*@
                             <div class="mb8">
                                 <span>Color: </span><label class="mb0 has-text-weight-bold">@Model.ColorName</label>
                             </div>
@@ -95,10 +101,20 @@
                 <section type="countdown" tool="realtime-visitors">
                     <div class="copt-countdown" name="copt">
                         <div class="copt-mt16 copt-realtime-visitors">
-                            <div>There are<span class="copt-p4 copt-mx6 copt-inline-block copt-realtime-visitors__number">0</span>people viewing this product right now.</div>
+                            <div>There are<span class="copt-p4 copt-mx6 copt-inline-block copt-realtime-visitors__number copt-realtime__visitors">0</span>people viewing this product right now.</div>
                         </div>
                     </div>
                 </section>
+                @if (!Model.IsOutOfStock)
+                {
+                    <section type="countdown" tool="realtime-buyers" style="margin-bottom: 10px;">
+                        <div class="copt-countdown" name="copt">
+                            <div class="copt-mt16 copt-realtime-visitors">
+                                <div>There are<span class="copt-p4 copt-mx6 copt-inline-block copt-realtime-visitors__number copt-realtime__buyers">0</span>people buy this product.</div>
+                            </div>
+                        </div>
+                    </section>
+                }
                 <div data-form="product" class="">
                     <div class="product__quantity">
                         <label class="d-block w-100 mb8">Quantity</label>
@@ -115,12 +131,24 @@
                         </div>
                     </div>
                     <div class="product__cart-form flex flex-wrap mt16 mb12 relative">
-                        <button type="button" class="btn btn-outline btn-add-cart" data-id="@Model.Id" onclick="cart.handleAddtoCartDetail(this)">
-                            <span>Add to cart</span>
-                        </button>
-                        <button type="button" class="btn btn-buy-now" data-id="@Model.Id" onclick="cart.handleBuyNow(this)">
-                            <span>Buy Now</span>
-                        </button>
+                        @if (Model.IsOutOfStock)
+                        {
+                            <button type="button" class="btn btn-outline btn-add-cart" disabled>
+                                <span>Add to cart</span>
+                            </button>
+                            <button type="button" class="btn btn-buy-now" disabled>
+                                <span>Buy Now</span>
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-outline btn-add-cart" data-id="@Model.Id" onclick="cart.handleAddtoCartDetail(this)">
+                                <span>Add to cart</span>
+                            </button>
+                            <button type="button" class="btn btn-buy-now" data-id="@Model.Id" onclick="cart.handleBuyNow(this)">
+                                <span>Buy Now</span>
+                            </button>
+                        }
                     </div>
                     <section type="quantity" id="coupons-section">
                         @Html.Partial("Product/_Coupon", Model.Id)

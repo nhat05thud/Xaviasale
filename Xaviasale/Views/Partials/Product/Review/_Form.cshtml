@@ -1,6 +1,6 @@
 ﻿﻿@inherits UmbracoViewPage<Xaviasale.Models.ReviewModel>
 
-@Html.AntiForgeryToken()
+@(Html.AntiForgeryToken())
 
 <div class="rv-widget__form--wrapper">
     <div class="review-p0 rv-widget__form">
@@ -44,11 +44,12 @@
                     @Html.ValidationMessageFor(x => x.Review)
                 </div>
             </div>
-            <!--<div class="rv-widget__group-field rv-widget__group-upload">
-                <label class="rv-widget__form-label">Photos 0/5</label>
-                <div class="rv-widget__control"><ul class="review-flex review-items-center rv-widget__list_image"><li><label for="rv_file_upload" class="rv-widget__add-img"></label><input id="rv_file_upload" type="file" name="file" multiple="" accept="image/x-png,image/png,image/gif,image/jpeg"></li></ul></div>-->
-            <!---->
-            <!--</div>-->
+            <div class="rv-widget__group-field rv-widget__group-upload">
+                <label class="rv-widget__form-label" id="photos-count">Photos 0/5</label>
+                <div class="rv-widget__control">
+                    <div id="image_picker"></div>
+                </div>
+            </div>
             <div class="rv-widget__group-horizontal">
                 <div class="rv-widget__group-field">
                     <label class="rv-widget__form-label">Your name*</label>

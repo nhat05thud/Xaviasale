@@ -1,8 +1,52 @@
 ﻿@inherits UmbracoViewPage<Xaviasale.Models.ReviewModel>
 
-@using (Ajax.BeginForm("HandleReview", "Product", null, new AjaxOptions { UpdateTargetId = "contentAjaxForm", HttpMethod = "POST", OnSuccess = "onSuccess", OnFailure = "onFailure" }, new { id = "rv_add_form", @class = "ajaxForm" }))
+@using (Ajax.BeginForm("HandleReview", "Product", null, 
+    new AjaxOptions { 
+        UpdateTargetId = "contentAjaxForm", 
+        HttpMethod = "POST",
+        OnSuccess = "onSuccess", 
+        OnFailure = "onFailure" 
+    }, new { id = "rv_add_form", @class = "ajaxForm", enctype = "multipart/form-data" }))
 {
     <div id="contentAjaxForm">
         @Html.Partial("~/Views/Partials/Product/Review/_Form.cshtml", Model)
     </div>
 }
+<script type="text/javascript">
+    window.addEventListener("submit", function (e) {
+        var form = e.target;
+        if (form.getAttribute("enctype") === "multipart/form-data") {
+            if (form.dataset.ajax) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var xhr = new XMLHttpRequest();
+                xhr.open(form.method, form.action);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        if (form.dataset.ajaxUpdate) {
+                            var updateTarget = document.querySelector(form.dataset.ajaxUpdate);
+                            if (updateTarget) {
+                                updateTarget.innerHTML = xhr.responseText;
+                            }
+                        }
+                        if (form.dataset.ajaxSuccess) {
+                            onReviewSuccess(xhr.response);
+                        }
+                    }
+                };
+                var formdata = new FormData(form);
+                document.getElementsByName("fileUpload[]").forEach((el) => {
+                    if ($(el)[0].files[0] != undefined) {
+                        formdata.append('ImagesGallery', $(el)[0].files[0]);
+                    }
+                });
+                xhr.send(formdata);
+            }
+        }
+    }, true);
+    function onReviewSuccess(result) {
+        swal("Add review success", "Please wait for admin to approve your review!", "success").then(function () {
+            $("#contentAjaxForm").html(result);
+        });
+    }
+</script>

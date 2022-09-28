@@ -26,6 +26,21 @@
         }
     }
 }
+@{
+    decimal shipFee = 0;
+    if (Model.Carts.Count == 1 && Model.Carts.FirstOrDefault().Quantity == 1)
+    {
+        var content = Umbraco.Content(Model.Carts.FirstOrDefault().ProductId);
+        if (content != null)
+        {
+            var nested = content.Value<IEnumerable<IPublishedElement>>("productColorNested");
+            if (nested != null && nested.Any())
+            {
+                shipFee = nested.FirstOrDefault().Value<decimal>("ship");
+            }
+        }
+    }
+}
 @Html.AntiForgeryToken()
 <div class="main">
     <div class="main__header">
@@ -227,7 +242,7 @@
                     </p>
                     <p class="step__complete-order--subdued">
                         <span class="mr4">Total:</span>
-                        <span>$@totalPrice</span>
+                        <span>$@(totalPrice + shipFee)</span>
                     </p>
                 </button>
             </div>
@@ -337,7 +352,7 @@
                             <tr class="total-line">
                                 <td class="total-line__name">Shipping</td>
                                 <td class="total-line__price">
-                                    <span class="order-summary__emphasis">$0.00</span>
+                                    <span class="order-summary__emphasis">$ @(shipFee)</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -354,7 +369,7 @@
                                         <span class="payment-due__label-total">Total:</span>
                                     </td>
                                     <td>
-                                        <span class="payment-due__price">$@totalPrice</span>
+                                        <span class="payment-due__price">$@(totalPrice + shipFee)</span>
                                     </td>
                                 </tr>
                             </tfoot>

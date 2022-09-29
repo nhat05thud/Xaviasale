@@ -16,6 +16,7 @@ namespace Xaviasale.Models
         [UmbracoEmail("Form.Review.Email.Validation")]
         public string Email { get; set; }
         public int PageId { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public string CreatedDate { get; set; }
+        public HttpPostedFileBase[] ImagesGallery { get; set; }
     }
 }

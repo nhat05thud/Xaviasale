@@ -6,6 +6,8 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using Umbraco.Core;
+using Umbraco.Core.Models;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Web;
 using Umbraco.Web.Mvc;
@@ -82,7 +84,8 @@ namespace Xaviasale.Controllers
                 MetaTitle = !string.IsNullOrEmpty(currentPage.Value<string>("metaTitle")) ? currentPage.Value<string>("metaTitle") : currentPage.Name,
                 MetaDescription = !string.IsNullOrEmpty(currentPage.Value<string>("metaDescription")) ? currentPage.Value<string>("metaDescription") : currentPage.Name,
                 MetaThumbnails = currentPage.Value<IPublishedContent>("metaThumbnails") != null ? currentPage.Value<IPublishedContent>("metaThumbnails").Url(mode: UrlMode.Absolute) : data.Value<IEnumerable<IPublishedContent>>("images") != null && data.Value<IEnumerable<IPublishedContent>>("images").Any() ? data.Value<IEnumerable<IPublishedContent>>("images").First()?.Url(mode: UrlMode.Absolute) : "",
-                Coupons = currentPage.Value<IEnumerable<IPublishedContent>>("coupons")
+                Coupons = currentPage.Value<IEnumerable<IPublishedContent>>("coupons"),
+                IsOutOfStock = currentPage.Value<bool>("isOutOfStock")
             };
             return PartialView("~/Views/Partials/Product/_ProductContentAjax.cshtml", model);
         }
@@ -91,6 +94,7 @@ namespace Xaviasale.Controllers
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult HandleReview(ReviewModel model)
         {
+            var mediaService = Services.MediaService;
             System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(model.CultureLcid);
 
             if (!ModelState.IsValid)
@@ -105,10 +109,40 @@ namespace Xaviasale.Controllers
             var parent = cs.GetById(Convert.ToInt32(model.PageId));
             var review = new List<Dictionary<string, object>>();
             var guid = Guid.NewGuid();
+
+            var listOfFiles = new List<IMedia>();
+            if (model.ImagesGallery != null && model.ImagesGallery.Count() > 0 )
+            {
+                var listFile = model.ImagesGallery;
+                var mediaRoot = mediaService.GetRootMedia().FirstOrDefault(x => x.Name.Equals("Review"));
+                if (mediaRoot == null)
+                {
+                    mediaRoot = mediaService.CreateMedia("Review", -1, "Folder");
+                    mediaService.Save(mediaRoot);
+                }
+                foreach (var file in listFile)
+                {
+                    var mediaFile = mediaService.CreateMedia(file.FileName, mediaRoot.Id, Constants.Conventions.MediaTypes.Image);
+                    mediaFile.SetValue(Services.ContentTypeBaseServices, Constants.Conventions.Media.File, file.FileName, file);
+                    mediaService.Save(mediaFile);
+                    var mediaItem = mediaService.GetById(mediaFile.Id);
+                    listOfFiles.Add(mediaItem);
+                }
+            }
             if (lstReviews != null && lstReviews.Any())
             {
                 foreach (var item in lstReviews)
                 {
+                    var lstMediaImages = new List<IMedia>();
+                    var lstImages = item.Value<IEnumerable<IPublishedContent>>("images");
+                    if (lstImages != null && lstImages.Any())
+                    {
+                        foreach (var img in lstImages)
+                        {
+                            var mediaItem = mediaService.GetById(img.Id);
+                            lstMediaImages.Add(mediaItem);
+                        }
+                    }
                     review.Add(new Dictionary<string, object>()
                     {
                         {"key", item.Key},
@@ -120,7 +154,8 @@ namespace Xaviasale.Controllers
                         {"approved", item.Value("approved")},
                         {"star", item.Value("star")},
                         {"review", item.Value("review")},
-                        {"createdDate", item.Value<DateTime>("createdDate").ToString("dd/MM/yyyy")}
+                        {"createdDate", item.Value("createdDate")},
+                        {"images", lstMediaImages != null && lstMediaImages.Count > 0 ? string.Join(",", lstMediaImages.Select(x => x.GetUdi()).Where(x => !string.IsNullOrEmpty(x.ToString()))) : "" }
                     });
                 }
             }
@@ -135,7 +170,8 @@ namespace Xaviasale.Controllers
                 {"approved", "false"},
                 {"star", model.Star.ToString()},
                 {"review", model.Review},
-                {"createdDate", model.CreatedDate.ToString("dd/MM/yyyy")}
+                {"createdDate", model.CreatedDate},
+                {"images", string.Join(",", listOfFiles.Select(x => x.GetUdi()).Where(x => !string.IsNullOrEmpty(x.ToString()))) }
             });
             parent.SetValue("reviewNested", Newtonsoft.Json.JsonConvert.SerializeObject(review), Thread.CurrentThread.CurrentUICulture.Name);
             cs.SaveAndPublish(parent);
@@ -149,6 +185,10 @@ namespace Xaviasale.Controllers
             model.ErrorMsg = Umbraco.GetDictionaryValue("Message.Success");
             ModelState.Clear();
             return PartialView("~/Views/Partials/Product/Review/_Form.cshtml", model);
+        }
+        private List<IMedia> ListMedia()
+        {
+            return null;
         }
     }
 }

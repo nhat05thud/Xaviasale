@@ -808,6 +808,7 @@
     <Content Include="scripts\jquery.validate.min.js" />
     <Content Include="scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="scripts\owl.carousel.min.js" />
+    <Content Include="scripts\spartan-multi-image-picker-min.js" />
     <Content Include="scripts\sweetalert.min.js" />
     <Content Include="scripts\toastr.min.js" />
     <Content Include="Templates\Emails\approved.html" />

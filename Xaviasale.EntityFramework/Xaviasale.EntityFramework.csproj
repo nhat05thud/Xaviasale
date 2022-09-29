@@ -72,6 +72,10 @@
     <Compile Include="Migrations\202209211807226_AddTraceColumnOrderTable.designer.cs">
       <DependentUpon>202209211807226_AddTraceColumnOrderTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209290829579_AddColumnOrderUpdateDate.cs" />
+    <Compile Include="Migrations\202209290829579_AddColumnOrderUpdateDate.designer.cs">
+      <DependentUpon>202209290829579_AddColumnOrderUpdateDate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupNewsletter.cs" />
     <Compile Include="Models\Newsletter.cs" />
@@ -98,6 +102,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209211807226_AddTraceColumnOrderTable.resx">
       <DependentUpon>202209211807226_AddTraceColumnOrderTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209290829579_AddColumnOrderUpdateDate.resx">
+      <DependentUpon>202209290829579_AddColumnOrderUpdateDate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

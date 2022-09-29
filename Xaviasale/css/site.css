@@ -380,3 +380,13 @@ progress {
 .upsell-absolute upsell-button-dual-ring+span{
     visibility: hidden;
 }
+#image_picker {
+    margin: 0 -5px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+    #image_picker .item {
+        width: 100px;
+        padding: 0 5px;
+    }

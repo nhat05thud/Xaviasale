@@ -41,6 +41,18 @@
             outline: 0;
             background: url("/images/spinner.svg") rgba(0, 0, 0, 0.1) center no-repeat;
         }
+        @@media (max-width:999px){
+            #checkout .content__wrap {
+                display: flex;
+            }
+                #checkout .content__wrap .main {
+                    order: 2;
+                    padding-top: 15px;
+                }
+                #checkout .content__wrap .sidebar {
+                    order: 1;
+                }
+        }
     </style>
     <script src="/scripts/jquery.js"></script>
 </head>

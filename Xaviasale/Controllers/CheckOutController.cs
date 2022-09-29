@@ -93,6 +93,20 @@ namespace Xaviasale.Controllers
                     }
                 }
             }
+            decimal shipFee = 0;
+            if (model.Count == 1 && model.FirstOrDefault().Quantity == 1)
+            {
+                var product = Umbraco.Content(model.FirstOrDefault().ProductId);
+                if (product != null)
+                {
+                    var nested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                    if (nested != null && nested.Any())
+                    {
+                        shipFee = nested.FirstOrDefault().Value<decimal>("ship");
+                    }
+                }
+            }
+            money += shipFee;
             redirectUrl = redirectUrl + "?data=" + resGuid;
             notifyUrl = notifyUrl + "?data=" + resGuid;
             var signString = $"channel={paymentMethod}&goodsName={goodName}&merchantId={merchanId}&money={money}&notifyUrl={notifyUrl}&outBody={outBody}&outTradeNo={outTradeNo}&returnUrl={redirectUrl}";

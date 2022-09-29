@@ -179,8 +179,10 @@ namespace Xaviasale.Controllers
                             return Json(new { success = false, message = Umbraco.GetDictionaryValue("Order.Id.NotFound") }, JsonRequestBehavior.AllowGet);
                         }
                         order.IsDelete = true;
+                        order.UpdateDate = DateTime.Now;
                         db.Orders.Attach(order);
                         db.Entry(order).Property(x => x.IsDelete).IsModified = true;
+                        db.Entry(order).Property(x => x.UpdateDate).IsModified = true;
                         db.SaveChanges();
                         transaction.Commit();
 

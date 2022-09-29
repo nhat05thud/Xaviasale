@@ -200,9 +200,11 @@ namespace Xaviasale.Controllers
                             order.Status = true;
                             order.IsSuccess = true;
                         }
+                        order.UpdateDate = DateTime.Now;
                         db.Orders.Attach(order);
                         db.Entry(order).Property(x => x.IsSuccess).IsModified = true;
                         db.Entry(order).Property(x => x.Status).IsModified = true;
+                        db.Entry(order).Property(x => x.UpdateDate).IsModified = true;
                         db.SaveChanges();
                         var obj = new CheckOutModel
                         {

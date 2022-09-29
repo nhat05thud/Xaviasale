@@ -76,6 +76,10 @@
     <Compile Include="Migrations\202209281434361_addColumnStatus.designer.cs">
       <DependentUpon>202209281434361_addColumnStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209290805300_AddCoumnOrderUpdateDate.cs" />
+    <Compile Include="Migrations\202209290805300_AddCoumnOrderUpdateDate.designer.cs">
+      <DependentUpon>202209290805300_AddCoumnOrderUpdateDate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupNewsletter.cs" />
     <Compile Include="Models\Newsletter.cs" />
@@ -105,6 +109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209281434361_addColumnStatus.resx">
       <DependentUpon>202209281434361_addColumnStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209290805300_AddCoumnOrderUpdateDate.resx">
+      <DependentUpon>202209290805300_AddCoumnOrderUpdateDate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

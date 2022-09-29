@@ -13,6 +13,7 @@ namespace Xaviasale.EntityFramework.Models
             Status = false;
             ResponGuid = Guid.NewGuid();
             CreateDate = DateTime.Now;
+            UpdateDate = DateTime.Now;
         }
         public int OrderId { get; set; }
         public string Email { get; set; }
@@ -33,6 +34,7 @@ namespace Xaviasale.EntityFramework.Models
         public string ResponseApi { get; set; }
         public Guid ResponGuid { get; set; }
         public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
         public IEnumerable<ShoppingCart> ShoppingCarts { get; set; }
     }
 }

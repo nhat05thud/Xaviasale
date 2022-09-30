@@ -28,11 +28,12 @@
         <p><b>State: </b> @Model.State</p>
         <p><b>Country: </b> @Model.Country</p>
         <p><b>Phone:</b> @Model.Phone</p>
+        <p><b>Ship:</b> $ @Model.ShipFee</p>
     </div>
     <div class="group-products">
         <h1>Order</h1>
         <div id="grid-product"></div>
-        <p style="text-align: right; font-size: 16px; margin: 10px 0;"><b>Total: <span id="totalPrice"></span></b></p>
+        <p style="text-align: right; font-size: 16px; margin: 10px 0;"><b>Total: <span id="totalPrice">@Model.TotalPrice</span></b></p>
     </div>
 </div>
 <script type="text/javascript">
@@ -84,12 +85,12 @@
         }
         ],
         dataBound: function (e) {
-            var gridData = $("#grid-product").data().kendoGrid.dataSource.view();
-            var total_price = 0;
-            gridData.forEach(element => {
-                total_price = total_price + (element.ProductPrice * element.Quantity);
-            });
-            $("#totalPrice").text("$ " + total_price + "");
+            //var gridData = $("#grid-product").data().kendoGrid.dataSource.view();
+            //var total_price = 0;
+            //gridData.forEach(element => {
+            //    total_price = total_price + (element.ProductPrice * element.Quantity);
+            //});
+            //$("#totalPrice").text("$ " + total_price + "");
         }
     });
 </script>

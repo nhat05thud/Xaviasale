@@ -76,6 +76,10 @@
     <Compile Include="Migrations\202209290829579_AddColumnOrderUpdateDate.designer.cs">
       <DependentUpon>202209290829579_AddColumnOrderUpdateDate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209301811300_AddAddictionColumnsForOrderAndShoppingCartTable.cs" />
+    <Compile Include="Migrations\202209301811300_AddAddictionColumnsForOrderAndShoppingCartTable.designer.cs">
+      <DependentUpon>202209301811300_AddAddictionColumnsForOrderAndShoppingCartTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupNewsletter.cs" />
     <Compile Include="Models\Newsletter.cs" />
@@ -105,6 +109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209290829579_AddColumnOrderUpdateDate.resx">
       <DependentUpon>202209290829579_AddColumnOrderUpdateDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209301811300_AddAddictionColumnsForOrderAndShoppingCartTable.resx">
+      <DependentUpon>202209301811300_AddAddictionColumnsForOrderAndShoppingCartTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

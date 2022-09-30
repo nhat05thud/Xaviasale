@@ -37,12 +37,15 @@ namespace Xaviasale.Controllers
                         FirstName = x.FirstName,
                         LastName = x.LastName,
                         Email = x.Email,
+                        TotalPrice = x.AmountOrder,
                         OrderProducts = (from b in db.ShoppingCarts where b.OrderId == x.OrderId select new OrderProduct
                         {
                             ProductId = b.ProductId,
                             Quantity = b.Quantity,
                             Color = b.Color,
-                            CouponId = b.CouponId
+                            CouponId = b.CouponId,
+                            ProductPrice = b.ProductAmount,
+                            Discount = b.ProductDiscount
                         }).ToList()
                     }).ToList();
 
@@ -57,21 +60,14 @@ namespace Xaviasale.Controllers
                         decimal discount = 0;
                         if (item.CouponId > 0 && hasCoupon == false)
                         {
-                            var coupon = Umbraco.Content(item.CouponId);
-                            discount = coupon.Value<decimal>("discount");
+                            discount = item.Discount;
                         }
                         #endregion
-                        var product = Umbraco.Content(item.ProductId);
-                        var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
-                        if (itemColorNested != null)
+                        var productPrice = item.ProductPrice;
+                        if (item.CouponId > 0 && hasCoupon == false)
                         {
-                            var productPrice = itemColorNested.Value<decimal>("price");
-                            order.TotalPrice += (discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity);
-                            if (item.CouponId > 0 && hasCoupon == false)
-                            {
-                                order.Discount = discount > 0 ? productPrice * (discount / 100) * item.Quantity : 0;
-                                hasCoupon = true;
-                            }
+                            order.Discount = discount > 0 ? productPrice * (discount / 100) * item.Quantity : 0;
+                            hasCoupon = true;
                         }
                     }
                 }
@@ -87,13 +83,15 @@ namespace Xaviasale.Controllers
                 using (var db = new XaviasaleContext())
                 {
                     var products = db.ShoppingCarts
-                        .Where(x => x.OrderId.Equals(id))
+                        .Where(x => x.OrderId.Equals(id) && x.ProductId > 0)
                         .Select(x => new OrderProduct
                         {
                             ProductId = x.ProductId,
                             Quantity = x.Quantity,
                             Color = x.Color,
-                            CouponId = x.CouponId
+                            CouponId = x.CouponId,
+                            ProductPrice = x.ProductAmount,
+                            Discount = x.ProductDiscount
                         })
                         .ToList();
                     var hasCoupon = false;
@@ -107,24 +105,31 @@ namespace Xaviasale.Controllers
                         if (item.CouponId > 0 && hasCoupon == false)
                         {
                             var coupon = Umbraco.Content(item.CouponId);
-                            discount = coupon.Value<decimal>("discount");
                             couponName = coupon.Name;
+                            discount = item.Discount > 0 ? item.ProductPrice * (item.Discount / 100) : 0;
                         }
                         #endregion
-                        var product = Umbraco.Content(item.ProductId);
-                        var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
-                        if (itemColorNested != null)
+                        item.Discount = discount;
+                        item.ProductPrice = item.ProductPrice - discount;
+                        if (item.CouponId > 0 && hasCoupon == false)
                         {
-                            var productPrice = itemColorNested.Value<decimal>("price");
-                            item.ProductName = product.Name;
-                            item.ProductUrl = product.Url(mode: UrlMode.Absolute);
-                            item.ProductPrice = (discount > 0 ? (productPrice - productPrice * (discount / 100)) : productPrice);
+                            item.CouponName = couponName;
+                            hasCoupon = true;
+                        }
 
-                            if (item.CouponId > 0 && hasCoupon == false)
+                        var product = Umbraco.Content(item.ProductId);
+                        if (product != null)
+                        {
+                            var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
+                            if (itemColorNested != null)
                             {
-                                item.CouponName = couponName;
-                                item.Discount = discount > 0 ? productPrice * (discount / 100) : 0;
-                                hasCoupon = true;
+                                item.ProductName = product.Name;
+                                item.ProductUrl = product.Url(mode: UrlMode.Absolute);
+                            }
+                            else
+                            {
+                                item.ProductName = "Not found product with this color";
+                                item.ProductUrl = "#";
                             }
                         }
                     }
@@ -154,7 +159,9 @@ namespace Xaviasale.Controllers
                             City = item.City,
                             State = item.State,
                             Country = item.Country,
-                            Phone = item.Phone
+                            Phone = item.Phone,
+                            TotalPrice = item.AmountOrder,
+                            ShipFee = item.ShipFee
                         };
                         return PartialView("~/Views/BackOfficeShoppingCart/_ViewOrder.cshtml", model);
                     }
@@ -202,51 +209,80 @@ namespace Xaviasale.Controllers
         {
             using (var db = new XaviasaleContext())
             {
-                var itemCount = 0;
                 var start = Utils.UnixTimeStampToDateTime(Convert.ToDouble(startDate)).EndOfDay();
                 var end = Utils.UnixTimeStampToDateTime(Convert.ToDouble(endDate)).EndOfDay();
-                var orders = db.Orders.Where(x => x.IsDelete == false && x.IsSuccess == true && x.CreateDate >= start && x.CreateDate <= end).ToList();
-                var lstProducts = new List<OrderProduct>();
-                foreach (var o in orders)
-                {
-                    var products = db.ShoppingCarts
-                        .Where(x => x.OrderId == o.OrderId)
-                        .Select(x => new OrderProduct
+                var orders = db.Orders
+                    .Where(x => x.IsDelete == false && x.IsSuccess == true && x.CreateDate >= start && x.CreateDate <= end).ToList()
+                    .Select((x, index) => new StatisticOrder
+                    {
+                        ItemNo = index + 1,
+                        OrderId = x.OrderId,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        Address = x.Address,
+                        TotalPrice = x.AmountOrder,
+                        CreateDate = x.CreateDate,
+                        ShipFee = x.ShipFee
+                    }).ToList();
+
+                return Json(orders, JsonRequestBehavior.AllowGet);
+            }
+        }
+        [HttpGet]
+        public ActionResult GetDetailStatistic(int orderId)
+        {
+            using (var db = new XaviasaleContext())
+            {
+                var products = db.ShoppingCarts
+                        .Where(x => x.OrderId == orderId && x.ProductId > 0).ToList()
+                        .Select((x, index) => new OrderProduct
                         {
+                            ItemNo = index + 1,
                             ProductId = x.ProductId,
                             Quantity = x.Quantity,
                             Color = x.Color,
-                            CouponId = x.CouponId
-                        })
-                        .ToList();
+                            CouponId = x.CouponId,
+                            ProductPrice = x.ProductAmount,
+                            Discount = x.ProductDiscount
+                        }).ToList();
 
-                    var hasCoupon = false;
-                    foreach (var item in products)
+                var hasCoupon = false;
+                foreach (var item in products)
+                {
+                    #region coupon
+                    var couponName = string.Empty;
+                    decimal discount = 0;
+                    if (item.CouponId > 0 && hasCoupon == false)
                     {
-                        #region coupon
-                        decimal discount = 0;
-                        if (item.CouponId > 0 && hasCoupon == false)
-                        {
-                            var coupon = Umbraco.Content(item.CouponId);
-                            discount = coupon.Value<decimal>("discount");
-                        }
-                        #endregion
-                        itemCount += 1;
-                        item.ItemNo = itemCount;
-                        var product = Umbraco.Content(item.ProductId);
+                        var coupon = Umbraco.Content(item.CouponId);
+                        couponName = coupon.Name;
+                        discount = item.Discount > 0 ? item.ProductPrice * (item.Discount / 100) : 0;
+                    }
+                    #endregion
+                    item.Discount = discount;
+                    item.ProductPrice = item.ProductPrice - discount;
+                    if (item.CouponId > 0 && hasCoupon == false)
+                    {
+                        item.CouponName = couponName;
+                        hasCoupon = true;
+                    }
+                    var product = Umbraco.Content(item.ProductId);
+                    if (product != null)
+                    {
                         var itemColorNested = product.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(item.Color));
                         if (itemColorNested != null)
                         {
-                            var productPrice = itemColorNested.Value<decimal>("price");
                             item.ProductName = product.Name;
                             item.ProductUrl = product.Url(mode: UrlMode.Absolute);
-                            item.ProductPrice = (discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity);
                         }
-                        lstProducts.Add(item);
+                        else
+                        {
+                            item.ProductName = "Not found product with this color";
+                            item.ProductUrl = "#";
+                        }
                     }
                 }
-
-                return Json(lstProducts, JsonRequestBehavior.AllowGet);
+                return Json(products, JsonRequestBehavior.AllowGet);
             }
         }
     }

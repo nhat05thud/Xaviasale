@@ -38,8 +38,8 @@ namespace Xaviasale.Controllers
             }
             var home = Umbraco.Content(model.Carts.FirstOrDefault().ProductId).Root();
             var successUrl = home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute);
-            var notifyUrl = home.Url(mode: UrlMode.Absolute).Substring(0, home.Url(mode: UrlMode.Absolute).IndexOf('/', "https://".Length)) + "/umbraco/surface/checkout/PaymentNotify";
-            var returnData = Checkout(model.Carts, model.PaymentMethod, successUrl, notifyUrl, model);
+            //var notifyUrl = home.Url(mode: UrlMode.Absolute).Substring(0, home.Url(mode: UrlMode.Absolute).IndexOf('/', "https://".Length)) + "/umbraco/surface/checkout/PaymentNotify";
+            var returnData = Checkout(model.Carts, model.PaymentMethod, successUrl, successUrl, model); // chưa định hình đc notifyUrl -> để tạm successUrl
             var result = JsonConvert.DeserializeObject<CoinHomePayOrderReturnModel>(returnData);
             Session[AppConstant.SESSION_CART_ITEMS] = null;
             return Json(new
@@ -89,10 +89,11 @@ namespace Xaviasale.Controllers
                     if (itemColorNested != null)
                     {
                         var productPrice = itemColorNested.Value<decimal>("price");
-                        money += discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity; ;
+                        money += discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity;
                     }
                 }
             }
+            #region shipFee
             decimal shipFee = 0;
             if (model.Count == 1 && model.FirstOrDefault().Quantity == 1)
             {
@@ -107,6 +108,7 @@ namespace Xaviasale.Controllers
                 }
             }
             money += shipFee;
+            #endregion
             redirectUrl = redirectUrl + "?data=" + resGuid;
             notifyUrl = notifyUrl + "?data=" + resGuid;
             var signString = $"channel={paymentMethod}&goodsName={goodName}&merchantId={merchanId}&money={money}&notifyUrl={notifyUrl}&outBody={outBody}&outTradeNo={outTradeNo}&returnUrl={redirectUrl}";
@@ -153,6 +155,8 @@ namespace Xaviasale.Controllers
                         client.Dispose();
                         res = dataObjects.Result;
                         order.ResponseApi = JsonConvert.SerializeObject(dataObjects.Result);
+                        order.AmountOrder = money;
+                        order.ShipFee = shipFee;
                     }
                     else
                     {
@@ -163,6 +167,8 @@ namespace Xaviasale.Controllers
                 db.Orders.Attach(order);
                 db.Entry(order).Property(x => x.RequestApi).IsModified = true;
                 db.Entry(order).Property(x => x.ResponseApi).IsModified = true;
+                db.Entry(order).Property(x => x.AmountOrder).IsModified = true;
+                db.Entry(order).Property(x => x.ShipFee).IsModified = true;
                 db.SaveChanges();
             }
             return res;
@@ -195,16 +201,28 @@ namespace Xaviasale.Controllers
                     {
                         foreach (var product in model.Carts)
                         {
-                            var item = new ShoppingCart
+                            var obj = Umbraco.Content(product.ProductId);
+                            if (obj != null)
                             {
-                                OrderId = order.OrderId,
-                                ProductId = product.ProductId,
-                                Quantity = product.Quantity,
-                                Color = product.Color,
-                                CouponId = product.CouponId
-                            };
-                            db.ShoppingCarts.Add(item);
-                            db.SaveChanges();
+                                var itemColorNested = obj.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(product.Color));
+                                if (itemColorNested != null)
+                                {
+                                    var coupon = Umbraco.Content(product.CouponId);
+                                    var productPrice = itemColorNested.Value<decimal>("price");
+                                    var item = new ShoppingCart
+                                    {
+                                        OrderId = order.OrderId,
+                                        ProductId = product.ProductId,
+                                        Quantity = product.Quantity,
+                                        Color = product.Color,
+                                        CouponId = coupon != null ? product.CouponId : 0,
+                                        ProductAmount = productPrice,
+                                        ProductDiscount = coupon != null ? coupon.Value<int>("discount") : 0
+                                    };
+                                    db.ShoppingCarts.Add(item);
+                                    db.SaveChanges();
+                                }
+                            }
                         }
                     }
 

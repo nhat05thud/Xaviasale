@@ -183,6 +183,10 @@ namespace Xaviasale.Controllers
                                     item.CouponId = coupon.Id;
                                     break;
                                 }
+                                else
+                                {
+                                    item.CouponId = 0;
+                                }
                             }
                         }
                     }

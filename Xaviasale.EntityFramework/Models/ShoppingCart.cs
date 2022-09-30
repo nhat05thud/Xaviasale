@@ -8,6 +8,8 @@
         public int Quantity { get; set; }
         public int CouponId { get; set; }
         public int OrderId { get; set; }
+        public decimal ProductAmount { get; set; }
+        public int ProductDiscount { get; set; }
         public Order Order { get; set; }
     }
 }

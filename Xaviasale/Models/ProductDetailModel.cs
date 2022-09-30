@@ -24,5 +24,6 @@ namespace Xaviasale.Models
         public string MetaDescription { get; set; }
         public string MetaThumbnails { get; set; }
         public bool IsOutOfStock { get; set; }
+        public int OrdersCounter { get; set; }
     }
 }

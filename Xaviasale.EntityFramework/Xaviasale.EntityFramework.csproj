@@ -80,6 +80,22 @@
     <Compile Include="Migrations\202209290805300_AddCoumnOrderUpdateDate.designer.cs">
       <DependentUpon>202209290805300_AddCoumnOrderUpdateDate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209300155076_addColumnOrderStatus.cs" />
+    <Compile Include="Migrations\202209300155076_addColumnOrderStatus.designer.cs">
+      <DependentUpon>202209300155076_addColumnOrderStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209300355481_addColumnAmountOrder.cs" />
+    <Compile Include="Migrations\202209300355481_addColumnAmountOrder.designer.cs">
+      <DependentUpon>202209300355481_addColumnAmountOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209300400092_addColumnProductAmountAndDiscount.cs" />
+    <Compile Include="Migrations\202209300400092_addColumnProductAmountAndDiscount.designer.cs">
+      <DependentUpon>202209300400092_addColumnProductAmountAndDiscount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209300455008_updateColumnProductDiscount.cs" />
+    <Compile Include="Migrations\202209300455008_updateColumnProductDiscount.designer.cs">
+      <DependentUpon>202209300455008_updateColumnProductDiscount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupNewsletter.cs" />
     <Compile Include="Models\Newsletter.cs" />
@@ -112,6 +128,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209290805300_AddCoumnOrderUpdateDate.resx">
       <DependentUpon>202209290805300_AddCoumnOrderUpdateDate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209300155076_addColumnOrderStatus.resx">
+      <DependentUpon>202209300155076_addColumnOrderStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209300355481_addColumnAmountOrder.resx">
+      <DependentUpon>202209300355481_addColumnAmountOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209300400092_addColumnProductAmountAndDiscount.resx">
+      <DependentUpon>202209300400092_addColumnProductAmountAndDiscount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209300455008_updateColumnProductDiscount.resx">
+      <DependentUpon>202209300455008_updateColumnProductDiscount.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

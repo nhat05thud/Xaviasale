@@ -30,11 +30,13 @@ namespace Xaviasale.EntityFramework.Models
         public bool IsSuccess { get; set; }
         public bool IsDelete { get; set; }
         public bool Status { get; set; }
+        public string OrderStatus { get; set; }
         public string RequestApi { get; set; }
         public string ResponseApi { get; set; }
         public Guid ResponGuid { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
+        public decimal AmountOrder { get; set; }
         public IEnumerable<ShoppingCart> ShoppingCarts { get; set; }
     }
 }

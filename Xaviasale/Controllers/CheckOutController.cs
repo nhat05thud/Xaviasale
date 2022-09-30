@@ -77,7 +77,7 @@ namespace Xaviasale.Controllers
                     if (itemColorNested != null)
                     {
                         var productPrice = itemColorNested.Value<decimal>("price");
-                        money += discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity; ;
+                        money += discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity;
                     }
                 }
             }
@@ -93,9 +93,11 @@ namespace Xaviasale.Controllers
                 {
                     var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().ToLower().Equals(orderModel.ResponGuid.ToString().ToLower()));
                     order.RequestApi = JsonConvert.SerializeObject(req);
+                    order.AmountOrder = money;
 
                     db.Orders.Attach(order);
                     db.Entry(order).Property(x => x.RequestApi).IsModified = true;
+                    db.Entry(order).Property(x => x.AmountOrder).IsModified = true;
                     db.SaveChanges();
                 }
                 return req;
@@ -150,16 +152,28 @@ namespace Xaviasale.Controllers
                     {
                         foreach (var product in model.Carts)
                         {
-                            var item = new ShoppingCart
+                            var obj = Umbraco.Content(product.ProductId);
+                            if (obj != null)
                             {
-                                OrderId = order.OrderId,
-                                ProductId = product.ProductId,
-                                Quantity = product.Quantity,
-                                Color = product.Color,
-                                CouponId = product.CouponId
-                            };
-                            db.ShoppingCarts.Add(item);
-                            db.SaveChanges();
+                                var itemColorNested = obj.Value<IEnumerable<IPublishedElement>>("productColorNested").FirstOrDefault(x => x.Value<string>("title").Equals(product.Color));
+                                if (itemColorNested != null)
+                                {
+                                    var coupon = Umbraco.Content(product.CouponId);
+                                    var productPrice = itemColorNested.Value<decimal>("price");
+                                    var item = new ShoppingCart
+                                    {
+                                        OrderId = order.OrderId,
+                                        ProductId = product.ProductId,
+                                        Quantity = product.Quantity,
+                                        Color = product.Color,
+                                        CouponId = coupon != null ? product.CouponId : 0,
+                                        ProductAmount = productPrice,
+                                        ProductDiscount = coupon.Value<int>("discount")
+                                    };
+                                    db.ShoppingCarts.Add(item);
+                                    db.SaveChanges();
+                                }
+                            }
                         }
                     }
 
@@ -185,26 +199,32 @@ namespace Xaviasale.Controllers
             }
         }
         [HttpGet]
-        public void PaymentNotify(string data, bool status)
+        public ActionResult PaymentNotify(string data, int order_id, string status, string hash)
         {
             if (!string.IsNullOrEmpty(data))
             {
+                Session[AppConstant.SESSION_CART_ITEMS] = null;
+                Session["CheckOutOrder"] = null;
                 using (var db = new XaviasaleContext())
                 {
                     var param = data.ToLower();
                     var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().ToLower().Equals(param));
                     if (order != null)
                     {
-                        if (status)
+                        if (status == "success")
                         {
                             order.Status = true;
                             order.IsSuccess = true;
                         }
+                        order.ResponseApi = $"/umbraco/surface/checkout/PaymentNotify?data={data}&order_id={order_id}&status={status}&hash={hash}";
+                        order.OrderStatus = status;
                         order.UpdateDate = DateTime.Now;
                         db.Orders.Attach(order);
                         db.Entry(order).Property(x => x.IsSuccess).IsModified = true;
                         db.Entry(order).Property(x => x.Status).IsModified = true;
+                        db.Entry(order).Property(x => x.OrderStatus).IsModified = true;
                         db.Entry(order).Property(x => x.UpdateDate).IsModified = true;
+                        db.Entry(order).Property(x => x.ResponseApi).IsModified = true;
                         db.SaveChanges();
                         var obj = new CheckOutModel
                         {
@@ -235,11 +255,12 @@ namespace Xaviasale.Controllers
                         }
                         catch (Exception ex)
                         {
-                            throw;
                         }
+                        return Json(new { success = true, message = "success" }, JsonRequestBehavior.AllowGet);
                     }
                 }
             }
+            return Json(new { success = false, message = "error" }, JsonRequestBehavior.AllowGet);
         }
         private MailMessage RenderMailMessage(CheckOutModel model)
         {

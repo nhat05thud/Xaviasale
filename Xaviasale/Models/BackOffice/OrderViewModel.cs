@@ -39,4 +39,15 @@ namespace Xaviasale.Models.BackOffice
         public decimal Discount { get; set; }
         public string CouponName { get; set; }
     }
+    public class StatisticOrder
+    {
+        public int ItemNo { get; set; }
+        public int OrderId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Address { get; set; }
+        public decimal TotalPrice { get; set; }
+        public DateTime CreateDate { get; set; }
+    }
+
 }

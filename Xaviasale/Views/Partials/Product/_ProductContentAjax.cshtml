@@ -105,12 +105,12 @@
                         </div>
                     </div>
                 </section>
-                @if (!Model.IsOutOfStock)
+                @if (!Model.IsOutOfStock && Model.OrdersCounter > 0)
                 {
                     <section type="countdown" tool="realtime-buyers" style="margin-bottom: 10px;">
                         <div class="copt-countdown" name="copt">
                             <div class="copt-mt16 copt-realtime-visitors">
-                                <div>There are<span class="copt-p4 copt-mx6 copt-inline-block copt-realtime-visitors__number copt-realtime__buyers">0</span>people buy this product.</div>
+                                <div>There are<span class="copt-p4 copt-mx6 copt-inline-block copt-realtime-visitors__number">@Model.OrdersCounter</span>people buy this product.</div>
                             </div>
                         </div>
                     </section>

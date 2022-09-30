@@ -64,30 +64,38 @@ namespace Xaviasale.Controllers
         public ActionResult LoadProductContentAjax(int pageId, string keyId = "")
         {
             var currentPage = Umbraco.Content(pageId);
-            var lstProducts = currentPage.Value<IEnumerable<IPublishedElement>>("productColorNested");
-            var data = string.IsNullOrEmpty(keyId)
-                ? lstProducts.FirstOrDefault()
-                : lstProducts.FirstOrDefault(x => x.Key.ToString().Equals(keyId));
-
-            var model = new ProductDetailModel
+            if (currentPage != null)
             {
-                Id = currentPage.Id,
-                ProductColors = currentPage.Value<IEnumerable<IPublishedElement>>("productColorNested"),
-                Name = currentPage.Name,
-                Description = currentPage.Value<string>("productDescription"),
-                Warranty = currentPage.Value<string>("returnAndWarranty"),
-                Images = data.Value<IEnumerable<IPublishedContent>>("images"),
-                Price = data.Value<decimal>("price"),
-                OldPrice = data.Value<decimal>("oldPrice"),
-                Save = data.Value<int>("save"),
-                ColorName = data.Value<string>("title"),
-                MetaTitle = !string.IsNullOrEmpty(currentPage.Value<string>("metaTitle")) ? currentPage.Value<string>("metaTitle") : currentPage.Name,
-                MetaDescription = !string.IsNullOrEmpty(currentPage.Value<string>("metaDescription")) ? currentPage.Value<string>("metaDescription") : currentPage.Name,
-                MetaThumbnails = currentPage.Value<IPublishedContent>("metaThumbnails") != null ? currentPage.Value<IPublishedContent>("metaThumbnails").Url(mode: UrlMode.Absolute) : data.Value<IEnumerable<IPublishedContent>>("images") != null && data.Value<IEnumerable<IPublishedContent>>("images").Any() ? data.Value<IEnumerable<IPublishedContent>>("images").First()?.Url(mode: UrlMode.Absolute) : "",
-                Coupons = currentPage.Value<IEnumerable<IPublishedContent>>("coupons"),
-                IsOutOfStock = currentPage.Value<bool>("isOutOfStock")
-            };
-            return PartialView("~/Views/Partials/Product/_ProductContentAjax.cshtml", model);
+                var lstProducts = currentPage.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                if (lstProducts != null)
+                {
+                    var data = string.IsNullOrEmpty(keyId)
+                        ? lstProducts.FirstOrDefault()
+                        : lstProducts.FirstOrDefault(x => x.Key.ToString().Equals(keyId));
+
+                    var model = new ProductDetailModel
+                    {
+                        Id = currentPage.Id,
+                        ProductColors = currentPage.Value<IEnumerable<IPublishedElement>>("productColorNested"),
+                        Name = currentPage.Name,
+                        Description = currentPage.Value<string>("productDescription"),
+                        Warranty = currentPage.Value<string>("returnAndWarranty"),
+                        Images = data.Value<IEnumerable<IPublishedContent>>("images"),
+                        Price = data.Value<decimal>("price"),
+                        OldPrice = data.Value<decimal>("oldPrice"),
+                        Save = data.Value<int>("save"),
+                        ColorName = data.Value<string>("title"),
+                        MetaTitle = !string.IsNullOrEmpty(currentPage.Value<string>("metaTitle")) ? currentPage.Value<string>("metaTitle") : currentPage.Name,
+                        MetaDescription = !string.IsNullOrEmpty(currentPage.Value<string>("metaDescription")) ? currentPage.Value<string>("metaDescription") : currentPage.Name,
+                        MetaThumbnails = currentPage.Value<IPublishedContent>("metaThumbnails") != null ? currentPage.Value<IPublishedContent>("metaThumbnails").Url(mode: UrlMode.Absolute) : data.Value<IEnumerable<IPublishedContent>>("images") != null && data.Value<IEnumerable<IPublishedContent>>("images").Any() ? data.Value<IEnumerable<IPublishedContent>>("images").First()?.Url(mode: UrlMode.Absolute) : "",
+                        Coupons = currentPage.Value<IEnumerable<IPublishedContent>>("coupons"),
+                        IsOutOfStock = currentPage.Value<bool>("isOutOfStock"),
+                        OrdersCounter = data.Value<int>("ordersCounter")
+                    };
+                    return PartialView("~/Views/Partials/Product/_ProductContentAjax.cshtml", model);
+                }
+            }
+            return null;
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

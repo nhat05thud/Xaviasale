@@ -63,7 +63,6 @@ prevNowPlaying = setInterval(function () {
 }, 3000);
 function initCoptRealtime(min, max) {
     $(".copt-realtime__visitors").text(getRandomArbitrary(min, max));
-    $(".copt-realtime__buyers").text(getRandomArbitrary(min, max));
 }
 function getRandomArbitrary(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -73,15 +72,6 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-var prevBuyersPlaying = null;
-if (prevBuyersPlaying) {
-    clearInterval(prevBuyersPlaying);
-}
-prevBuyersPlaying = setInterval(function () {
-    var currentView = $(".copt-realtime__buyers").text();
-    var randomInt = getRandomArbitrary(1, 5);
-    $(".copt-realtime__buyers").text(parseInt(currentView) + randomInt);
-}, 5000);
 
 function myfunload() {
     $(".wrap-content p").each(function () {

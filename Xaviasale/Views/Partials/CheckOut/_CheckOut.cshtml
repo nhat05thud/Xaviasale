@@ -25,7 +25,6 @@
         });
     });
     function onCheckoutSuccess(e) {
-        console.log(123);
         if (e.data.data != null) {
             window.location.href = e.data.data.payUrl
         }
@@ -42,7 +41,6 @@
         $(".loading_div").css("display", "none");
     }
     function onCheckoutFailure(e) {
-        console.log(456);
         swal({
             title: e.success ? "Success" : "Error",
             text: e.message,

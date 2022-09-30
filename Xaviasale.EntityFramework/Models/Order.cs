@@ -37,6 +37,7 @@ namespace Xaviasale.EntityFramework.Models
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public decimal AmountOrder { get; set; }
+        public decimal ShipFee { get; set; }
         public IEnumerable<ShoppingCart> ShoppingCarts { get; set; }
     }
 }

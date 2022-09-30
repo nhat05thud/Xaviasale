@@ -81,6 +81,22 @@ namespace Xaviasale.Controllers
                     }
                 }
             }
+            #region shipFee
+            decimal shipFee = 0;
+            if (model.Count == 1 && model.FirstOrDefault().Quantity == 1)
+            {
+                var product = Umbraco.Content(model.FirstOrDefault().ProductId);
+                if (product != null)
+                {
+                    var nested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                    if (nested != null && nested.Any())
+                    {
+                        shipFee = nested.FirstOrDefault().Value<decimal>("ship");
+                    }
+                }
+            }
+            money += shipFee;
+            #endregion
             var data = createOrderOnServer(merchanId, merchanUrl, money, successUrl, cancelUrl, notifyUrl, orderModel.OrderId.ToString(), timestamp, secret);
             var req = new VnxRequest {
                 operation = "PAY",
@@ -94,10 +110,12 @@ namespace Xaviasale.Controllers
                     var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().ToLower().Equals(orderModel.ResponGuid.ToString().ToLower()));
                     order.RequestApi = JsonConvert.SerializeObject(req);
                     order.AmountOrder = money;
+                    order.ShipFee = shipFee;
 
                     db.Orders.Attach(order);
                     db.Entry(order).Property(x => x.RequestApi).IsModified = true;
                     db.Entry(order).Property(x => x.AmountOrder).IsModified = true;
+                    db.Entry(order).Property(x => x.ShipFee).IsModified = true;
                     db.SaveChanges();
                 }
                 return req;
@@ -168,7 +186,7 @@ namespace Xaviasale.Controllers
                                         Color = product.Color,
                                         CouponId = coupon != null ? product.CouponId : 0,
                                         ProductAmount = productPrice,
-                                        ProductDiscount = coupon.Value<int>("discount")
+                                        ProductDiscount = coupon != null ? coupon.Value<int>("discount") : 0
                                     };
                                     db.ShoppingCarts.Add(item);
                                     db.SaveChanges();

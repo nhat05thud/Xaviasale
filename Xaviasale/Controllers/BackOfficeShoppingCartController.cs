@@ -159,7 +159,9 @@ namespace Xaviasale.Controllers
                             City = item.City,
                             State = item.State,
                             Country = item.Country,
-                            Phone = item.Phone
+                            Phone = item.Phone,
+                            TotalPrice = item.AmountOrder,
+                            ShipFee = item.ShipFee
                         };
                         return PartialView("~/Views/BackOfficeShoppingCart/_ViewOrder.cshtml", model);
                     }
@@ -219,7 +221,8 @@ namespace Xaviasale.Controllers
                         LastName = x.LastName,
                         Address = x.Address,
                         TotalPrice = x.AmountOrder,
-                        CreateDate = x.CreateDate
+                        CreateDate = x.CreateDate,
+                        ShipFee = x.ShipFee
                     }).ToList();
 
                 return Json(orders, JsonRequestBehavior.AllowGet);

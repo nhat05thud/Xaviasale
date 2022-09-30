@@ -24,6 +24,7 @@ namespace Xaviasale.Models.BackOffice
         public string Phone { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Discount { get; set; }
+        public decimal ShipFee { get; set; }
         public List<OrderProduct> OrderProducts { get; set; }
     }
     public class OrderProduct
@@ -47,6 +48,7 @@ namespace Xaviasale.Models.BackOffice
         public string LastName { get; set; }
         public string Address { get; set; }
         public decimal TotalPrice { get; set; }
+        public decimal ShipFee { get; set; }
         public DateTime CreateDate { get; set; }
     }
 

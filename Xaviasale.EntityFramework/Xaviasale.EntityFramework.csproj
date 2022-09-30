@@ -96,6 +96,10 @@
     <Compile Include="Migrations\202209300455008_updateColumnProductDiscount.designer.cs">
       <DependentUpon>202209300455008_updateColumnProductDiscount.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209301901504_AddColumnOrderShipFee.cs" />
+    <Compile Include="Migrations\202209301901504_AddColumnOrderShipFee.designer.cs">
+      <DependentUpon>202209301901504_AddColumnOrderShipFee.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\GroupNewsletter.cs" />
     <Compile Include="Models\Newsletter.cs" />
@@ -140,6 +144,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209300455008_updateColumnProductDiscount.resx">
       <DependentUpon>202209300455008_updateColumnProductDiscount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209301901504_AddColumnOrderShipFee.resx">
+      <DependentUpon>202209301901504_AddColumnOrderShipFee.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

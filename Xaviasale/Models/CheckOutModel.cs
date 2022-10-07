@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Umbraco.Core.Models.PublishedContent;
 using Xaviasale.ClassHelper;
 
 namespace Xaviasale.Models
@@ -106,5 +107,14 @@ namespace Xaviasale.Models
     {
         public string operation { get; set; }
         public VnxOrder order { get; set; }
+    }
+
+    public class CheckOutIPublishContent
+    {
+        public string ProductName { get; set; }
+        public string ProductImage { get; set; }
+        public decimal ProductPrice { get; set; }
+        public IPublishedElement Product { get; set; }
+        public int Quantity { get; set; }
     }
 }

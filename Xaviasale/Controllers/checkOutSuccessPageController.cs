@@ -22,6 +22,7 @@ namespace Xaviasale.Controllers
         // GET: checkOutSuccessPage
         public override ActionResult Index(ContentModel model)
         {
+            Session[AppConstant.SESSION_CART_ITEMS] = null;
             return CurrentTemplate(model);
         }
     }

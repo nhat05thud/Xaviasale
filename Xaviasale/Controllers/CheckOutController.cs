@@ -16,11 +16,18 @@ using Xaviasale.EntityFramework.Models;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using Stripe;
+using Stripe.Checkout;
+using System.Web;
 
 namespace Xaviasale.Controllers
 {
     public class CheckOutController : SurfaceController
     {
+        public CheckOutController()
+        {
+            StripeConfiguration.ApiKey = WebConfigurationManager.AppSettings["Stripe.SecretKey"];
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
@@ -39,27 +46,36 @@ namespace Xaviasale.Controllers
             var home = Umbraco.Content(model.Carts.FirstOrDefault().ProductId).Root();
             var successUrl = home.DescendantOfType("checkOutSuccessPage")?.Url(mode: UrlMode.Absolute);
             var cancelUrl = home.DescendantOfType("checkOutFailPage")?.Url(mode: UrlMode.Absolute);
-            //var notifyUrl = home.DescendantOfType("checkOutNotifyPage")?.Url(mode: UrlMode.Absolute);
-            var notifyUrl = home.Url(mode: UrlMode.Absolute).Substring(0, home.Url(mode: UrlMode.Absolute).IndexOf('/', "https://".Length)) + "/umbraco/surface/checkout/PaymentNotify";
-            var returnData = Checkout(model.Carts, successUrl, cancelUrl, notifyUrl, model);
+            var returnData = Checkout(model.Carts, successUrl, cancelUrl, model);
             if (returnData == null)
             {
                 return Json(new { success = false, message = "Error" }, JsonRequestBehavior.AllowGet);
             }
-            Session["CheckOutOrder"] = returnData;
-            return Json(new { success = true, message = "Success" }, JsonRequestBehavior.AllowGet);
+            return Json(new { success = true, session = returnData.Id, message = "Success" }, JsonRequestBehavior.AllowGet);
         }
-        private VnxRequest Checkout(List<Cart> model, string successUrl, string cancelUrl, string notifyUrl, CheckOutModel checkoutModel)
+        private Stripe.Checkout.Session Checkout(List<Cart> model, string successUrl, string cancelUrl, CheckOutModel checkoutModel)
         {
             var orderModel = SaveOrdersToDatabase(checkoutModel);
-            var merchanId = WebConfigurationManager.AppSettings["VNX.MerchantId"];
-            var merchanUrl = WebConfigurationManager.AppSettings["VNX.merchantUrl"];
-            successUrl = successUrl + "?data=" + orderModel.ResponGuid;
-            cancelUrl = cancelUrl + "?data=" + orderModel.ResponGuid;
-            notifyUrl = notifyUrl + "?data=" + orderModel.ResponGuid;
-            var secret = WebConfigurationManager.AppSettings["VNX.Secret"];
-            var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            var lstProducts = new List<CheckOutIPublishContent>();
+
+            #region shipFee
             decimal money = 0;
+            decimal shipFee = 0;
+            if (model.Count == 1 && model.FirstOrDefault().Quantity == 1)
+            {
+                var product = Umbraco.Content(model.FirstOrDefault().ProductId);
+                if (product != null)
+                {
+                    var nested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
+                    if (nested != null && nested.Any())
+                    {
+                        shipFee = nested.FirstOrDefault().Value<decimal>("ship");
+                    }
+                }
+            }
+            money += shipFee;
+            #endregion
+
             var hasCoupon = false;
             foreach (var item in model)
             {
@@ -78,37 +94,60 @@ namespace Xaviasale.Controllers
                     {
                         var productPrice = itemColorNested.Value<decimal>("price");
                         money += discount > 0 ? (productPrice - productPrice * (discount / 100)) * item.Quantity : productPrice * item.Quantity;
+
+                        var obj = new CheckOutIPublishContent
+                        {
+                            ProductName = product.Name,
+                            ProductImage = itemColorNested.Value<IEnumerable<IPublishedContent>>("images")?.FirstOrDefault()?.Url(mode: UrlMode.Absolute),
+                            ProductPrice = shipFee > 0 && model.IndexOf(item) == 0 ? itemColorNested.Value<decimal>("price") + shipFee : itemColorNested.Value<decimal>("price"),
+                            Product = itemColorNested,
+                            Quantity = item.Quantity
+                        };
+                        lstProducts.Add(obj);
                     }
                 }
             }
-            #region shipFee
-            decimal shipFee = 0;
-            if (model.Count == 1 && model.FirstOrDefault().Quantity == 1)
+
+            #region Stripe
+            var options = new SessionCreateOptions
             {
-                var product = Umbraco.Content(model.FirstOrDefault().ProductId);
-                if (product != null)
-                {
-                    var nested = product.Value<IEnumerable<IPublishedElement>>("productColorNested");
-                    if (nested != null && nested.Any())
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = lstProducts.Select(x => new SessionLineItemOptions {
+                    PriceData = new SessionLineItemPriceDataOptions
                     {
-                        shipFee = nested.FirstOrDefault().Value<decimal>("ship");
-                    }
-                }
-            }
-            money += shipFee;
-            #endregion
-            var data = createOrderOnServer(merchanId, merchanUrl, money, successUrl, cancelUrl, notifyUrl, orderModel.OrderId.ToString(), timestamp, secret);
-            var req = new VnxRequest {
-                operation = "PAY",
-                order = data
+                        Currency = "usd",
+                        UnitAmountDecimal = x.ProductPrice * 100, // cents to Usd
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = x.ProductName,
+                            Description = $"{x.ProductName} - ({x.Product.Value<string>("title")})",
+                            Images = new List<string>
+                            {
+                                HttpUtility.UrlPathEncode(x.ProductImage != null ? x.ProductImage : "https://via.placeholder.com/202x202")
+                            }
+                        },
+                    },
+                    Quantity = x.Quantity
+                }).ToList(),
+                Metadata = new Dictionary<string, string>
+                {
+                    { "OrderId", orderModel.OrderId.ToString() },
+                },
+                Mode = "payment",
+                SuccessUrl = successUrl,
+                CancelUrl = cancelUrl
             };
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+            #endregion
 
             try
             {
                 using (var db = new XaviasaleContext())
                 {
                     var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().ToLower().Equals(orderModel.ResponGuid.ToString().ToLower()));
-                    order.RequestApi = JsonConvert.SerializeObject(req);
+                    order.RequestApi = JsonConvert.SerializeObject(options);
                     order.AmountOrder = money;
                     order.ShipFee = shipFee;
 
@@ -118,30 +157,12 @@ namespace Xaviasale.Controllers
                     db.Entry(order).Property(x => x.ShipFee).IsModified = true;
                     db.SaveChanges();
                 }
-                return req;
+                return session;
             }
             catch
             {
                 return null;
             }
-        }
-        private VnxOrder createOrderOnServer(string merchantId, string merchantUrl, decimal amountOrder, string successUrl, string cancelUrl, string notifyUrl, string orderId, string timestamp, string secret)
-        {
-            var stringToHash =
-                "amountOrder=" + amountOrder + "&cancelUrl=" + cancelUrl + "&merchantId=" + merchantId + "&merchantUrl=" + merchantUrl + "&notifyUrl=" + notifyUrl + "&orderId=" + orderId + "&successUrl=" + successUrl + "&timestamp=" + timestamp;
-            var secureHash = Utils.ToMd5(stringToHash + Utils.ToMd5(secret)).ToString();
-            var order = new VnxOrder {
-                merchantId = merchantId,
-                merchantUrl = merchantUrl,
-                amountOrder = amountOrder,
-                successUrl = successUrl,
-                cancelUrl = cancelUrl,
-                notifyUrl = notifyUrl,
-                OrderId = orderId,
-                timestamp = timestamp,
-                secureHash = secureHash.ToLower()
-            };
-            return order;
         }
         private OrderResponseModel SaveOrdersToDatabase(CheckOutModel model)
         {
@@ -216,70 +237,6 @@ namespace Xaviasale.Controllers
                 return writer.ToString();
             }
         }
-        [HttpGet]
-        public ActionResult PaymentNotify(string data, int order_id, string status, string hash)
-        {
-            if (!string.IsNullOrEmpty(data))
-            {
-                Session[AppConstant.SESSION_CART_ITEMS] = null;
-                Session["CheckOutOrder"] = null;
-                using (var db = new XaviasaleContext())
-                {
-                    var param = data.ToLower();
-                    var order = db.Orders.FirstOrDefault(x => x.ResponGuid.ToString().ToLower().Equals(param));
-                    if (order != null)
-                    {
-                        if (status == "success")
-                        {
-                            order.Status = true;
-                            order.IsSuccess = true;
-                        }
-                        order.ResponseApi = $"/umbraco/surface/checkout/PaymentNotify?data={data}&order_id={order_id}&status={status}&hash={hash}";
-                        order.OrderStatus = status;
-                        order.UpdateDate = DateTime.Now;
-                        db.Orders.Attach(order);
-                        db.Entry(order).Property(x => x.IsSuccess).IsModified = true;
-                        db.Entry(order).Property(x => x.Status).IsModified = true;
-                        db.Entry(order).Property(x => x.OrderStatus).IsModified = true;
-                        db.Entry(order).Property(x => x.UpdateDate).IsModified = true;
-                        db.Entry(order).Property(x => x.ResponseApi).IsModified = true;
-                        db.SaveChanges();
-                        var obj = new CheckOutModel
-                        {
-                            Email = order.Email,
-                            FirstName = order.FirstName,
-                            LastName = order.LastName,
-                            Address = order.Address,
-                            Apartment = order.Apartment,
-                            ZipCode = order.ZipCode,
-                            City = order.City,
-                            State = order.State,
-                            Country = order.Country,
-                            Phone = order.Phone
-                        };
-                        obj.Carts = db.ShoppingCarts.Where(x => x.OrderId == order.OrderId)
-                            .Select(x => new Cart
-                            {
-                                Color = x.Color,
-                                CouponId = x.CouponId,
-                                ProductId = x.ProductId,
-                                Quantity = x.Quantity
-                            }).ToList();
-                        var email = RenderMailMessage(obj);
-                        try
-                        {
-                            var smtp = new SmtpClient();
-                            smtp.Send(email);
-                        }
-                        catch (Exception ex)
-                        {
-                        }
-                        return Json(new { success = true, message = "success" }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-            }
-            return Json(new { success = false, message = "error" }, JsonRequestBehavior.AllowGet);
-        }
         private MailMessage RenderMailMessage(CheckOutModel model)
         {
             decimal total = 0;
@@ -346,6 +303,179 @@ namespace Xaviasale.Controllers
                 To = { sendTo }
             };
             return email;
+        }
+        [HttpPost]
+        public ActionResult UpdatePaymentStatus()
+        {
+            Session[AppConstant.SESSION_CART_ITEMS] = null;
+            using (var db = new XaviasaleContext())
+            {
+                try
+                {
+                    Stream req = Request.InputStream;
+                    req.Seek(0, System.IO.SeekOrigin.Begin);
+                    string json = new StreamReader(req).ReadToEnd();
+
+                    // Get all Stripe events.
+                    var stripeEvent = EventUtility.ParseEvent(json);
+                    string stripeJson = stripeEvent.Data.RawObject + string.Empty;
+                    var childData = Charge.FromJson(stripeJson);
+                    var metadata = childData.Metadata;
+
+                    int orderID = -1;
+                    string strOrderID = string.Empty;
+                    if (metadata.TryGetValue("OrderId", out strOrderID))
+                    {
+                        int.TryParse(strOrderID, out orderID);
+                    }
+                    Stripe.Checkout.Session session = null;
+                    switch (stripeEvent.Type)
+                    {
+                        case Events.CheckoutSessionCompleted:
+                            session = stripeEvent.Data.Object as Stripe.Checkout.Session;
+                            // Save an order in your database, marked as 'awaiting payment'
+                            //CreateOrder(session);
+
+                            // Check if the order is paid (for example, from a card payment)
+                            //
+                            // A delayed notification payment will have an `unpaid` status, as
+                            // you're still waiting for funds to be transferred from the customer's
+                            // account.
+                            var orderPaid = session.PaymentStatus == "paid";
+
+                            if (orderPaid)
+                            {
+                                // Fulfill the purchase
+                                FulfillOrder(session, json, orderID);
+                            }
+                            break;
+                        case Events.CheckoutSessionAsyncPaymentSucceeded:
+                            session = stripeEvent.Data.Object as Stripe.Checkout.Session;
+
+                            // Fulfill the purchase
+                            FulfillOrder(session, json, orderID);
+
+                            break;
+                        case Events.CheckoutSessionAsyncPaymentFailed:
+                            session = stripeEvent.Data.Object as Stripe.Checkout.Session;
+
+                            // Send an email to the customer asking them to retry their order
+                            //EmailCustomerAboutFailedPayment(orderID);
+
+                            break;
+                    }
+                    return Json(new { Code = 1, Message = "Update success." });
+                }
+                catch (StripeException e)
+                {
+                    return Json(new { Code = -100, Message = "Error." });
+                }
+            }
+        }
+        private void FulfillOrder(Stripe.Checkout.Session session,string json, int orderID)
+        {
+            using (var db = new XaviasaleContext())
+            {
+                var order = db.Orders.FirstOrDefault(x => x.OrderId == orderID);
+                if (order != null)
+                {
+                    order.IsSuccess = true;
+                    order.Status = true;
+                    order.OrderStatus = session.PaymentStatus;
+                    order.UpdateDate = DateTime.Now;
+                    order.ResponseApi = json;
+                    db.Orders.Attach(order);
+                    db.Entry(order).Property(x => x.IsSuccess).IsModified = true;
+                    db.Entry(order).Property(x => x.Status).IsModified = true;
+                    db.Entry(order).Property(x => x.OrderStatus).IsModified = true;
+                    db.Entry(order).Property(x => x.UpdateDate).IsModified = true;
+                    db.Entry(order).Property(x => x.ResponseApi).IsModified = true;
+                    db.SaveChanges();
+                }
+            }
+            EmailAdminAboutPayment(orderID);
+        }
+        private void EmailAdminAboutPayment(int orderID)
+        {
+            // get orderid
+            using (var db = new XaviasaleContext())
+            {
+                var order = db.Orders.FirstOrDefault(x => x.OrderId == orderID);
+                if (order != null)
+                {
+                    var obj = new CheckOutModel
+                    {
+                        Email = order.Email,
+                        FirstName = order.FirstName,
+                        LastName = order.LastName,
+                        Address = order.Address,
+                        Apartment = order.Apartment,
+                        ZipCode = order.ZipCode,
+                        City = order.City,
+                        State = order.State,
+                        Country = order.Country,
+                        Phone = order.Phone
+                    };
+                    obj.Carts = db.ShoppingCarts.Where(x => x.OrderId == order.OrderId)
+                        .Select(x => new Cart
+                        {
+                            Color = x.Color,
+                            CouponId = x.CouponId,
+                            ProductId = x.ProductId,
+                            Quantity = x.Quantity
+                        }).ToList();
+                    var email = RenderMailMessage(obj);
+                    try
+                    {
+                        var smtp = new SmtpClient();
+                        smtp.Send(email);
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+            }
+        }
+        private void EmailCustomerAboutFailedPayment(int orderID)
+        {
+            // get orderid
+            using (var db = new XaviasaleContext())
+            {
+                var order = db.Orders.FirstOrDefault();
+                if (order != null)
+                {
+                    var obj = new CheckOutModel
+                    {
+                        Email = order.Email,
+                        FirstName = order.FirstName,
+                        LastName = order.LastName,
+                        Address = order.Address,
+                        Apartment = order.Apartment,
+                        ZipCode = order.ZipCode,
+                        City = order.City,
+                        State = order.State,
+                        Country = order.Country,
+                        Phone = order.Phone
+                    };
+                    obj.Carts = db.ShoppingCarts.Where(x => x.OrderId == order.OrderId)
+                        .Select(x => new Cart
+                        {
+                            Color = x.Color,
+                            CouponId = x.CouponId,
+                            ProductId = x.ProductId,
+                            Quantity = x.Quantity
+                        }).ToList();
+                    var email = RenderMailMessage(obj);
+                    try
+                    {
+                        var smtp = new SmtpClient();
+                        smtp.Send(email);
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+            }
         }
     }
 }

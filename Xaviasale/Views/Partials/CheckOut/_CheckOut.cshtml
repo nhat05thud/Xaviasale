@@ -1,6 +1,6 @@
 ﻿@using Xaviasale.Controllers
 @inherits UmbracoViewPage<Xaviasale.Models.CheckOutModel>
-@{ 
+@{
     var home = Umbraco.AssignedContentItem.Root();
 }
 
@@ -16,7 +16,9 @@
         @Html.Partial("~/Views/Partials/CheckOut/_Form.cshtml", Model)
     </div>
 }
+<script src="https://js.stripe.com/v3/"></script>
 <script>
+    var stripe = Stripe('@System.Configuration.ConfigurationManager.AppSettings["Stripe.PublishKey"]');
     $("#requestForm").on('submit', function () {
         setTimeout(function () {
             if (!$("input, textarea, select").hasClass("input-validation-error")) {
@@ -26,7 +28,11 @@
     });
     function onCheckoutSuccess(e) {
         if (e.success) {
-            window.location.reload();
+            stripe.redirectToCheckout({
+                sessionId: e.session
+            }).then(function (result) {
+                console.log(result.error.message);
+            });
         }
         else {
             swal({
